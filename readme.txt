@@ -22,6 +22,10 @@ Improve your experience with Gravity Forms by adding additional functionality. _
 
 * Submit forms using Ajax
 
+* [Leave suggestions, comments, and/or bug reports](http://www.seodenver.com/gravity-forms-addons/)
+
+Developed by Katz Web Services, a __[Denver SEO firm](http://www.katzwebservices.com)__.
+
 == Screenshots ==
 
 1. How the Gravity Forms 'Add Fields' boxes look after plugin is activated
