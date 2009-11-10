@@ -12,15 +12,15 @@ Add functionality to the great Gravity Forms plugin.
 
 Requires the [Gravity Forms plugin](http://sn.im/gravityforms) __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__
 
-=== Improve Gravity Forms Functionality and Usability === 
+###Improve Gravity Forms Functionality and Usability
 
-### Gravity Forms Addons
+#### Gravity Forms Addons
 
 * Expand the Add Fields boxes to view all the boxes at once.
 * Edit form entries directly from the Entries page (saving two clicks)
 * Easily access form data to use in your website with PHP functions - [Learn more on the plugin's website](http://www.seodenver.com/gravity-forms-addons/)
 
-### Upcoming Features
+#### Upcoming Features
 
 * Submit forms using Ajax
 
