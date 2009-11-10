@@ -2,21 +2,23 @@
 Tags: gravity forms, forms, gravity, form, crm, gravity form
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 1.0
+Stable tag: 1.1
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Add functionality to the great Gravity Forms plugin. Features: Expand all of the 'Add Fields' boxes at once
+Add functionality to the great Gravity Forms plugin.
 
 == Description ==
 
-__Requires the [Gravity Forms plugin](http://sn.im/gravityforms)__
+Requires the [Gravity Forms plugin](http://sn.im/gravityforms) __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__
 
-Improve your experience with Gravity Forms by adding additional functionality. __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__
+=== Improve Gravity Forms Functionality and Usability === 
 
 ### Gravity Forms Addons
 
 * Expand the Add Fields boxes to view all the boxes at once.
+* Edit form entries directly from the Entries page (saving two clicks)
+* Easily access form data to use in your website with PHP functions - [Learn more on the plugin's website](http://www.seodenver.com/gravity-forms-addons/)
 
 ### Upcoming Features
 
@@ -29,8 +31,13 @@ Developed by Katz Web Services, a __[Denver SEO firm](http://www.katzwebservices
 == Screenshots ==
 
 1. How the Gravity Forms 'Add Fields' boxes look after plugin is activated
+2. This plugin adds an Edit link to Gravity Form entries
 
 == Changelog ==
+
+= 1.1 =
+* Added Edit link to Entries page to directly edit an entry
+* Added a bunch of functions to use in directly accessing form and entry data from outside the plugin
 
 = 1.0 =
 * Launched plugin
