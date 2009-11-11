@@ -2,7 +2,7 @@
 Tags: gravity forms, forms, gravity, form, crm, gravity form
 Requires at least: 2.8
 Tested up to: 2.9
-Stable tag: 1.2
+Stable tag: 1.2.1
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
@@ -24,7 +24,7 @@ Requires the [Gravity Forms plugin](http://sn.im/gravityforms) __Don't use Gravi
 
 * [Leave suggestions, comments, and/or bug reports](http://www.seodenver.com/gravity-forms-addons/)
 
-Developed by Katz Web Services, a __[Denver SEO firm](http://www.katzwebservices.com)__.
+#### Developed by Katz Web Services, a __[Denver SEO firm](http://www.katzwebservices.com)__.
 
 == Screenshots ==
 
@@ -32,6 +32,10 @@ Developed by Katz Web Services, a __[Denver SEO firm](http://www.katzwebservices
 2. This plugin adds an Edit link to Gravity Form entries
 
 == Changelog ==
+
+
+= 1.2.1 = 
+* Fixed whitespace issue if site is gzip'ed. No need to upgrade if you aren't getting the `Warning: Cannot modify header information - headers already sent by...` PHP error.
 
 = 1.2 = 
 * Compatibility with Gravity Forms 1.3

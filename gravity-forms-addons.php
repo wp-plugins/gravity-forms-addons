@@ -4,13 +4,16 @@ Plugin Name: Gravity Forms Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Add functionality and usability to the great Gravity Forms plugin.
 Author: Katz Web Services, Inc.
-Version: 1.2
+Version: 1.2.1
 Author URI: http://www.katzwebservices.com
 */
 
 /*
 
 Versions:
+
+= 1.2.1 = 
+* Fixed whitespace issue if site is gzip'ed. No need to upgrade if you aren't getting the `Warning: Cannot modify header information - headers already sent by...` PHP error.
 
 = 1.2 = 
 * Compatibility with Gravity Forms 1.3
@@ -80,10 +83,7 @@ if(class_exists(RGForms) && class_exists(RGFormsModel)) {
 	}
 	// Allows for edit links to work with a link instead of a form (GET instead of POST)
 	if(isset($_GET["screen_mode"])) { $_POST["screen_mode"] = $_GET["screen_mode"]; }
-?>
 
-	
-<?php 	
 	function kws_gf_head() {
 		if(is_admin()) {
 			kws_gf_css();
