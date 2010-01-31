@@ -6,11 +6,30 @@ Description: Add functionality and usability to the great Gravity Forms plugin.
 Author: Katz Web Services, Inc.
 Version: 1.2.1
 Author URI: http://www.katzwebservices.com
+
+Copyright 2010 Katz Web Services, Inc.  (email: info@katzwebservices.com)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 */
 
 /*
 
 Versions:
+
+= 1.2.1.1 = 
+* Updated with GPL information. Did you know Gravity Forms is also GPL? Any WordPress plugin is.
 
 = 1.2.1 = 
 * Fixed whitespace issue if site is gzip'ed. No need to upgrade if you aren't getting the `Warning: Cannot modify header information - headers already sent by...` PHP error.
