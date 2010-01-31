@@ -51,3 +51,6 @@ Yes, this plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms).
 
 = 1.0 =
 * Launched plugin
+
+== License ==
+* This plugin is released under a GPL license.
