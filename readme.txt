@@ -1,14 +1,17 @@
 === Gravity Forms Addons ===
-Tags: gravity forms, forms, gravity, form, crm, gravity form
+Tags: gravity forms, forms, gravity, form, crm, gravity form, contact form, contact forms, contact, feedback, email, captcha, akismet, cforms, contact form 7, secure form, wp contact form, simplemodal contact form, enhanced wp contact form
 Requires at least: 2.8
 Tested up to: 3.0
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Add functionality to the great Gravity Forms plugin.
+Adds functionality that extends the Gravity Forms plugin.
 
 == Description ==
+
+<blockquote><p><strong>This plugin requires the Gravity Forms plugin.</strong><br /><a href="http://sn.im/gravityforms" rel="nofollow">Learn more & purchase here</a>.</p>
+<p><em>Note:</em> Gravity Forms is a paid plugin, and this plugin exists to extend its functionality. This plugin author is not the creator of Gravity Forms.</p></blockquote>
 
 ###Improve Gravity Forms Functionality and Usability
 
@@ -34,7 +37,22 @@ Add functionality to the great Gravity Forms plugin.
 = Does this plugin require Gravity Forms? =
 Yes, this plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms). __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__ and start using this add-on plugin!
 
+= What is the license for this plugin? =
+* This plugin is released under a GPL license.
+
+== Installation ==
+
+1. Make sure you have the [Gravity Forms plugin](http://sn.im/gravityforms) installed and Activated.
+1. Upload the Gravity Forms Addons plugin to your blog, Activate it, and you're done.
+
 == Changelog ==
+
+= 1.3 = 
+* Added an admin notice if Gravity Forms is not installed properly. This will help the confusion: an installed version of Gravity Forms is required for this plugin to do anything! This update also solves the `Fatal error: Class 'RGForms' not found` error.
+* Added function to get field values from a lead: `get_gf_field_value($leadid, $fieldid)` will work for all field lengths (`get_gf_field_value_long()` worked for just long values)
+* Added `IDs` link to Edit Forms page, allowing you to find out what the field IDs are for each field in a form. This allows you to use the functions in this plugin much more easily.
+* Removed `$Forms->escape_text` reference, since it has been replaced by esc_html(). This would have caused a fatal error.
+
 
 = 1.2.1.1 = 
 * Updated with GPL information. Did you know Gravity Forms is also GPL? Any WordPress plugin is.
@@ -52,5 +70,8 @@ Yes, this plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms).
 = 1.0 =
 * Launched plugin
 
-== License ==
-* This plugin is released under a GPL license.
+== Upgrade Notice ==
+
+= 1.3 = 
+* Removed `$Forms->escape_text` reference, since it has been replaced by esc_html(). This would have caused a fatal error.
+* This solves the `Fatal error: Class 'RGForms' not found` error by checking to make sure Gravity Forms is installed properly first.
