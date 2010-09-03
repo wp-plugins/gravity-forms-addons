@@ -93,7 +93,7 @@ This plugin is released under a GPL license.
 
 == Installation == 
 
-1. Upload the Akismet plugin to your blog and Activate it
+1. Upload this plugin to your blog and Activate it
 2. Using Gravity Forms, reorder the columns on the form you'd like to turn into a directory
 	* In the "Entries: [Your Form]") screen, find the "Edit" link with the pencil icon in the table header. Click it.
 	* Drag the columns you want in your directory onto the "Active Columns" box
