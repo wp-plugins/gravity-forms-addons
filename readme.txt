@@ -34,7 +34,7 @@ There are over 30 configurable options for how you want the directory to display
 * Edit form entries directly from the Entries page (saving two clicks)
 * Easily access form data to use in your website with PHP functions - [Learn more on the plugin's website](http://www.seodenver.com/gravity-forms-addons/)
 
-#### Upcoming Features
+#### Have an idea or issue?
 
 * [Leave suggestions, comments, and/or bug reports](http://www.seodenver.com/gravity-forms-addons/)
 
