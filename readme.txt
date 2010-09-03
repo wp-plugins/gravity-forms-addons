@@ -12,7 +12,7 @@ Add functionality to the great Gravity Forms plugin.
 
 > This plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms). __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__ and start using this awesome plugin!
 
-## Turn Gravity Forms into a Directory plugin
+### Turn Gravity Forms into a Directory plugin
 Gravity Forms is already the easiest form plugin - its functionality makes WordPress <em>close</em> to having user-submitted directory capabilities. Finally, the Gravity Forms Directory & Addons plugin does just that.
 
 * Completely shortcode based, using the `[directory]` shortcode
