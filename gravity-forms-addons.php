@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Gravity Forms Addons
+Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
-Description: Add functionality and usability to the great Gravity Forms plugin.
+Description: Add directory functionality and improve usability for the great Gravity Forms plugin.
 Author: Katz Web Services, Inc.
-Version: 1.3
+Version: 2.0
 Author URI: http://www.katzwebservices.com
 
 Copyright 2010 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -27,6 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*
 
 Versions:
+= 2.0 =
+* This deserves a new version number. Added directory capabilities. Killer directory capabilities.
+
 = 1.3 = 
 * Added an admin notice if Gravity Forms is not installed properly. This will help the confusion: an installed version of Gravity Forms is required for this plugin to do anything!
 * Added function to get field values from a lead: `get_gf_field_value($leadid, $fieldid)` will work for all field lengths (`get_gf_field_value_long()` worked for just long values)
@@ -60,6 +63,9 @@ Versions:
 
 // If Gravity Forms is installed and exists
 if(class_exists('RGForms') && class_exists('RGFormsModel')) { 
+	
+	// Load up the directory functionality
+	@include_once('directory.php');
 	
 	$Forms = new RGForms();  $RG = new RGFormsModel(); 
 	if(class_exists('GFCommon')) { $Common = new GFCommon(); } else { $Common = false; }
@@ -145,27 +151,41 @@ EOD;
 			else if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'gf_edit_forms') {
 				?>
 				$(".row-actions span.edit:contains('Delete')").each(function() { 
-					var editLink = $(this).parents('tr').find('.column-title a:contains("Preview")').attr('href');
-					editLink = editLink + '&amp;show_field_ids=true';
-					$(this).after('<span class="edit">| <a title="<?php _e("View form field IDs", "gravityforms"); ?>" href="'+editLink+'" class="form_ids"><?php _e("IDs", "gravityforms"); ?></a></span>');
+					var formID = $(this).parents('tr').find('.column-id').text();;
+					$(this).after('<span class="edit">| <a title="<?php _e("View form field IDs", "gravityforms"); ?>" href="<?php  echo WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/field-ids.php"; ?>?id='+formID+'&amp;show_field_ids=true" class="form_ids"><?php _e("IDs", "gravityforms"); ?></a></span>');
 				});
+					var h = $('#gravityformspreviewidsiframe').css('height');
+					
 					$("a.form_ids").live('click', function(e) {
-			           e.preventDefault(); 
-			           $.get($(this).attr('href'),function(data) {
-				           $.modal(data, {
-					           	overlayClose:true, 
-				           		containerCss:{
-									backgroundColor:"transparent",
-									borderColor: 'transparent',
-									borderWidth: 0,
-									minHeight: 400,
-									padding:10,
-									escClose: true,
-									width:'auto',
-									autoPosition: true
-								}
-							});
-			           });
+						e.preventDefault();
+						var src = $(this).attr('href');
+						$.modal('<iframe src="' + src + '" width="" height="" style="border:0;">', {
+//							closeHTML:"<a href='#'>Close</a>",
+							minHeight:400,
+							minWidth: 600,
+							containerCss:{
+								borderColor: 'transparent',
+								borderWidth: 0,
+								padding:10,
+								escClose: true,
+								minWidth:500,
+								maxWidth:800,
+								minHeight:500,
+							},
+							overlayClose:true,
+							onShow: function(dlg) {
+								var iframeHeight = $('iframe', $(dlg.container)).height();
+								var containerHeight = $(dlg.container).height();
+								var iframeWidth = $('iframe', $(dlg.container)).width();
+								var containerWidth = $(dlg.container).width();
+								
+								if(containerHeight < iframeHeight) { $(dlg.container).height(iframeHeight); }
+								else { $('iframe', $(dlg.container)).height(containerHeight); }
+								
+								if(containerWidth < iframeWidth) { $(dlg.container).width(iframeWidth); }
+								else { $('iframe', $(dlg.container)).width(containerWidth); }
+							}
+						});
 			         });
 
 				<?php 

@@ -1,17 +1,32 @@
-=== Gravity Forms Addons ===
-Tags: gravity forms, forms, gravity, form, crm, gravity form, contact form, contact forms, contact, feedback, email, captcha, akismet, cforms, contact form 7, secure form, wp contact form, simplemodal contact form, enhanced wp contact form
+=== Gravity Forms Directory & Addons ===
+Tags: gravity forms, forms, gravity, form, crm, gravity form, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds
 Requires at least: 2.8
-Tested up to: 3.0
+Tested up to: 3.0.1
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Adds functionality that extends the Gravity Forms plugin.
+Add functionality to the great Gravity Forms plugin.
 
 == Description ==
 
-<blockquote><p><strong>This plugin requires the Gravity Forms plugin.</strong><br /><a href="http://sn.im/gravityforms" rel="nofollow">Learn more & purchase here</a>.</p>
-<p><em>Note:</em> Gravity Forms is a paid plugin, and this plugin exists to extend its functionality. This plugin author is not the creator of Gravity Forms.</p></blockquote>
+> This plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms). __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__ and start using this awesome plugin!
+
+## Turn Gravity Forms into a Directory plugin
+Gravity Forms is already the easiest form plugin - its functionality makes WordPress <em>close</em> to having user-submitted directory capabilities. Finally, the Gravity Forms Directory & Addons plugin does just that.
+
+* Completely shortcode based, using the `[directory]` shortcode
+* Includes built-in __searching__ 
+* Sort by each column
+* Easily re-organize the columns inside Gravity Forms
+* Has an option to <strong>show only approved listings</strong>
+* Show or hide any column
+* Directory features pagination
+* Define custom styles inside the shortcode
+* Includes lightbox support for uploaded images
+
+####Insert a totally configurable table using the editor
+There are over 30 configurable options for how you want the directory to display. 
 
 ###Improve Gravity Forms Functionality and Usability
 
@@ -21,38 +36,30 @@ Adds functionality that extends the Gravity Forms plugin.
 
 #### Upcoming Features
 
-* Submit forms using Ajax
-
-* Easily set up a directory using Gravity Forms
-
 * [Leave suggestions, comments, and/or bug reports](http://www.seodenver.com/gravity-forms-addons/)
 
 == Screenshots ==
 
 1. How the Gravity Forms 'Add Fields' boxes look after plugin is activated
 2. This plugin adds an Edit link to Gravity Form entries
+3. Insert a directory
 
 == Frequently Asked Questions == 
 
+= How do I find a field ID? =
+On the Gravity Forms "Edit Forms" page, hover over the form and click the link called "IDs" that appears.
+
 = Does this plugin require Gravity Forms? =
-Yes, this plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms). __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__ and start using this add-on plugin!
+This plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms). __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__ and start using this add-on plugin!
 
-= What is the license for this plugin? =
-* This plugin is released under a GPL license.
-
-== Installation ==
-
-1. Make sure you have the [Gravity Forms plugin](http://sn.im/gravityforms) installed and Activated.
-1. Upload the Gravity Forms Addons plugin to your blog, Activate it, and you're done.
+= What's the license? =
+This plugin is released under a GPL license.
 
 == Changelog ==
 
-= 1.3 = 
-* Added an admin notice if Gravity Forms is not installed properly. This will help the confusion: an installed version of Gravity Forms is required for this plugin to do anything! This update also solves the `Fatal error: Class 'RGForms' not found` error.
-* Added function to get field values from a lead: `get_gf_field_value($leadid, $fieldid)` will work for all field lengths (`get_gf_field_value_long()` worked for just long values)
-* Added `IDs` link to Edit Forms page, allowing you to find out what the field IDs are for each field in a form. This allows you to use the functions in this plugin much more easily.
-* Removed `$Forms->escape_text` reference, since it has been replaced by esc_html(). This would have caused a fatal error.
-
+= 2.0 =
+* This upgrade deserves a new version number. Added directory capabilities. <em>Killer</em> directory capabilities.
+* Added a form field identifier to more easily find out the form ID. Check out the FAQ "How do I find a field ID?"
 
 = 1.2.1.1 = 
 * Updated with GPL information. Did you know Gravity Forms is also GPL? Any WordPress plugin is.
@@ -72,6 +79,19 @@ Yes, this plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms).
 
 == Upgrade Notice ==
 
-= 1.3 = 
-* Removed `$Forms->escape_text` reference, since it has been replaced by esc_html(). This would have caused a fatal error.
-* This solves the `Fatal error: Class 'RGForms' not found` error by checking to make sure Gravity Forms is installed properly first.
+= 2.0 =
+* This upgrade deserves a new version number. Added directory capabilities. Killer directory capabilities.
+
+
+== Installation == 
+
+1. Upload the Akismet plugin to your blog and Activate it
+2. Using Gravity Forms, reorder the columns on the form you'd like to turn into a directory
+	* In the "Entries: [Your Form]") screen, find the "Edit" link with the pencil icon in the table header. Click it.
+	* Drag the columns you want in your directory onto the "Active Columns" box
+	* Drag the columns you <strong>don't</strong> want in your directory onto the "Inactive Columns" box
+	* Click the Save button
+3. Go to the post or page where you want the directory
+4. Click "Add a Gravity Forms Directory" button (likely just to the right of the Gravity Forms button)
+5. Choose a form from the drop down, (you may click advanced options for lots of additional options)
+
