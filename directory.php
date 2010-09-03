@@ -46,6 +46,7 @@ function kws_gf_directory($atts) {
 	      'search' => true, // show the search field
 	      'tfoot' => true, // show the <tfoot>
 	      'thead' => true, // show the <thead>
+	      'showadminonly' => false, // Admin only columns aren't shown by default, but can be (added 2.0.1)
 	      'datecreatedformat' => get_option('date_format').' \a\t '.get_option('time_format'), // Use standard PHP date formats (http://php.net/manual/en/function.date.php)
 	      'dateformat' => false, // Override the options from Gravity Forms, and use standard PHP date formats (http://php.net/manual/en/function.date.php)
 	      ), $atts ) );
@@ -67,9 +68,16 @@ function kws_gf_directory($atts) {
         $is_numeric = $sort_field_meta["type"] == "number";
 
 		$columns = RGFormsModel::get_grid_columns($form_id, true);
-		$approvedcolumn = kws_gf_get_approved_column($columns);
-		
+		$approvedcolumn = kws_gf_get_approved_column($form);
+		$adminonlycolumns = kws_gf_get_admin_only($form);
+
         $leads = RGFormsModel::get_leads($form_id, $sort_field, $sort_direction, $search_query, $first_item_index, $page_size, $star, $read, $is_numeric);
+        
+        if(!$showadminonly)  { 
+        	$leads = kws_gf_remove_admin_only($leads, $adminonlycolumns, $approvedcolumn, true); 
+        	$columns = kws_gf_remove_admin_only($columns, $adminonlycolumns, $approvedcolumn, false); 
+        }
+        
         $lead_count = kws_gf_get_lead_count($form_id, $search_query, $star, $read, $approvedcolumn, $approved);
 
         
@@ -170,11 +178,14 @@ function kws_gf_directory($atts) {
                         <?php
                         foreach($columns as $field_id => $field_info){
                             $dir = $field_id == 0 ? "DESC" : "ASC"; //default every field so ascending sorting except date_created (id=0)
-                            if($field_id == $sort_field) //reverting direction if clicking on the currently sorted field
+                            if($field_id == $sort_field) { //reverting direction if clicking on the currently sorted field
                                 $dir = $sort_direction == "ASC" ? "DESC" : "ASC";
+                            }
+                            if(!in_array($field_id, $adminonlycolumns) || (in_array($field_id, $adminonlycolumns) && $showadminonly) || !$showadminonly) {
                             ?>
                             <th scope="col" class="manage-column" onclick="Search('<?php echo $search_query ?>', '<?php echo $field_id ?>', '<?php echo $dir ?>');" style="cursor:pointer;"><?php echo esc_html($field_info["label"]) ?></th>
                             <?php
+                            }
                         }
                         ?>
                     </tr>
@@ -184,11 +195,14 @@ function kws_gf_directory($atts) {
                     <?php
                     if(sizeof($leads) > 0 && $lead_count > 0){
                         $field_ids = array_keys($columns);
-
-                        foreach($leads as $lead){
+						
+						foreach($leads as $lead){
                             echo "\n\t\t\t\t\t\t";
                             
                             $leadapproved = false; if($approved) { $leadapproved = kws_gf_check_approval($lead, $approvedcolumn); }
+                            
+                            
+#                            if(in_array(key() $adminonlycolumns )
                             
                             if($leadapproved && $approved || !$approved) {
                             	$target = ''; if($linknewwindow) { $target = ' target="_blank"'; }
@@ -353,7 +367,7 @@ function kws_gf_directory($atts) {
         
         return $date_display;
     }
-
+	
 	function kws_gf_get_icon_url($path){
         $info = pathinfo($path);
 
@@ -501,13 +515,58 @@ function kws_gf_directory($atts) {
 		return false;
 	}
 	
-	function kws_gf_get_approved_column($columns) {
-		foreach($columns as $key=>$col) {
+	function kws_gf_remove_admin_only($leads, $adminOnly, $approved, $isleads) {
+		$i = 0;
+		if($isleads) {
+			foreach($leads as $key => $lead) {
+				if(in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
+					unset($leads[$i]);
+				}
+			}
+		} else {
+			foreach($leads as $key => $lead) {
+				if(in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
+					unset($leads[$key]);
+				}
+			}
+		}
+		return $leads;
+	}
+	
+	function kws_gf_get_approved_column($form) {
+		foreach($form['fields'] as $key=>$col) {
 			if(strtolower($col['label']) == 'approved' && $col['type'] == 'checkbox') {
 				return $key;
 			}
 		}
+		
+		foreach($form['fields'] as $key=>$col) {
+			if(is_array($col['inputs'])) {
+				foreach($col['inputs'] as $key2=>$input) {
+					if(strtolower($input['label']) == 'approved' && $col['type'] == 'checkbox' && !empty($col['adminOnly'])) {
+						return $input['id'];
+					}
+				}
+			}
+		}
+
 		return false;
+	}
+	
+	function kws_gf_get_admin_only($form) {
+		foreach($form['fields'] as $key=>$col) {
+			if(!empty($col['adminOnly'])) {
+				$adminOnly[] = $col['id'];
+			}
+			if(is_array($col['inputs'])) { 
+				foreach($col['inputs'] as $key2=>$input) {
+					if(!empty($col['adminOnly'])) {
+						$adminOnly[] = $input['id'];
+					}
+				}
+			}
+		}
+		return $adminOnly;
 	}
 	
 
@@ -684,6 +743,7 @@ function kws_gf_make_popup_options($js = false) {
 	}
 		$advanced = array(      
 			  array('checkbox', 'approved' , false, "Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved')"),
+			  array('checkbox', 'showadminonly', false, "Show admin only columns (the Approved column can always be shown, if desired.)"),
 		      array('checkbox', 'wpautop' , true, "Convert bulk paragraph text to...paragraphs"),
 		      array('checkbox', 'lightbox' , true, "Do you want your image uploads to be lightboxed?"),
 		      array('checkbox', 'showcount' , true, "Do you want to show 'Displaying 1-19 of 19'?"),

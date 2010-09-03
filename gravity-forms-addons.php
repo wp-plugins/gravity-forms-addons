@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Add directory functionality and improve usability for the great Gravity Forms plugin.
 Author: Katz Web Services, Inc.
-Version: 2.0
+Version: 2.0.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2010 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -22,38 +22,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-*/
-
-/*
-
-Versions:
-= 2.0 =
-* This deserves a new version number. Added directory capabilities. Killer directory capabilities.
-
-= 1.3 = 
-* Added an admin notice if Gravity Forms is not installed properly. This will help the confusion: an installed version of Gravity Forms is required for this plugin to do anything!
-* Added function to get field values from a lead: `get_gf_field_value($leadid, $fieldid)` will work for all field lengths (`get_gf_field_value_long()` worked for just long values)
-* Added `IDs` link to Edit Forms page, allowing you to find out what the field IDs are for each field in a form. This allows you to use the functions in this plugin much more easily.
-* Removed `$Forms->escape_text` reference, since it has been replaced by esc_html(). This would have caused a fatal error.
-
-= 1.2.1.1 = 
-* Updated with GPL information. Did you know Gravity Forms is also GPL? Any WordPress plugin is.
-
-= 1.2.1 = 
-* Fixed whitespace issue if site is gzip'ed. No need to upgrade if you aren't getting the `Warning: Cannot modify header information - headers already sent by...` PHP error.
-
-= 1.2 = 
-* Compatibility with Gravity Forms 1.3
-
-= 1.1 =
-* Added Edit link to Entries page to directly edit an entry
-* Added a bunch of functions to use in directly accessing form and entry data from outside the plugin
-
-= 1.0 =
-* Launched plugin
-
-*/
-		
+*/		
 		
 // Get Gravity Forms over here!
 @include_once(WP_PLUGIN_DIR . "/gravityforms/gravityforms.php");

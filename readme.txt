@@ -57,6 +57,10 @@ This plugin is released under a GPL license.
 
 == Changelog ==
 
+= 2.0.1 = 
+* Fixed Admin-only columns being shown if in Select Columns view
+* Turned off Admin-only columns by default, and added option to force showing of Admin-only options the Approved column will always be able to be shown.
+
 = 2.0 =
 * This upgrade deserves a new version number. Added directory capabilities. <em>Killer</em> directory capabilities.
 * Added a form field identifier to more easily find out the form ID. Check out the FAQ "How do I find a field ID?"
@@ -78,6 +82,10 @@ This plugin is released under a GPL license.
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.0.1 = 
+* Fixed Admin-only columns being shown if in Select Columns view
+* Turned off Admin-only columns by default, and added option to force showing of Admin-only options the Approved column will always be able to be shown.
 
 = 2.0 =
 * This upgrade deserves a new version number. Added directory capabilities. Killer directory capabilities.
