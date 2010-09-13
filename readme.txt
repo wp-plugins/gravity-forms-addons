@@ -6,11 +6,11 @@ Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Add directory capabilities and other functionality to the great Gravity Forms plugin.
+Add directory capabilities and other functionality to the great <a href="http://sn.im/gravityforms" rel="nofollow">Gravity Forms</a> plugin.
 
 == Description ==
 
-> This plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms). __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__ and start using this awesome plugin!
+> This plugin requires the <a href="http://sn.im/gravityforms" rel="nofollow">[Gravity Forms plugin]</a>. <strong>Don't use Gravity Forms? <a href="http://sn.im/gravityforms" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!
 
 ### Turn Gravity Forms into a Directory plugin
 Gravity Forms is already the easiest form plugin - its functionality makes WordPress <em>close</em> to having user-submitted directory capabilities. Finally, the Gravity Forms Directory & Addons plugin does just that.
@@ -57,6 +57,14 @@ This plugin is released under a GPL license.
 
 == Changelog ==
 
+= 2.0.2 =
+* Fixed  `Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 522` and 
+`Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 528` PHP Warnings. Please note: you should turn off PHP warnings on your production website. To do this, add the following to your `wp-config.php` file:
+<pre>
+error_reporting(0);
+@ini_set(‘display_errors’, 0);
+</pre>
+
 = 2.0.1 = 
 * Fixed Admin-only columns being shown if in Select Columns view
 * Turned off Admin-only columns by default, and added option to force showing of Admin-only options the Approved column will always be able to be shown.
@@ -82,6 +90,14 @@ This plugin is released under a GPL license.
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.0.2 = 
+* Fixed  `Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 522` and 
+`Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 528` PHP Warnings. Please note: you should turn off PHP warnings on your production website. To do this, add the following to your `wp-config.php` file:
+<pre>
+error_reporting(0);
+@ini_set(‘display_errors’, 0);
+</pre>
 
 = 2.0.1 = 
 * Fixed Admin-only columns being shown if in Select Columns view

@@ -518,15 +518,23 @@ function kws_gf_directory($atts) {
 	function kws_gf_remove_admin_only($leads, $adminOnly, $approved, $isleads) {
 		$i = 0;
 		if($isleads) {
-			foreach($leads as $key => $lead) {
-				if(in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
-					unset($leads[$i]);
+			if(is_array($leads)) {
+				foreach($leads as $key => $lead) {
+					if(is_array($adminOnly)) {
+						if(@in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
+							unset($leads[$i]);
+						}
+					}
 				}
 			}
 		} else {
-			foreach($leads as $key => $lead) {
-				if(in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
-					unset($leads[$key]);
+			if(is_array($leads)) {
+				foreach($leads as $key => $lead) {
+					if(is_array($adminOnly)) {
+						if(@in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
+							unset($leads[$key]);
+						}
+					}
 				}
 			}
 		}
