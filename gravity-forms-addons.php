@@ -2,9 +2,9 @@
 /*
 Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
-Description: Add directory functionality and improve usability for the great Gravity Forms plugin.
+Description: Add directory functionality and improve usability for the great <a href="http://sn.im/gravityforms" rel="nofollow">Gravity Forms</a> plugin.
 Author: Katz Web Services, Inc.
-Version: 2.0.2
+Version: 2.1.0
 Author URI: http://www.katzwebservices.com
 
 Copyright 2010 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -32,55 +32,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // If Gravity Forms is installed and exists
 if(class_exists('RGForms') && class_exists('RGFormsModel')) { 
-	
+
 	// Load up the directory functionality
 	@include_once('directory.php');
 	
+	// Load Joost's widget
+	@include_once('gravity-forms-widget.php');
+	
+	// Load Joost's referrer tracker
+	@include_once('gravity-forms-referrer.php');
+		
 	$Forms = new RGForms();  $RG = new RGFormsModel(); 
 	if(class_exists('GFCommon')) { $Common = new GFCommon(); } else { $Common = false; }
 	if(class_exists('GFFormDisplay')) { $FormDisplay = new GFFormDisplay(); } else { $FormDisplay = false; }
 	
 	function kws_gf_css() {
-		echo '<style type="text/css">';
-			kws_gf_expand_boxes_css(); 	
-		echo '</style>';
+		if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'gf_edit_forms' && isset($_REQUEST['id']) && is_numeric($_REQUEST['id'])) {
+			echo '<style type="text/css">';
+				echo '.gforms_edit_form ul.menu li ul { display:block!important; } ';
+			echo '</style>';
+		}
 	}
-	
-	function kws_gf_expand_boxes_css() {
-		echo '.gforms_edit_form ul.menu li ul { display:block!important; } ';
-	}
-	
-	function kws_gf_js() {
-		global $Common;
-		echo '<script src="'.$Common->get_base_url().'/js/jquery.simplemodal-1.3.min.js"></script>'; // Added for the new IDs popup
-		echo '<script type="text/javascript">
-			jQuery(document).ready(function($) {';
 		
-			kws_gf_expand_boxes_js();
-			kws_gf_add_edit_js();
-			
-		echo '});
-		</script>';
+	function kws_gf_js() {
+		if(isset($_REQUEST['page']) && ($_REQUEST['page'] == 'gf_edit_forms' && !isset($_REQUEST['id']) || $_REQUEST['page'] == 'gf_entries')) {
+			global $Common;
+			if($_REQUEST['page'] == 'gf_edit_forms') {
+				echo '<script src="'.$Common->get_base_url().'/js/jquery.simplemodal-1.3.min.js"></script>'; // Added for the new IDs popup
+			}
+			echo '<script type="text/javascript">
+			jQuery(document).ready(function($) {';
+				kws_gf_add_edit_js();
+			echo '});
+			</script>';
+		}
 	}
-	
-	function kws_gf_expand_boxes_js() { ?>
-		$("ul.menu li ul").each(function() {
-			// Prevent the slideUp/slideDown functions from working
-			$(this).css('min-height', $(this).height()).css('height', $(this).height()) ;
-		});
-	<?php }
-	
-	
+		
 	function kws_gf_show_field_ids($form) {
 		if(isset($_REQUEST['show_field_ids'])) {
 		echo <<<EOD
 		<style type="text/css">
-		#input_ids th, #input_ids td { border-bottom:1px solid #999; padding:.25em 15px; }
-		#input_ids th { border-bottom-color: #333; font-size:.9em; background-color: #464646; color:white; padding:.5em 15px; font-weight:bold;  } 
-		#input_ids { background:#ccc; margin:0 auto; font-size:1.2em; line-height:1.4; width:100%; border-collapse:collapse;  }
-		#input_ids strong { font-weight:bold; }
-		#preview_hdr { display:none;}
-		#input_ids caption { color:white!important;}
+			#input_ids th, #input_ids td { border-bottom:1px solid #999; padding:.25em 15px; }
+			#input_ids th { border-bottom-color: #333; font-size:.9em; background-color: #464646; color:white; padding:.5em 15px; font-weight:bold;  } 
+			#input_ids { background:#ccc; margin:0 auto; font-size:1.2em; line-height:1.4; width:100%; border-collapse:collapse;  }
+			#input_ids strong { font-weight:bold; }
+			#preview_hdr { display:none;}
+			#input_ids caption { color:white!important;}
 		</style>
 EOD;
 		
@@ -164,10 +161,8 @@ EOD;
 	if(isset($_GET["screen_mode"])) { $_POST["screen_mode"] = $_GET["screen_mode"]; }
 
 	function kws_gf_head() {
-		if(is_admin()) {
-			kws_gf_css();
-			kws_gf_js();
-		}
+		kws_gf_css();
+		kws_gf_js();
 	}
 	
 	add_action('admin_head', 'kws_gf_head',1);

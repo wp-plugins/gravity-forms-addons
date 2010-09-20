@@ -1,5 +1,5 @@
 === Gravity Forms Directory & Addons ===
-Tags: gravity forms, forms, gravity, form, crm, gravity form, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form
+Tags: gravity forms, forms, gravity, form, crm, gravity form, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
 Tested up to: 3.0.1
 Stable tag: trunk
@@ -34,7 +34,16 @@ There are over 30 configurable options for how you want the directory to display
 * Edit form entries directly from the Entries page (saving two clicks)
 * Easily access form data to use in your website with PHP functions - [Learn more on the plugin's website](http://www.seodenver.com/gravity-forms-addons/)
 
-#### Have an idea or issue?
+### Google Analytics Integration & Gravity Forms Widget
+
+This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank">Gravity Forms Widget + Extras</a>, which includes:
+
+* Track the referrer for the form submission using Google Analytics (adds referrer data and the search keyword[s] used to the notification emails.)
+* A Gravity Forms widget (see <a href="http://wordpress.org/extend/plugins/gravity-forms-addons/screenshots/" rel="nofollow">plugin Screenshots</a>)
+
+<small>Thanks to <a href="http://yoast.com">Joost de Valk</a> for functionality added to the plugin in version 2.1.0.</small>
+
+#### Have an idea or issue with this Gravity Forms add-on plugin?
 
 * [Leave suggestions, comments, and/or bug reports](http://www.seodenver.com/gravity-forms-addons/)
 
@@ -43,19 +52,27 @@ There are over 30 configurable options for how you want the directory to display
 1. How the Gravity Forms 'Add Fields' boxes look after plugin is activated
 2. This plugin adds an Edit link to Gravity Form entries
 3. Insert a directory
+4. How the Gravity Forms widget appears on the widgets page
 
 == Frequently Asked Questions == 
-
-= How do I find a field ID? =
-On the Gravity Forms "Edit Forms" page, hover over the form and click the link called "IDs" that appears.
 
 = Does this plugin require Gravity Forms? =
 This plugin requires the [Gravity Forms plugin](http://sn.im/gravityforms). __Don't use Gravity Forms? [Buy the plugin](http://sn.im/gravityforms)__ and start using this add-on plugin!
 
+= How do I find a field ID? =
+On the Gravity Forms "Edit Forms" page, hover over the form and click the link called "IDs" that appears.
+
 = What's the license? =
 This plugin is released under a GPL license.
 
+= Form submissions are showing as duplicates. =
+This is a known issue. If the submission page has both a form in the content and the same form on the sidebar widget, the entry will be submitted twice. We're working on a fix.
+
 == Changelog ==
+
+= 2.1.0 =
+* Incorporated Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank">Gravity Forms Widget + Extras</a> plugin.
+* Removed some code that may have been negatively affecting the display of the form fields on the Form Editor page
 
 = 2.0.2 =
 * Fixed  `Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 522` and 
@@ -90,6 +107,10 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.1.0 =
+* Incorporated Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank">Gravity Forms Widget + Extras</a> plugin.
+* Removed some code that may have been negatively affecting the display of the form fields on the Form Editor page.
 
 = 2.0.2 = 
 * Fixed  `Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 522` and 
