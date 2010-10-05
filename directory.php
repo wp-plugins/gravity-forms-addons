@@ -181,7 +181,7 @@ function kws_gf_directory($atts) {
                             if($field_id == $sort_field) { //reverting direction if clicking on the currently sorted field
                                 $dir = $sort_direction == "ASC" ? "DESC" : "ASC";
                             }
-                            if(!in_array($field_id, $adminonlycolumns) || (in_array($field_id, $adminonlycolumns) && $showadminonly) || !$showadminonly) {
+                            if(is_array($adminonlycolumns) && !in_array($field_id, $adminonlycolumns) || (is_array($adminonlycolumns) && in_array($field_id, $adminonlycolumns) && $showadminonly) || !$showadminonly) {
                             ?>
                             <th scope="col" class="manage-column" onclick="Search('<?php echo $search_query ?>', '<?php echo $field_id ?>', '<?php echo $dir ?>');" style="cursor:pointer;"><?php echo esc_html($field_info["label"]) ?></th>
                             <?php
@@ -521,7 +521,7 @@ function kws_gf_directory($atts) {
 			if(is_array($leads)) {
 				foreach($leads as $key => $lead) {
 					if(is_array($adminOnly)) {
-						if(@in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
+						if(is_array($adminOnly) && @in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
 							unset($leads[$i]);
 						}
 					}
@@ -531,7 +531,7 @@ function kws_gf_directory($atts) {
 			if(is_array($leads)) {
 				foreach($leads as $key => $lead) {
 					if(is_array($adminOnly)) {
-						if(@in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
+						if(is_array($adminOnly) && @in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
 							unset($leads[$key]);
 						}
 					}

@@ -70,6 +70,9 @@ This is a known issue. If the submission page has both a form in the content and
 
 == Changelog ==
 
+= 2.1.1 =
+* Fixed "Insert Directory" modal ("lightbox") functionality (<a href="http://www.seodenver.com/gravity-forms-addons/comment-page-1/#comment-3152">as reported on the plugin page</a>)
+
 = 2.1.0 =
 * Incorporated Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank">Gravity Forms Widget + Extras</a> plugin.
 * Removed some code that may have been negatively affecting the display of the form fields on the Form Editor page
@@ -107,6 +110,9 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.1.1 =
+* Fixed "Insert Directory" modal ("lightbox") functionality (<a href="http://www.seodenver.com/gravity-forms-addons/comment-page-1/#comment-3152">as reported on the plugin page</a>)
 
 = 2.1.0 =
 * Incorporated Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank">Gravity Forms Widget + Extras</a> plugin.
