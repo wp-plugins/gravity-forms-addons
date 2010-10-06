@@ -36,12 +36,14 @@ There are over 30 configurable options for how you want the directory to display
 
 ### Google Analytics Integration & Gravity Forms Widget
 
-This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank">Gravity Forms Widget + Extras</a>, which includes:
+This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank" rel="nofollow">Gravity Forms Widget + Extras</a>, which includes:
 
 * Track the referrer for the form submission using Google Analytics (adds referrer data and the search keyword[s] used to the notification emails.)
 * A Gravity Forms widget (see <a href="http://wordpress.org/extend/plugins/gravity-forms-addons/screenshots/" rel="nofollow">plugin Screenshots</a>)
 
-<small>Thanks to <a href="http://yoast.com">Joost de Valk</a> for functionality added to the plugin in version 2.1.0.</small>
+### Check out other Gravity Forms integrations:
+
+* <a href="http://wordpress.org/extend/plugins/gravity-forms-constant-contact/">Gravity Forms + Constant Contact</a> - If you use Constant Contact and Gravity Forms, this plugin is for you.
 
 #### Have an idea or issue with this Gravity Forms add-on plugin?
 
@@ -69,6 +71,9 @@ This plugin is released under a GPL license.
 This is a known issue. If the submission page has both a form in the content and the same form on the sidebar widget, the entry will be submitted twice. We're working on a fix.
 
 == Changelog ==
+
+= 2.1.2 =
+* Fixed <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-widget-admin-bug" rel="nofollow">reported bug</a> with the widget where checkboxes weren't staying checked. No other changes.
 
 = 2.1.1 =
 * Fixed "Insert Directory" modal ("lightbox") functionality (<a href="http://www.seodenver.com/gravity-forms-addons/comment-page-1/#comment-3152">as reported on the plugin page</a>)
@@ -110,6 +115,8 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+* Fixed <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-widget-admin-bug" rel="nofollow">reported bug</a> with the widget where checkboxes weren't staying checked. No other changes.
 
 = 2.1.1 =
 * Fixed "Insert Directory" modal ("lightbox") functionality (<a href="http://www.seodenver.com/gravity-forms-addons/comment-page-1/#comment-3152">as reported on the plugin page</a>)

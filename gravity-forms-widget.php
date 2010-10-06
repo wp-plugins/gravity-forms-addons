@@ -66,10 +66,9 @@ class GravityForms_Widget extends WP_Widget {
 			</select>
 		</p>
 		<p>
-			<input type="checkbox" name="<?php echo $this->get_field_name( 'showtitle' ); ?>" id="<?php echo $this->get_field_id( 'showtitle' ); ?>" <?php checked($instance['showtitle']); ?>/> <label for="<?php echo $this->get_field_id( 'showtitle' ); ?>"><?php _e("Show the title"); ?></label><br/>
-			<input type="checkbox" name="<?php echo $this->get_field_name( 'showdesc' ); ?>" id="<?php echo $this->get_field_id( 'showdesc' ); ?>" <?php checked($instance['showdesc']); ?>/> <label for="<?php echo $this->get_field_id( 'showdesc' ); ?>"><?php _e("Show the description"); ?></label><br/>
+			<input type="checkbox" name="<?php echo $this->get_field_name( 'showtitle' ); ?>" value="1"  id="<?php echo $this->get_field_id( 'showtitle' ); ?>" <?php checked($instance['showtitle']); ?>/> <label for="<?php echo $this->get_field_id( 'showtitle' ); ?>"><?php _e("Show the title"); ?></label><br/>
+			<input type="checkbox" name="<?php echo $this->get_field_name( 'showdesc' ); ?>" value="1" id="<?php echo $this->get_field_id( 'showdesc' ); ?>" <?php checked($instance['showdesc']); ?>/> <label for="<?php echo $this->get_field_id( 'showdesc' ); ?>"><?php _e("Show the description"); ?></label><br/>
 		</p>
-		<p>
 			<label for="<?php echo $this->get_field_id( 'tabindex' ); ?>"><?php _e("Tab Index Start"); ?>:</label>
 			<input id="<?php echo $this->get_field_id( 'tabindex' ); ?>" name="<?php echo $this->get_field_name( 'tabindex' ); ?>" value="<?php echo $instance['tabindex']; ?>" style="width:15%;" /><br/>
 			<small><?php _e('Because you probably have comment forms on single pages, you\'ll need to increase the tabindex for this form, otherwise these tabindices will collide.') ?></small>
