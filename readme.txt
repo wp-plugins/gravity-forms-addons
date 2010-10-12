@@ -12,7 +12,7 @@ Add directory capabilities and other functionality to the great <a href="http://
 
 > This plugin requires the <a href="http://sn.im/gravityforms" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://sn.im/gravityforms" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!
 
-__How easy is Gravity Forms? Check out the video below:__
+__How easy is <a href="http://sn.im/gravityforms" rel="nofollow">Gravity Forms</a>? Check out the video below:__
 [youtube http://www.youtube.com/watch?v=t2gFT3K_Klc]
 
 ### Turn Gravity Forms into a Directory plugin
