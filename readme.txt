@@ -12,6 +12,9 @@ Add directory capabilities and other functionality to the great <a href="http://
 
 > This plugin requires the <a href="http://sn.im/gravityforms" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://sn.im/gravityforms" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!
 
+__How easy is Gravity Forms? Check out the video below:__
+[youtube http://www.youtube.com/watch?v=t2gFT3K_Klc]
+
 ### Turn Gravity Forms into a Directory plugin
 Gravity Forms is already the easiest form plugin - its functionality makes WordPress <em>close</em> to having user-submitted directory capabilities. Finally, the Gravity Forms Directory & Addons plugin does just that.
 
@@ -69,6 +72,11 @@ This plugin is released under a GPL license.
 
 = Form submissions are showing as duplicates. =
 This is a known issue. If the submission page has both a form in the content and the same form on the sidebar widget, the entry will be submitted twice. We're working on a fix.
+
+= How do I remove referrer information from emails? =
+Add the following to your theme's `functions.php` file:
+
+<code>remove_filter('gform_pre_submission_filter','gf_yst_store_referrer');</code>
 
 == Changelog ==
 
