@@ -107,7 +107,17 @@ function displaying_to_asdasd($content) {
 }
 </pre>
 
+= I can't see the fields in the Add Fields box! = 
+The code is meant to expand all the field boxes so you don't need to click them open and closed all the time. This works normally in Safari and Chrome (read: good browsers :-P). For some other browsers, it breaks the whole page.
+
+To fix this issue, add this to your theme's `functions.php` file:
+
+<code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
+
 == Changelog ==
+
+= 2.2.1 = 
+* Added fix for Add Fields Column shifting out of view, <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-add-fields-column-shifts-in-the-edit-forms-view" rel="nofollow">as reported here</a> and on the plugin support page. See the FAQ item "I can't see the fields in the Add Fields box!"
 
 = 2.2 = 
 * Fixed visibility of Insert a Directory form in the admin screen
@@ -159,6 +169,9 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.2.1 = 
+* Added fix for Add Fields Column shifting out of view, <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-add-fields-column-shifts-in-the-edit-forms-view" rel="nofollow">as reported here</a> and on the plugin support page. See the FAQ item "I can't see the fields in the Add Fields box!"
 
 = 2.2 = 
 * Fixed visibility of Insert a Directory form in the admin screen
