@@ -56,8 +56,8 @@ function kws_gf_directory($atts) {
         $sort_direction = empty($_GET["dir"]) ? $dir : $_GET["dir"];
         $search_query = isset($_GET["gf_search"]) ? $_GET["gf_search"] : null;
         $page_index = empty($_GET["page"]) ? $startpage -1 : intval($_GET["page"]) - 1;
-        $star = is_numeric($_GET["star"]) ? intval($_GET["star"]) : null;
-        $read = is_numeric($_GET["read"]) ? intval($_GET["read"]) : null;
+        $star = (isset($_GET["star"]) && is_numeric($_GET["star"])) ? intval($_GET["star"]) : null;
+        $read = (isset($_GET["read"]) && is_numeric($_GET["read"])) ? intval($_GET["read"]) : null;
         $first_item_index = $page_index * $page_size;
 
         $form = RGFormsModel::get_form_meta($form_id);
@@ -183,7 +183,13 @@ function kws_gf_directory($atts) {
                             }
                             if(is_array($adminonlycolumns) && !in_array($field_id, $adminonlycolumns) || (is_array($adminonlycolumns) && in_array($field_id, $adminonlycolumns) && $showadminonly) || !$showadminonly) {
                             ?>
-                            <th scope="col" class="manage-column" onclick="Search('<?php echo $search_query ?>', '<?php echo $field_id ?>', '<?php echo $dir ?>');" style="cursor:pointer;"><?php echo esc_html($field_info["label"]) ?></th>
+                            <th scope="col" class="manage-column" onclick="Search('<?php echo $search_query ?>', '<?php echo $field_id ?>', '<?php echo $dir ?>');" style="cursor:pointer;"><?php 
+                            $label = $field_info["label"];
+                            
+                            $label = apply_filters('kws_gf_directory_th', apply_filters('kws_gf_directory_th_'.$field_id, apply_filters('kws_gf_directory_th_'.sanitize_title($label), $label)));
+                            echo esc_html($label) 
+                           
+                             ?></th>
                             <?php
                             }
                         }
@@ -208,13 +214,13 @@ function kws_gf_directory($atts) {
                             	$target = ''; if($linknewwindow) { $target = ' target="_blank"'; }
                                 $valignattr = ''; if($valign) { $valignattr = ' valign="'.$valign.'"'; } 
                                 $lightboxclass = ''; if($lightbox) { $lightboxclass = '  class="thickbox"'; }
-                                $nofollow .= ''; if($nofollowlinks) { $nofollow = ' rel="nofollow"'; }
+                                $nofollow = ''; if($nofollowlinks) { $nofollow = ' rel="nofollow"'; }
                                     
                             ?><tr<?php if($showrowids){ ?> id="lead_row_<?php echo $lead["id"] ?>" <?php } ?>class='<?php echo $rowclass; echo $lead["is_starred"] ? " featured" : "" ?>'<?php echo $rowstyle ? ' style="'.$rowstyle.'"' : ''; echo $valignattr; ?>><?php
                                 $class = "";
                                 $is_first_column = true;
                                 foreach($field_ids as $field_id){
-                                    $value = $lead[$field_id];
+                                    $value = isset($lead[$field_id]) ? $lead[$field_id] : '';
                                     $input_type = !empty($columns[$field_id]["inputType"]) ? $columns[$field_id]["inputType"] : $columns[$field_id]["type"];
                                     switch($input_type){
                                         case "checkbox" :
@@ -283,15 +289,23 @@ function kws_gf_directory($atts) {
                                         break;
 
                                         default:
+                                        	$class = '';
+                                        	$input_type = 'text';
                                         	if(is_email($value) && $linkemail) {$value = "<a href='mailto:$value'$nofollow>$value</a>"; } 
                                         	elseif(preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $value) && $linkwebsite) {
-                                        		if($lightbox && $linkiframe) { $value = $value .'?KeepThis=true&TB_iframe=true&height=400&width=600'; }
-                                        		$value = "<a href='$value'$nofollow$target>$value</a>"; 
+                                        		if($lightbox) { $href = $value .'?KeepThis=true&TB_iframe=true&height=400&width=600'; $class = ' class="thickbox lightbox"'; }
+                                        		$value = "<a href='$href'{$nofollow}{$target}{$class}>$value</a>"; 
                                         	}
                                         	else { $value = esc_html($value); }
                                     }
 									if($is_first_column) { echo "\n"; }
-                                	echo "\t\t\t\t\t\t\t"; ?><td<?php echo empty($class) ? '' : ' class="'.$input_type.' '.$class.'"'; echo $valignattr; ?>><?php echo empty($value) ? '&nbsp;' : $value; ?></td><?php
+                                	echo "\t\t\t\t\t\t\t"; ?><td<?php echo empty($class) ? '' : ' class="'.$input_type.' '.$class.'"'; echo $valignattr; ?>><?php 
+                                	
+                                	$value = empty($value) ? '&nbsp;' : $value;
+                                	$value = apply_filters('kws_gf_directory_value', apply_filters('kws_gf_directory_value_'.$input_type, apply_filters('kws_gf_directory_value_'.$field_id, $value)));
+                                	echo $value;
+                                	
+                                	?></td><?php
                                 	echo "\n";
                                 	$is_first_column = false;
                                 }
@@ -346,6 +360,9 @@ function kws_gf_directory($atts) {
         <?php
         $content = ob_get_contents(); // Get the output
 		ob_end_clean(); // Clear the cache
+		
+		// If the form is form #2, two filters are applied: `kws_gf_directory_output_2` and `kws_gf_directory_output`
+		$content = apply_filters('kws_gf_directory_output', apply_filters('kws_gf_directory_output_'.$form_id, $content));
 		
 		return $content; // Return it!
     }
@@ -788,9 +805,9 @@ function kws_gf_make_popup_options($js = false) {
 		      array('text','tablestyle', '', "inline CSS for the <table>"),
 		      array('text','rowclass', '', "Class for the <table>"),
 		      array('text','rowstyle', '', "Inline CSS for all <tbody><tr>'s"),
-		      array('text','valign', 'baseline',""),
+		      array('text','valign', 'baseline',"Vertical align for table cells"),
 		      array('text','sort', 'date_created', "Use the input ID ( example: 1.3 or 7 or ip )"),
-		      array('text','dir', 'DESC',""),
+		      array('text','dir', 'DESC',"Sort in ascending order (<code>ASC</code>) or descending (<code>DESC</code>)"),
 		      array('text','startpage' , 1, "If you want to show page 8 instead of 1"),
 		      array('text','pagelinkstype' , 'plain', "Type of pagination links. <code>plain</code> is just a string with the links separated by a newline character. The other possible values are either <code>array</code> or <code>list</code>."),
 		      array('text','titleprefix' , 'Entries for ', "Default GF behavior is 'Entries : '"),

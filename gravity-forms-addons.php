@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Add directory functionality and improve usability for the great <a href="http://sn.im/gravityforms" rel="nofollow">Gravity Forms</a> plugin.
 Author: Katz Web Services, Inc.
-Version: 2.1.2
+Version: 2.2
 Author URI: http://www.katzwebservices.com
 
 Copyright 2010 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -167,7 +167,11 @@ EOD;
 	
 	add_action('admin_head', 'kws_gf_head',1);
 	
-
+	function gf_field_value($leadid, $fieldid) {
+		echo get_gf_field_value($leadid, $fieldid);
+	}
+	
+	
 	// To retrieve textarea inputs from a lead 
 	// Example: get_gf_field_value_long(22, '14');
 	function get_gf_field_value_long($leadid, $fieldid) {
@@ -200,6 +204,7 @@ EOD;
 	function gf_field_value_long($leadid, $fieldid) {
 		echo get_gf_field_value_long($leadid, $fieldid);
 	}
+	
 	
 	// Gives you the label for a form input (such as First Name). Enter in the form and the field ID to access the label.
 	// Example: echo get_gf_field_label(1,1.3);

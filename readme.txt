@@ -78,7 +78,42 @@ Add the following to your theme's `functions.php` file:
 
 <code>remove_filter('gform_pre_submission_filter','gf_yst_store_referrer');</code>
 
+= How do I use the filters? =
+If you want to modify the output of the plugin, you can do so by adding code to your active __theme's `functions.php` file__. For more information, check out the <a href="http://codex.wordpress.org/Function_Reference/add_filter" rel="nofollow">add_filter() WordPress Codex page</a>
+
+<h3>Plugin filters</h3>
+
+- `kws_gf_directory_output`, `kws_gf_directory_output_'.$form_id` - Modify output for all directories or just a single directory, by ID
+- `kws_gf_directory_value`, `kws_gf_directory_value_'.$input_type`, `kws_gf_directory_value_'.$field_id` - Modify output for fields in general, or based on type (`text`, `date`, `textarea`, etc...), or based on field id.
+- `kws_gf_directory_th`, `kws_gf_directory_th_'.$field_id`, `kws_gf_directory_th_'.sanitize_title($label)` - Modify the `<th>` names en masse, by field ID, or by field name (lowercase like a slug)
+
+<pre>
+// This replaces "John" in a first name field with "Jack"
+add_filter('kws_gf_directory_value_text', 'john_to_jack');
+function john_to_jack($content) {
+	return str_replace('John', 'Jack', $content);
+}
+
+// This replaces the "Email" table column header with "asdsad"
+add_filter('kws_gf_directory_th', 'email_to_asdsad');
+function email_to_asdsad($content) {
+	return str_replace('Email', 'asdsad', $content);
+}
+
+// This replaces "Displaying 1-20" with "asdsad 1 - 20"
+add_filter('kws_gf_directory_output', 'displaying_to_asdasd'); 
+function displaying_to_asdasd($content) {
+	return str_replace('Displaying', 'asdsad', $content);
+}
+</pre>
+
 == Changelog ==
+
+= 2.2 = 
+* Added multiple filters to modify output before showing the directory (See FAQ for more information)
+* Since Gravity Forms 1.4 (and the advent of Ajax submission), every time someone submitted an Ajax form, admin-ajax.php would show as a visited page. This should now be fixed.
+* Fixed various PHP warnings.
+* Fixed lightbox functionality on links
 
 = 2.1.2 =
 * Fixed <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-widget-admin-bug" rel="nofollow">reported bug</a> with the widget where checkboxes weren't staying checked. No other changes.
@@ -124,6 +159,13 @@ error_reporting(0);
 
 == Upgrade Notice ==
 
+= 2.2 = 
+* Added multiple filters to modify output before showing the directory (See FAQ for more information)
+* Since Gravity Forms 1.4 (and the advent of Ajax submission), every time someone submitted an Ajax form, admin-ajax.php would show as a visited page. This should now be fixed.
+* Fixed various PHP warnings.
+* Fixed lightbox functionality on links
+
+= 2.1.2 =
 * Fixed <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-widget-admin-bug" rel="nofollow">reported bug</a> with the widget where checkboxes weren't staying checked. No other changes.
 
 = 2.1.1 =

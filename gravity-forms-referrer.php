@@ -30,7 +30,12 @@ if(!function_exists('gf_yst_referer_session')) {
 		if ( !isset($_SESSION['gf_yst_referer']) || !is_array($_SESSION['gf_yst_referer']) ) {
 			$_SESSION['gf_yst_referer'] = array();
 		}
-		if ( (strpos($_SERVER['HTTP_REFERER'], $baseurl) === false) && ! (in_array($_SERVER['HTTP_REFERER'], $_SESSION['gf_yst_referer'])) ) {
+		
+		// With the ajax submission option, every time someone submitted a form, admin-ajax.php would show as a visited page.
+		// This should prevent that.
+		if(isset($_SERVER['HTTP_REFERER']) && preg_match('/admin\-ajax\.php/ism', $_SERVER['HTTP_REFERER'], $matches)) { return; }
+		
+		if (!isset($_SERVER['HTTP_REFERER']) || (strpos($_SERVER['HTTP_REFERER'], $baseurl) === false) && ! (in_array($_SERVER['HTTP_REFERER'], $_SESSION['gf_yst_referer'])) ) {
 			if (! isset($_SERVER['HTTP_REFERER'])) {
 				$_SESSION['gf_yst_referer'][] = "Type-in or bookmark";
 			} else {
@@ -40,6 +45,7 @@ if(!function_exists('gf_yst_referer_session')) {
 		if (end($_SESSION['gf_yst_pages']) != "http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) {
 			$_SESSION['gf_yst_pages'][] = "http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];	
 		}
+		return;
 	}
 }
 
