@@ -110,6 +110,7 @@ function displaying_to_asdasd($content) {
 == Changelog ==
 
 = 2.2 = 
+* Fixed visibility of Insert a Directory form in the admin screen
 * Added multiple filters to modify output before showing the directory (See FAQ for more information)
 * Since Gravity Forms 1.4 (and the advent of Ajax submission), every time someone submitted an Ajax form, admin-ajax.php would show as a visited page. This should now be fixed.
 * Fixed various PHP warnings.
@@ -160,6 +161,7 @@ error_reporting(0);
 == Upgrade Notice ==
 
 = 2.2 = 
+* Fixed visibility of Insert a Directory form in the admin screen
 * Added multiple filters to modify output before showing the directory (See FAQ for more information)
 * Since Gravity Forms 1.4 (and the advent of Ajax submission), every time someone submitted an Ajax form, admin-ajax.php would show as a visited page. This should now be fixed.
 * Fixed various PHP warnings.
