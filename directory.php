@@ -681,7 +681,7 @@ function kws_gf_directory($atts) {
             }
         </script>
 
-        <div id="select_gf_directory" style="overflow-x:hidden; overflow-y:auto;">
+        <div id="select_gf_directory" style="display:none;">
             <div class="wrap">
                 <div>
                     <div style="padding:15px 15px 0 15px;">
