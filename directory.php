@@ -266,7 +266,7 @@ function kws_gf_directory($atts) {
                                                  	'caption' => $caption,
                                                  	'description' => $description,
                                                  	'url' => $url,
-                                                 	'code' => "<img src='$src' {$size[3]} />"
+                                                 	'code' => "<img src='$src' {$size[3]} alt='' />"
                                                  );
                                                  $img = apply_filters('kws_gf_directory_lead_image', apply_filters('kws_gf_directory_lead_image_'.$postimage, apply_filters('kws_gf_directory_lead_image_'.$lead['id'], $img)));
                                                  $value = "<a href='$url'$target$lightboxclass>{$img['code']}</a>";

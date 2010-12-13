@@ -128,6 +128,7 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 = 2.3 =
 * Added new directory option: `postimage`. When your directory has an image, you can choose to show a generic icon (default) or show the full image.
+* Directory entry images now have alt, width and height attributes
 * Added powerful `kws_gf_directory_lead_image` filters (see "Plugin filters" in the FAQ)
 
 = 2.2.1 = 
