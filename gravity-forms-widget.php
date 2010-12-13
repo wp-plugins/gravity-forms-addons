@@ -1,9 +1,10 @@
 <?php
 
+if(!class_exists('GravityForms_Widget')) {
 class GravityForms_Widget extends WP_Widget {
 
 	function GravityForms_Widget() {
-		$widget_ops = array( 'classname' => 'gravityformswidget', 'description' => 'Gravity Forms Widget' );
+		$widget_ops = array( 'classname' => 'gravityformswidget', 'description' => 'Gravity Forms Addons Widget' );
 		$control_ops = array( 'width' => 200, 'height' => 250, 'id_base' => 'gravityformswidget' );
 		$this->WP_Widget( 'gravityformswidget', 'Gravity Forms', $widget_ops, $control_ops );
 	}
@@ -84,5 +85,5 @@ if(!function_exists('gravityformswidget_widget_func')) {
 }
 
 add_action( 'widgets_init', 'gravityformswidget_widget_func' );
-
+}
 ?>

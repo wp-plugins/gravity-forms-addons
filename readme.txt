@@ -1,7 +1,7 @@
 === Gravity Forms Directory & Addons ===
 Tags: gravity forms, forms, gravity, form, crm, gravity form, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
-Tested up to: 3.0.1
+Tested up to: 3.0.3
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -20,7 +20,7 @@ Gravity Forms is already the easiest form plugin - its functionality makes WordP
 
 * Completely shortcode based, using the `[directory]` shortcode
 * Includes built-in __searching__ 
-* Sort by each column
+* Sort by column
 * Easily re-organize the columns inside Gravity Forms
 * Has an option to <strong>show only approved listings</strong>
 * Show or hide any column
@@ -86,6 +86,7 @@ If you want to modify the output of the plugin, you can do so by adding code to 
 - `kws_gf_directory_output`, `kws_gf_directory_output_'.$form_id` - Modify output for all directories or just a single directory, by ID
 - `kws_gf_directory_value`, `kws_gf_directory_value_'.$input_type`, `kws_gf_directory_value_'.$field_id` - Modify output for fields in general, or based on type (`text`, `date`, `textarea`, etc...), or based on field id.
 - `kws_gf_directory_th`, `kws_gf_directory_th_'.$field_id`, `kws_gf_directory_th_'.sanitize_title($label)` - Modify the `<th>` names en masse, by field ID, or by field name (lowercase like a slug)
+- `kws_gf_directory_lead_image`, `kws_gf_directory_lead_image_icon`, `kws_gf_directory_lead_image_image`, `kws_gf_directory_lead_image_'.$lead_id`
 
 <pre>
 // This replaces "John" in a first name field with "Jack"
@@ -105,6 +106,15 @@ add_filter('kws_gf_directory_output', 'displaying_to_asdasd');
 function displaying_to_asdasd($content) {
 	return str_replace('Displaying', 'asdsad', $content);
 }
+
+// This replaces images with the Google icon.
+// You can modify all sorts of things using the $img array in this filter.
+add_filter('kws_gf_directory_lead_image', 'kws_gf_directory_lead_image_edit');
+function kws_gf_directory_lead_image_edit($img = array()) {
+	// $img = array('src' => $src, 'size' => $size, 'title' => $title, 'caption' => $caption, 'description' => $description, 'url' => $url, 'code' => "<img src='$src' {$size[3]} />");
+        $img['code'] = '<img src="http://www.google.com/images/logo.gif" alt="Replaced!" />';
+	return $img;
+}
 </pre>
 
 = I can't see the fields in the Add Fields box! = 
@@ -115,6 +125,10 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 2.3 =
+* Added new directory option: `postimage`. When your directory has an image, you can choose to show a generic icon (default) or show the full image.
+* Added powerful `kws_gf_directory_lead_image` filters (see "Plugin filters" in the FAQ)
 
 = 2.2.1 = 
 * Added fix for Add Fields Column shifting out of view, <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-add-fields-column-shifts-in-the-edit-forms-view" rel="nofollow">as reported here</a> and on the plugin support page. See the FAQ item "I can't see the fields in the Add Fields box!"
@@ -169,6 +183,10 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.3 =
+* Added new directory option: `postimage`. When your directory has an image, you can choose to show a generic icon (default) or show the full image.
+* Added powerful `kws_gf_directory_lead_image` filters (see "Plugin filters" in the FAQ)
 
 = 2.2.1 = 
 * Added fix for Add Fields Column shifting out of view, <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-add-fields-column-shifts-in-the-edit-forms-view" rel="nofollow">as reported here</a> and on the plugin support page. See the FAQ item "I can't see the fields in the Add Fields box!"

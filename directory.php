@@ -8,7 +8,7 @@ function kws_gf_directory($atts) {
     //quit if version of wp is not supported
     if(!GFCommon::ensure_wp_version())
         return;
-    
+
     ob_start(); // Using ob_start() allows us to use echo instead of $output .=
     
 	foreach($atts as $key => $att) { 
@@ -49,6 +49,7 @@ function kws_gf_directory($atts) {
 	      'showadminonly' => false, // Admin only columns aren't shown by default, but can be (added 2.0.1)
 	      'datecreatedformat' => get_option('date_format').' \a\t '.get_option('time_format'), // Use standard PHP date formats (http://php.net/manual/en/function.date.php)
 	      'dateformat' => false, // Override the options from Gravity Forms, and use standard PHP date formats (http://php.net/manual/en/function.date.php)
+	      'postimage' => 'image', // Whether to show icon, thumbnail, or large image
 	      ), $atts ) );
 		
 		$form_id = $form;
@@ -237,12 +238,38 @@ function kws_gf_directory($atts) {
                                         break;
 
                                         case "post_image" :
-                                            list($url, $title, $caption, $description) = explode("|:|", $value);
+                                        	list($url, $title, $caption, $description) = explode("|:|", $value);
+                                            $size = '';
                                             if(!empty($url)){
-                                                //displaying thumbnail (if file is an image) or an icon based on the extension
-                                                 $thumb = kws_gf_get_icon_url($url);
-#                                                 if($thumb != 'icon_image') { $lightboxclass = ''; } // No thickbox for non-images please
-                                                 $value = "<a href='$url'$target$lightboxclass><img src='$thumb'/></a>";
+                                            	//displaying thumbnail (if file is an image) or an icon based on the extension
+                                                 $icon = kws_gf_get_icon_url($url);
+                                                 if(!preg_match('/icon\_image\.gif/ism', $icon)) { 
+                                                 	$lightboxclass = '';
+                                                 	$size = @getimagesize($icon);
+                                                 	$img = "<img src='$src' {$size[3]}/>";
+                                                 } else { // No thickbox for non-images please
+                                                 	switch(strtolower(trim($postimage))) {
+                                                 		case 'image':
+                                                 			$src = $url;
+                                                 			break;
+                                                 		case 'icon' :
+                                                 		default:
+                                                 			$src = $icon;
+                                                 			break;
+                                                 	}
+                                                 	$size = @getimagesize($src);
+                                                 }
+                                                 $img = array(
+                                                 	'src' => $src,
+                                                 	'size' => $size,
+                                                 	'title' => $title,
+                                                 	'caption' => $caption,
+                                                 	'description' => $description,
+                                                 	'url' => $url,
+                                                 	'code' => "<img src='$src' {$size[3]} />"
+                                                 );
+                                                 $img = apply_filters('kws_gf_directory_lead_image', apply_filters('kws_gf_directory_lead_image_'.$postimage, apply_filters('kws_gf_directory_lead_image_'.$lead['id'], $img)));
+                                                 $value = "<a href='$url'$target$lightboxclass>{$img['code']}</a>";
                                             }
                                         break;
 
@@ -657,7 +684,8 @@ function kws_gf_directory($atts) {
                 var directory_id = jQuery("#add_directory_id").val();
                 if(directory_id == ""){
                     alert("<?php _e("Please select a form", "gravityforms") ?>");
-                    return;
+                    jQuery('#add_directory_id').focus();
+                    return false;
                 }
                 
             <?php 
@@ -721,6 +749,7 @@ function kws_gf_directory($atts) {
 }
 
 function kws_gf_make_field($type, $id, $default, $label) {
+	
 	$output = '<li style="width:90%; clear:left; border-bottom: 1px solid #cfcfcf; padding:.25em .25em .4em; margin-bottom:.25em;">';
 	if($type == "checkbox") { 
 			if($default) { $default = ' checked="checked"';}
@@ -728,6 +757,14 @@ function kws_gf_make_field($type, $id, $default, $label) {
 	} elseif($type == "text") {
 			$output .= '<input type="text" id="'.$id.'" value="'.$default.'" style="width:40%;" /> <label for="'.$id.'" style="font-size:11px; font-style:italic; color:#5A5A5A;'; if(strlen($label) > 100) { $output .= 'display:block;padding:8px 0 0 0;';} else { $output .= 'padding:8px 0 0 8px;';} 
 			$output .= '">'.$label.'</label>'."\n";
+	} elseif($type == 'radio') {
+		if(is_array($default)) {
+			foreach($default as $opt) {
+				if(!empty($opt['default'])) { $checked = ' checked="checked"'; } else { $checked = ''; }
+				$id_opt = $id.'_'.sanitize_title($opt['value']);
+				$output .= '<label for="'.$id_opt.'"><input type="radio"'.$checked.' value="'.$opt['value'].'" id="'.$id_opt.'" name="'.$id.'" /> '.$opt['label'].'</label>'."\n";	
+			}
+		}
 	}
 	$output .= '</li>'."\n";
 	echo $output;
@@ -738,6 +775,8 @@ function kws_gf_make_popup_js($type, $id) {
 		$js = 'var '.$id.' = jQuery("#'.$id.'").is(":checked") ? "true" : "false";';
 	} elseif($type == "text") {
 		$js = 'var '.$id.' = jQuery("#'.$id.'").val();';
+	} elseif($type == 'radio') {
+		$js = 'var '.$id.' = jQuery("#'.$id.':checked").val();';
 	}
 	$id = $id.'=\""+'.$id.'+"\"';
 	return array('js'=>$js, 'id'=>$id);
@@ -771,6 +810,7 @@ function kws_gf_make_popup_options($js = false) {
 			  array('checkbox', 'showadminonly', false, "Show admin only columns (the Approved column can always be shown, if desired.)"),
 		      array('checkbox', 'wpautop' , true, "Convert bulk paragraph text to...paragraphs"),
 		      array('checkbox', 'lightbox' , true, "Do you want your image uploads to be lightboxed?"),
+		      array('radio'   , 'postimage' , array(array('label' =>'<img src="'.GFCommon::get_base_url().'/images/doctypes/icon_image.gif" /> Show image icon', 'value'=>'icon', 'default'=>'1'), array('label' =>'Show full image', 'value'=>'image')), "How do you want images to appear in the directory?"),
 		      array('checkbox', 'showcount' , true, "Do you want to show 'Displaying 1-19 of 19'?"),
 		      array('checkbox', 'pagelinksshowall' , true, "Whether to show each page number, or just 7"),
 		      array('checkbox', 'showrowids' , true, "Whether or not to show the row ids, which are the entry IDs."),
@@ -784,11 +824,11 @@ function kws_gf_make_popup_options($js = false) {
 		      array('checkbox', 'searchtabindex' , false, "Adds tabindex='' to the search field"),
 		      array('checkbox', 'tfoot' , true, "Show the <tfoot>"),
 		      array('checkbox', 'thead' , true, "Show the <thead>"),
-		      array('checkbox', 'dateformat', false, "Override the options from Gravity Forms, and use standard PHP date formats")
+		      array('checkbox', 'dateformat', false, "Override the options from Gravity Forms, and use standard PHP date formats"),
 		);
 	if(!$js) { 	     
 		foreach($advanced as $o) {
-			kws_gf_make_field($o[0], $o[1], esc_html($o[2]), esc_html($o[3]));
+			kws_gf_make_field($o[0], $o[1], $o[2], esc_html($o[3]));
 		}
 		echo '</ul>';
 		echo '<hr style="margin:1em; display:block; outline:none; border-bottom:1px solid #ccc;" />';
