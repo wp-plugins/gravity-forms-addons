@@ -2,9 +2,9 @@
 /*
 Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
-Description: Add directory functionality and improve usability for the great <a href="http://sn.im/gravityforms" rel="nofollow">Gravity Forms</a> plugin.
+Description: Add directory functionality and improve usability for the great <a href="http://bit.ly/dvF8BI" rel="nofollow">Gravity Forms</a> plugin.
 Author: Katz Web Services, Inc.
-Version: 2.3
+Version: 2.3.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2010 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -48,7 +48,9 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 	
 	function kws_gf_css() {
 		if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'gf_edit_forms' && isset($_REQUEST['id']) && is_numeric($_REQUEST['id'])) {
-			$style = '<style type="text/css">.gforms_edit_form ul.menu li ul { display:block!important; }</style>';
+			$style = '<style type="text/css">
+				.gforms_edit_form_expanded ul.menu li.add_field_button_container ul { display:block!important; }
+			</style>';
 			$style= apply_filters('kws_gf_display_all_fields', $style);
 			echo $style;
 		}
@@ -59,10 +61,10 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 		if(is_admin()) {
 			echo '<script src="'.$Common->get_base_url().'/js/jquery.simplemodal-1.3.min.js"></script>'; // Added for the new IDs popup
 		}
-		if(isset($_REQUEST['page']) && ($_REQUEST['page'] == 'gf_edit_forms' && !isset($_REQUEST['id']) || $_REQUEST['page'] == 'gf_entries')) {
+		if(isset($_REQUEST['page']) && ($_REQUEST['page'] == 'gf_edit_forms' || $_REQUEST['page'] == 'gf_entries')) {
 			echo '<script type="text/javascript">
 			jQuery(document).ready(function($) {';
-				kws_gf_add_edit_js();
+				kws_gf_add_edit_js(isset($_REQUEST['id']));
 			echo '});
 			</script>';
 		}
@@ -101,8 +103,46 @@ EOD;
 	}
 	add_filter('gform_pre_render','kws_gf_show_field_ids');
 	
-	function kws_gf_add_edit_js() {
-	
+	function kws_gf_add_edit_js($edit_forms = false) {
+			if($edit_forms) {
+				?>
+				$('div.gforms_edit_form #add_fields #floatMenu').prepend('<div class="alignright" style="margin:1.17em 0!important;"><label for="expandAllMenus"><input type="checkbox" id="expandAllMenus" value="1" /> Expand All Menus</label></div>');
+				$('input#expandAllMenus').live('change click', function() {
+					if($(this).is(':checked')) {
+						$('div.gforms_edit_form').addClass('gforms_edit_form_expanded');
+						$('ul.menu li .button-title-link').unbind().die(); // .unbind() is for the initial .click()... .die() is for the live() below
+					} else {
+						$('div.gforms_edit_form').removeClass('gforms_edit_form_expanded');
+						// from .../gravityforms/js/menu.js
+						jQuery('ul.menu li .button-title-link').live('click', 
+						        function() {
+						            var checkElement = jQuery(this).next();
+						            var parent = this.parentNode.parentNode.id;
+						
+						            if(jQuery('#' + parent).hasClass('noaccordion')) {
+						                jQuery(this).next().slideToggle('normal');
+						                return false;
+						            }
+						            if((checkElement.is('ul')) && (checkElement.is(':visible'))) {
+						                if(jQuery('#' + parent).hasClass('collapsible')) {
+						                    jQuery('#' + parent + ' ul:visible').slideUp('normal');
+						                }
+						                return false;
+						            }
+						            if((checkElement.is('ul')) && (!checkElement.is(':visible'))) {
+						                jQuery('#' + parent + ' ul:visible').slideUp('normal');
+						                checkElement.slideDown('normal');
+						                return false;
+						            }
+						        }
+						    );
+					}
+				});
+				
+				<?php
+				return;
+			}
+			
 			if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'gf_entries') {
 				?>
 				$(".row-actions span.edit:contains('Delete')").each(function() { 
@@ -264,7 +304,7 @@ EOD;
 } else {
 	// If the classes don't exist, the plugin won't do anything useful.
 	function kws_gf_warning() {
-			echo "<div id='kws-gf-warning' class='updated fade'><p><strong>".sprintf(__('Gravity Forms Addons has detected a problem: required Gravity Forms files cannot be found'), "http://sn.im/gravityforms")."</strong></p><p>".sprintf(__('The <a href="%1$s">Gravity Forms plugin</a> must be installed and activated for the Gravity Forms Addons plugin to work.</p><p>If you haven\'t installed the plugin, you can <a href="%1$s">purchase the plugin here</a>. If you have, and you believe this notice is in error, <a href="%2$s">start a topic on the plugin support forum</a>.'), "http://sn.im/gravityforms", "http://wordpress.org/tags/gravity-forms-addons?forum_id=10#postform")."</p></div>";
+			echo "<div id='kws-gf-warning' class='updated fade'><p><strong>".sprintf(__('Gravity Forms Addons has detected a problem: required Gravity Forms files cannot be found'), "http://bit.ly/dvF8BI")."</strong></p><p>".sprintf(__('The <a href="%1$s">Gravity Forms plugin</a> must be installed and activated for the Gravity Forms Addons plugin to work.</p><p>If you haven\'t installed the plugin, you can <a href="%1$s">purchase the plugin here</a>. If you have, and you believe this notice is in error, <a href="%2$s">start a topic on the plugin support forum</a>.'), "http://bit.ly/dvF8BI", "http://wordpress.org/tags/gravity-forms-addons?forum_id=10#postform")."</p></div>";
 	}
 	
 	add_action('admin_notices', 'kws_gf_warning');
