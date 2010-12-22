@@ -128,7 +128,9 @@ To fix this issue, add this to your theme's `functions.php` file:
 == Changelog ==
 
 = 2.4 = 
-* Added single-entry viewing capability
+Merry Christmas! This update adds a key functionality: the ability to have a separate page for each entry. This is huge, and took lots of time to develop, so please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8" rel="nofollow">give thanks & spread the Christmas cheer by donating</a>!
+
+* __Added single-entry viewing capability__
 	- View single entry details on either a separate page or in a lightbox
 	- Entries in separate page have their own permalink (http://example.com/directory/entry/[form#]/[entry#]/)
 	- Add entry detail links by having Entry ID column added to directory
