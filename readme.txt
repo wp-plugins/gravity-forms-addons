@@ -19,7 +19,7 @@ __How easy is <a href="http://bit.ly/dvF8BI" rel="nofollow">Gravity Forms</a>? C
 Gravity Forms is already the easiest form plugin - its functionality makes WordPress <em>close</em> to having user-submitted directory capabilities. Finally, the Gravity Forms Directory & Addons plugin does just that.
 
 * Completely shortcode based, using the `[directory]` shortcode
-* Includes built-in __searching__ 
+* Includes built-in __searching__
 * Sort by column
 * Easily re-organize the columns inside Gravity Forms
 * Has an option to <strong>show only approved listings</strong>
@@ -27,6 +27,7 @@ Gravity Forms is already the easiest form plugin - its functionality makes WordP
 * Directory features pagination
 * Define custom styles inside the shortcode
 * Includes lightbox support for uploaded images
+* Option to __view single entries__ in their own page or in a lightbox
 
 ####Insert a totally configurable table using the editor
 There are over 30 configurable options for how you want the directory to display. 
@@ -126,6 +127,13 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 2.4 = 
+* Added single-entry viewing capability
+	- View single entry details on either a separate page or in a lightbox
+	- Entries in separate page have their own permalink (http://example.com/directory/entry/[form#]/[entry#]/)
+	- Add entry detail links by having Entry ID column added to directory
+* Fixed footer column filters
+
 = 2.3.1 = 
 * Added "Expand All Menus" checkbox to easily change whether the Add Fields menus are expanded in the Form Editor
 
@@ -187,6 +195,13 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.4 = 
+* Added single-entry viewing capability
+	- View single entry details on either a separate page or in a lightbox
+	- Entries in separate page have their own permalink (http://example.com/directory/entry/[form#]/[entry#]/)
+	- Add entry detail links by having Entry ID column added to directory
+* Fixed footer column filters
 
 = 2.3.1 = 
 * Added "Expand All Menus" checkbox to easily change whether the Add Fields menus are expanded in the Form Editor

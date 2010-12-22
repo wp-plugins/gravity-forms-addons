@@ -4,8 +4,8 @@ add_shortcode('directory', 'kws_gf_directory');
 
 function kws_gf_directory($atts) { 
 	global $wpdb,$wp_rewrite;
-
-    //quit if version of wp is not supported
+	
+	//quit if version of wp is not supported
     if(!GFCommon::ensure_wp_version())
         return;
 
@@ -50,6 +50,14 @@ function kws_gf_directory($atts) {
 	      'datecreatedformat' => get_option('date_format').' \a\t '.get_option('time_format'), // Use standard PHP date formats (http://php.net/manual/en/function.date.php)
 	      'dateformat' => false, // Override the options from Gravity Forms, and use standard PHP date formats (http://php.net/manual/en/function.date.php)
 	      'postimage' => 'image', // Whether to show icon, thumbnail, or large image
+	      'entry' => true, // If there's an Entry ID column, link to the full entry
+	      'entrylightbox' => '',
+	      'entrylink' => 'View entry details',
+	      'entryth' => 'More Info',
+	      'entryback' => '&larr; Back to directory',
+	      'entryonly' => true,
+	      'entrytitle' => 'Entry Detail',
+	      'entryanchor' => true,
 	      ), $atts ) );
 		
 		$form_id = $form;
@@ -74,13 +82,20 @@ function kws_gf_directory($atts) {
 
         $leads = RGFormsModel::get_leads($form_id, $sort_field, $sort_direction, $search_query, $first_item_index, $page_size, $star, $read, $is_numeric);
         
-        if(!$showadminonly)  { 
+        if(!$showadminonly)  {
         	$leads = kws_gf_remove_admin_only($leads, $adminonlycolumns, $approvedcolumn, true); 
         	$columns = kws_gf_remove_admin_only($columns, $adminonlycolumns, $approvedcolumn, false); 
         }
         
         $lead_count = kws_gf_get_lead_count($form_id, $search_query, $star, $read, $approvedcolumn, $approved);
 
+        
+        if($entry === true && $detail = kws_gf_process_lead_detail(true, $entryback, $showadminonly, $adminonlycolumns, $approvedcolumn)) {
+        	echo $detail;
+        	if($entryonly) {
+        		return;
+        	}
+        };
         
         
 		// Get a list of query args for the pagination links
@@ -103,7 +118,7 @@ function kws_gf_directory($atts) {
 
 		$page_links = paginate_links($page_links);
 		
-		if($lightbox) {
+		if($lightbox || $entrylightbox) {
         	wp_print_scripts(array("thickbox"));
         	wp_print_styles(array("thickbox"));
 		}
@@ -185,7 +200,8 @@ function kws_gf_directory($atts) {
                             if(is_array($adminonlycolumns) && !in_array($field_id, $adminonlycolumns) || (is_array($adminonlycolumns) && in_array($field_id, $adminonlycolumns) && $showadminonly) || !$showadminonly) {
                             ?>
                             <th scope="col" class="manage-column" onclick="Search('<?php echo $search_query ?>', '<?php echo $field_id ?>', '<?php echo $dir ?>');" style="cursor:pointer;"><?php 
-                            $label = $field_info["label"];
+                            if($field_info['type'] == 'id' && $entry) { $label = $entryth; }
+                            else { $label = $field_info["label"]; }
                             
                             $label = apply_filters('kws_gf_directory_th', apply_filters('kws_gf_directory_th_'.$field_id, apply_filters('kws_gf_directory_th_'.sanitize_title($label), $label)));
                             echo esc_html($label) 
@@ -266,7 +282,7 @@ function kws_gf_directory($atts) {
                                                  	'caption' => $caption,
                                                  	'description' => $description,
                                                  	'url' => $url,
-                                                 	'code' => "<img src='$src' {$size[3]} alt='' />"
+                                                 	'code' => "<img src='$src' {$size[3]} />"
                                                  );
                                                  $img = apply_filters('kws_gf_directory_lead_image', apply_filters('kws_gf_directory_lead_image_'.$postimage, apply_filters('kws_gf_directory_lead_image_'.$lead['id'], $img)));
                                                  $value = "<a href='$url'$target$lightboxclass>{$img['code']}</a>";
@@ -314,7 +330,32 @@ function kws_gf_directory($atts) {
 	                                        	$value = GFCommon::date_display($value, $field["dateFormat"]); 
 	                                        }
                                         break;
-
+										
+										case "id" :
+											if($entry) {
+												$entrytitle = apply_filters('kws_gf_directory_detail_title', apply_filters('kws_gf_directory_detail_title_'.$value, $entrytitle));
+                    							if($entrylightbox || $lightbox && $entrylightbox === '') { 
+													$href = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/entry-details.php?leadid=$value&amp;form={$form['id']}&amp;KeepThis=true&TB_iframe=true&amp;width=600"; $class = ' class="thickbox lightbox"'; 
+												} else {
+													if($wp_rewrite->using_permalinks()) {
+														// example.com/example-directory/entry/4/14/
+														$url = parse_url(add_query_arg(array()));
+														$href = trailingslashit($url['path']).'entry/'.$form['id'].'/'.$value.'/';
+														if(!empty($url['query'])) { $href .= '?'.$url['query']; }
+													} else {
+														// example.com/?page_id=24&leadid=14&form=4
+														$href = add_query_arg(array('leadid'=>$value, 'form' => $form['id']));
+													}
+												}
+												if($showrowids && $entryanchor) {
+													// example.com/?page_id=24&leadid=14&form=4&row=58
+													// example.com/example-directory/entry/4/14/?row=58
+													$href = add_query_arg(array('row'=>$lead["id"]), $href);
+												} 
+												$value = '<a href="'.$href.'"'.$class.' title="'.$entrytitle.'">'.$entrylink.'</a>';
+											}
+										break;
+										
                                         default:
                                         	$class = '';
                                         	$input_type = 'text';
@@ -351,17 +392,29 @@ function kws_gf_directory($atts) {
                     ?>
                 </tbody>
                 <?php if($tfoot) { ?>
-                <tfoot><?php echo "\n\t\t\t"; ?><tr><?php
+                <tfoot>
+                	<tr>
+                        <?php
                         foreach($columns as $field_id => $field_info){
                             $dir = $field_id == 0 ? "DESC" : "ASC"; //default every field so ascending sorting except date_created (id=0)
-                            if($field_id == $sort_field) //reverting direction if clicking on the currently sorted field
+                            if($field_id == $sort_field) { //reverting direction if clicking on the currently sorted field
                                 $dir = $sort_direction == "ASC" ? "DESC" : "ASC";
-                            echo "\n\t\t\t\t";
-                            ?><th scope="col" class="manage-column" onclick="Search('<?php echo $field_id ?>', '<?php echo $dir ?>', <?php echo $form_id ?>, '<?php echo $search_query ?>', '<?php echo $star ?>', '<?php echo $read ?>');" style="cursor:pointer;"><?php echo esc_html($field_info["label"]) ?></th><?php
-
+                            }
+                            if(is_array($adminonlycolumns) && !in_array($field_id, $adminonlycolumns) || (is_array($adminonlycolumns) && in_array($field_id, $adminonlycolumns) && $showadminonly) || !$showadminonly) {
+                            ?>
+                            <th scope="col" class="manage-column" onclick="Search('<?php echo $search_query ?>', '<?php echo $field_id ?>', '<?php echo $dir ?>');" style="cursor:pointer;"><?php 
+                            if($field_info['type'] == 'id' && $entry) { $label = $entryth; }
+                            else { $label = $field_info["label"]; }
+                            
+                            $label = apply_filters('kws_gf_directory_th', apply_filters('kws_gf_directory_th_'.$field_id, apply_filters('kws_gf_directory_th_'.sanitize_title($label), $label)));
+                            echo esc_html($label) 
+                           
+                             ?></th>
+                            <?php
+                            }
                         }
-                        echo "\n\t\t\t";
-                        ?></tr>
+                        ?>
+                    </tr>
                 </tfoot>
                 <?php } ?>
                 </table>
@@ -559,14 +612,20 @@ function kws_gf_directory($atts) {
 		return false;
 	}
 	
-	function kws_gf_remove_admin_only($leads, $adminOnly, $approved, $isleads) {
+	function kws_gf_remove_admin_only($leads, $adminOnly, $approved, $isleads, $single = false) {
 		$i = 0;
 		if($isleads) {
 			if(is_array($leads)) {
 				foreach($leads as $key => $lead) {
 					if(is_array($adminOnly)) {
-						if(is_array($adminOnly) && @in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
-							unset($leads[$i]);
+						if(@in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
+							if($single) {
+								foreach($adminOnly as $ao) {
+									unset($lead[$ao]);
+								}
+							} else {
+								unset($leads[$i]);
+							}
 						}
 					}
 				}
@@ -575,8 +634,12 @@ function kws_gf_directory($atts) {
 			if(is_array($leads)) {
 				foreach($leads as $key => $lead) {
 					if(is_array($adminOnly)) {
-						if(is_array($adminOnly) && @in_array($key, $adminOnly) && $key != $approved && $key != floor($approved)) {
-							unset($leads[$key]);
+						if(@in_array($key, $adminOnly) && $key != $approved && $key != floor($approved) && !$single || ($single && (!isset($lead['id']) || isset($lead['id']) && in_array($lead['id'], $adminOnly)))) {
+							if($single) {
+								unset($leads[floor($key)]);
+							} else {
+								unset($leads[$key]);
+							}
 						}
 					}
 				}
@@ -753,16 +816,16 @@ function kws_gf_make_field($type, $id, $default, $label) {
 	$output = '<li style="width:90%; clear:left; border-bottom: 1px solid #cfcfcf; padding:.25em .25em .4em; margin-bottom:.25em;">';
 	if($type == "checkbox") { 
 			if($default) { $default = ' checked="checked"';}
-			$output .= '<label for="'.$id.'"><input type="checkbox" id="'.$id.'"'.$default.' /> '.$label.'</label>'."\n";	
+			$output .= '<label for="gf_settings_'.$id.'"><input type="checkbox" id="gf_settings_'.$id.'"'.$default.' /> '.$label.'</label>'."\n";	
 	} elseif($type == "text") {
-			$output .= '<input type="text" id="'.$id.'" value="'.$default.'" style="width:40%;" /> <label for="'.$id.'" style="font-size:11px; font-style:italic; color:#5A5A5A;'; if(strlen($label) > 100) { $output .= 'display:block;padding:8px 0 0 0;';} else { $output .= 'padding:8px 0 0 8px;';} 
+			$output .= '<input type="text" id="gf_settings_'.$id.'" value="'.htmlspecialchars($default).'" style="width:40%;" /> <label for="gf_settings_'.$id.'" style="font-size:11px; font-style:italic; color:#5A5A5A;'; if(strlen($label) > 100) { $output .= 'display:block;padding:8px 0 0 0;';} else { $output .= 'padding:8px 0 0 8px;';} 
 			$output .= '">'.$label.'</label>'."\n";
 	} elseif($type == 'radio') {
 		if(is_array($default)) {
 			foreach($default as $opt) {
 				if(!empty($opt['default'])) { $checked = ' checked="checked"'; } else { $checked = ''; }
 				$id_opt = $id.'_'.sanitize_title($opt['value']);
-				$output .= '<label for="'.$id_opt.'"><input type="radio"'.$checked.' value="'.$opt['value'].'" id="'.$id_opt.'" name="'.$id.'" /> '.$opt['label'].'</label>'."\n";	
+				$output .= '<label for="gf_settings_'.$id_opt.'"><input type="radio"'.$checked.' value="'.$opt['value'].'" id="gf_settings_'.$id_opt.'" name="'.$id.'" /> '.$opt['label'].'</label>'."\n";	
 			}
 		}
 	}
@@ -772,11 +835,16 @@ function kws_gf_make_field($type, $id, $default, $label) {
 
 function kws_gf_make_popup_js($type, $id) {
 	if($type == "checkbox") {
-		$js = 'var '.$id.' = jQuery("#'.$id.'").is(":checked") ? "true" : "false";';
+		$js = 'var '.$id.' = jQuery("#gf_settings_'.$id.'").is(":checked") ? "true" : "false";';
 	} elseif($type == "text") {
-		$js = 'var '.$id.' = jQuery("#'.$id.'").val();';
+		$js = 'var '.$id.' = jQuery("#gf_settings_'.$id.'").val();';
 	} elseif($type == 'radio') {
-		$js = 'var '.$id.' = jQuery("#'.$id.':checked").val();';
+		$js = '
+		if(jQuery("input[name=\''.$id.'\']:checked").length > 0) { 
+			var '.$id.' = jQuery("input[name=\''.$id.'\']:checked").val();
+		} else {
+			var '.$id.' = jQuery("input[name=\''.$id.'\']").eq(0).val();
+		}';
 	}
 	$id = $id.'=\""+'.$id.'+"\"';
 	return array('js'=>$js, 'id'=>$id);
@@ -794,17 +862,13 @@ function kws_gf_make_popup_options($js = false) {
 			kws_gf_make_field($o[0], $o[1], esc_html($o[2]), esc_html($o[3]));
 		}
 		echo '</ul>';
-		echo '<a href="#kws_gf_advanced_settings" class="kws_gf_advanced_settings">Show advanced settings</a>';
-		echo '<div style="display:none;" id="kws_gf_advanced_settings">';
-		echo "<fieldset><legend style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em; padding:.5em 0;'>Advanced Settings</legend>";
-		echo "<h3 style='margin-top:1em;'>Inputs Galore</h3>";
-		echo '<ul style="padding: 0 15px 0 15px; width:100%;">';
 	} else {
 		foreach($standard as $o) {
 			$out[$i] = kws_gf_make_popup_js($o[0], $o[1]);
 			$i++;
 		}
 	}
+		
 		$advanced = array(      
 			  array('checkbox', 'approved' , false, "Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved')"),
 			  array('checkbox', 'showadminonly', false, "Show admin only columns (the Approved column can always be shown, if desired.)"),
@@ -826,15 +890,43 @@ function kws_gf_make_popup_options($js = false) {
 		      array('checkbox', 'thead' , true, "Show the <thead>"),
 		      array('checkbox', 'dateformat', false, "Override the options from Gravity Forms, and use standard PHP date formats"),
 		);
-	if(!$js) { 	     
+		$entry = array(
+			array('checkbox', 'entry', true, "If there's a displayed Entry ID column, add link to each full entry"),
+			array('checkbox', 'entrylightbox', false, "Open entry details in lightbox (defaults to lightbox settings)"),
+			array('text', 'entrytitle', 'Entry Detail', "Title of entry lightbox window"),
+			array('text', 'entrylink', 'View full entry', "Link text to show full entry"),
+			array('text', 'entryth', 'More Info', "Entry ID column title"),
+			array('text', 'entryback', '&larr; Back to directory',),
+			array('checkbox', 'entryonly', true, "When viewing full entry, show entry only? Otherwise, show entry with directory below"),
+			array('checkbox', 'entryanchor', true, "When returning to directory view from single entry, link to specific anchor row?"),
+		);
+	
+	if(!$js) {
+		echo '<a href="#kws_gf_advanced_settings" class="kws_gf_advanced_settings">Show advanced settings</a>';
+		echo '<div style="display:none;" id="kws_gf_advanced_settings">';
+		echo "<fieldset><legend style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em; padding:.5em 0;'>Advanced Settings</legend>";
+		echo "<h3 style='padding-top:1em; margin:0;'>Single Entry View</h3>";
+		echo '<p class="howto">These settings control whether users can view each entry as a separate page or lightbox. Single entries will show all data associated with that entry.</p>';
+		echo '<ul style="padding:0 15px 0 15px; width:100%;">';
+		foreach($entry as $o) {
+			kws_gf_make_field($o[0], $o[1], esc_html($o[2]), esc_html($o[3]));
+		}
+		echo '</ul>';
+		echo '<hr style="margin-top:1em; display:block; border:none; outline:none; border-bottom:1px solid #ccc;" />';
+		echo "<h3 style='padding-top:1em; margin:0;'>Checkboxes Galore</h3>";
+		echo '<ul style="padding: 0 15px 0 15px; width:100%;">'; 	     
 		foreach($advanced as $o) {
 			kws_gf_make_field($o[0], $o[1], $o[2], esc_html($o[3]));
 		}
 		echo '</ul>';
-		echo '<hr style="margin:1em; display:block; outline:none; border-bottom:1px solid #ccc;" />';
-		echo "<h3 style='margin-top:1em;'>Inputs Galore</h3>";
+		echo '<hr style="margin-top:1em; display:block; border:none; outline:none; border-bottom:1px solid #ccc;" />';
+		echo "<h3 style='padding-top:1em; margin:0;'>Text Inputs Galore</h3>";
 		echo '<ul style="padding: 0 15px 0 15px; width:100%;">';
 	} else {
+		foreach($entry as $o) {
+			$out[$i] = kws_gf_make_popup_js($o[0], $o[1]);
+			$i++;
+		}
 		foreach($advanced as $o) {
 			$out[$i] = kws_gf_make_popup_js($o[0], $o[1]);
 			$i++;
@@ -873,6 +965,161 @@ add_action('media_buttons_context', 'kws_gf_add_form_button', 999);
 
 if(in_array(RG_CURRENT_PAGE, array('post.php', 'page.php', 'page-new.php', 'post-new.php'))){
     add_action('admin_footer',  'kws_gf_add_mce_popup');
+}
+
+add_filter('get_shortlink', 'kws_gf_directory_shortlink');
+function kws_gf_directory_shortlink($link) {
+	$shortlink = apply_filters('kws_gf_directory_shortlink', true);
+	if($shortlink) {
+		$url = add_query_arg(array());
+		if(preg_match('/entry\/([0-9]+)\/([0-9]+)\/?/ism',$url, $matches)) {
+			return add_query_arg(array('leadid'=>$matches[2], 'form'=>$matches[1]), $link);
+		} elseif(isset($_REQUEST['leadid']) && isset($_REQUEST['form'])) {
+			return add_query_arg(array('leadid'=>$_REQUEST['leadid'], 'form'=>$_REQUEST['form']), $link);
+		}
+		return $link;
+	}
+}
+
+add_action('wp_head', 'kws_gf_directory_canonical_add', 1);
+function kws_gf_directory_canonical_add() {
+	$canonical = apply_filters('kws_gf_directory_canonical_add', true);
+	if($canonical) {
+		add_filter('post_link', 'kws_gf_directory_canonical', 1, 3);
+		add_filter('page_link', 'kws_gf_directory_canonical', 1, 3);
+		function kws_gf_directory_canonical($permalink, $sentPost = '', $leavename = '') {
+			global $post;
+			$post->permalink = $permalink;
+			$url = add_query_arg(array());
+			// $post->ID === $sentPost->ID is so that add_query_arg match doesn't apply to other posts; just current
+			if($post->ID === $sentPost->ID && preg_match('/(entry\/(?:[0-9]+)\/(?:[0-9]+)\/?)/ism',$url, $matches)) {
+				return trailingslashit($permalink).$matches[0];
+			}
+			return $permalink;
+		}
+	}
+}
+
+function kws_gf_process_lead_detail($inline = true, $entryback = '', $showadminonly = false, $adminonlycolumns = array(), $approvedcolumn = null) {
+	global $wp,$post;
+	$formid = $leadid = false;
+	
+	if(isset($wp->query_vars['entry'])) {
+		list($formid, $leadid) = explode('/', $wp->query_vars['entry']);
+	}
+	$formid = isset($_REQUEST['form']) ? (int)$_REQUEST['form'] : $formid;
+	$leadid = isset($_REQUEST['leadid']) ? (int)$_REQUEST['leadid'] : $leadid;
+
+	if($leadid && $formid) {
+		if(!class_exists('GFEntryDetail')) { require_once(GFCommon::get_base_path() . "/entry_detail.php"); }
+		if(!class_exists('GFCommon')) { require_once(WP_PLUGIN_DIR . "/gravityforms/common.php"); }
+		
+		$lead = RGFormsModel::get_lead((int)$leadid);
+		if(!$showadminonly)  {
+			$lead = kws_gf_remove_admin_only(array($lead), $adminonlycolumns, $approvedcolumn, true, true);
+			$lead = $lead[0];
+		}
+
+		if(!class_exists('RGFormsModel')) { require_once(WP_PLUGIN_DIR . "/gravityforms/forms_model.php"); }
+		$form = RGFormsModel::get_form_meta((int)$formid);
+		if(!$showadminonly)  {
+			$form['fields'] = kws_gf_remove_admin_only($form['fields'], $adminonlycolumns, $approvedcolumn, false, true);
+		}
+				
+		ob_start(); // Using ob_start() allows us to filter output
+			kws_gf_lead_detail($form, $lead, false, $inline);
+			$content = ob_get_contents(); // Get the output
+		ob_end_clean(); // Clear the cache
+		
+		$url = parse_url(add_query_arg(array(), remove_query_arg('row')));
+		$href = isset($post->permalink) ? $post->permalink : get_permalink(); 
+		if(!empty($url['query'])) { $href .= '?'.$url['query']; }
+		if(isset($_REQUEST['row'])) { $href .= '#lead_row_'.$leadid; }
+		$link = apply_filters('kws_gf_directory_backlink', '<p><a href="'.$href.'">'.esc_html($entryback).'</a></p>');
+		$content = $link . $content; 
+		$content = apply_filters('kws_gf_directory_detail', apply_filters('kws_gf_directory_detail_'.(int)$leadid, $content));
+		return $content;
+	} else {
+		return false;
+	}
+}
+
+function kws_gf_lead_detail($form, $lead, $allow_display_empty_fields=false, $inline = true) {
+        if($allow_display_empty_fields){
+            $display_empty_fields = $_COOKIE["gf_display_empty_fields"];
+        }
+        ?>
+        <table cellspacing="0" class="widefat fixed entry-detail-view">
+        <?php if($inline) { ?>
+            <thead>
+                <tr>
+                    <th id="details">
+                    <?php 
+                    	$title = $form["title"] .' : Entry # '.$lead["id"]; 
+                    	$title = apply_filters('kws_gf_directory_detail_title', apply_filters('kws_gf_directory_detail_title_'.(int)$lead['id'], array($title, $lead)));
+                    	if(is_array($title)) {
+                    		echo $title[0];
+                    	} else {
+                    		echo $title;
+                    	}                    	
+                    ?>
+                    </th>
+                    <th style="width:140px; font-size:10px; text-align: right;">
+                    <?php
+                        if($allow_display_empty_fields){
+                            ?>
+                            <input type="checkbox" id="gentry_display_empty_fields" <?php echo $display_empty_fields ? "checked='checked'" : "" ?> onclick="ToggleShowEmptyFields();"/>&nbsp;&nbsp;<label for="gentry_display_empty_fields">show empty fields</label>
+                            <?php
+                        }
+                        ?>
+                    </th>
+                </tr>
+            </thead>
+            <?php
+            }
+            ?>
+            <tbody>
+                <?php
+                $count = 0;
+                $field_count = sizeof($form["fields"]);
+                foreach($form["fields"] as $field){
+                    $count++;
+                    $is_last = $count >= $field_count ? true : false;
+
+                    switch(RGFormsModel::get_input_type($field)){
+                        case "section" :
+                            ?>
+                            <tr>
+                                <td colspan="2" class="entry-view-section-break<?php echo $is_last ? " lastrow" : ""?>"><?php echo esc_html(GFCommon::get_label($field))?></td>
+                            </tr>
+                            <?php
+                        break;
+
+                        case "captcha":
+                        case "html":
+                            //ignore captcha field
+                        break;
+
+                        default :
+                            $value = RGFormsModel::get_lead_field_value($lead, $field);
+                            $display_value = GFCommon::get_lead_field_display($field, $value);
+                            if($display_empty_fields || !empty($display_value) || $display_value === "0"){
+                                ?>
+                                <tr>
+                                    <td colspan="2" class="entry-view-field-name"><?php echo esc_html(GFCommon::get_label($field))?></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="entry-view-field-value<?php echo $is_last ? " lastrow" : ""?>"><?php echo empty($display_value) && $display_value !== "0" ? "&nbsp;" : $display_value ?></td>
+                                </tr>
+                                <?php
+                            }
+                        break;
+                    }
+                }
+                ?>
+            </tbody>
+        </table>
+        <?php
 }
 
 ?>
