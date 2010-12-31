@@ -1,7 +1,7 @@
 === Gravity Forms Directory & Addons ===
 Tags: gravity forms, forms, gravity, form, crm, gravity form, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
-Tested up to: 3.0.3
+Tested up to: 3.0.4
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -127,9 +127,12 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
-= 2.4 = 
-Merry Christmas! This update adds a key functionality: the ability to have a separate page for each entry. This is huge, and took lots of time to develop, so please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8" rel="nofollow">give thanks & spread the Christmas cheer by donating</a>!
+= 2.4.1 =
+* Included entry-details.php file, required for lightbox viewing
+* Fixed issue with single-entry lightbox view - no longer shows admin-only columns if admin-only setting is turned off.
+* Fixed Multi-blog single entry view, canonical link and chortling generation
 
+= 2.4 = 
 * __Added single-entry viewing capability__
 	- View single entry details on either a separate page or in a lightbox
 	- Entries in separate page have their own permalink (http://example.com/directory/entry/[form#]/[entry#]/)
@@ -197,6 +200,11 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.4.1 =
+* Included entry-details.php file, required for lightbox viewing
+* Fixed issue with single-entry lightbox view - no longer shows admin-only columns if admin-only setting is turned off.
+* Fixed Multi-blog single entry view, canonical link and chortling generation
 
 = 2.4 = 
 * Added single-entry viewing capability

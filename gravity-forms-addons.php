@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Add directory functionality and improve usability for the great <a href="http://bit.ly/dvF8BI" rel="nofollow">Gravity Forms</a> plugin.
 Author: Katz Web Services, Inc.
-Version: 2.4
+Version: 2.4.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2010 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -22,8 +22,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-*/		
-		
+*/
+
+
 // Get Gravity Forms over here!
 @include_once(WP_PLUGIN_DIR . "/gravityforms/gravityforms.php");
 @include_once(WP_PLUGIN_DIR . "/gravityforms/forms_model.php");
@@ -35,6 +36,24 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 
 	// Load up the directory functionality
 	@include_once('directory.php');
+	
+	register_activation_hook( __FILE__, 'kws_gf_flush_rules' );
+	register_deactivation_hook( __FILE__, 'kws_gf_flush_rules' );
+	
+	function kws_gf_flush_rules() {
+		global $wp_rewrite;
+		$wp_rewrite->flush_rules();
+		return;
+	}
+	
+	add_action('init', 'kws_gf_add_rewrite');
+	function kws_gf_add_rewrite() {
+		global $wp_rewrite;
+		if(!$wp_rewrite->using_permalinks()) { return; }
+		$wp_rewrite->add_permastruct('entry', '(.+)/entry/%entry%', true);
+		$wp_rewrite->add_endpoint('entry',EP_PERMALINK);
+		$wp_rewrite->flush_rules();
+	}
 	
 	// Load Joost's widget
 	@include_once('gravity-forms-widget.php');
@@ -49,7 +68,8 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 	function kws_gf_css() {
 		if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'gf_edit_forms' && isset($_REQUEST['id']) && is_numeric($_REQUEST['id'])) {
 			$style = '<style type="text/css">
-				.gforms_edit_form_expanded ul.menu li.add_field_button_container ul { display:block!important; }
+				.gforms_edit_form_expanded ul.menu li.add_field_button_container ul,
+				.gforms_edit_form_expanded ul.menu li.add_field_button_container ul ol { display:block!important; }
 			</style>';
 			$style= apply_filters('kws_gf_display_all_fields', $style);
 			echo $style;

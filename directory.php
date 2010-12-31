@@ -1,9 +1,11 @@
 <?php 
 
+// Version: 2.4.1
+
 add_shortcode('directory', 'kws_gf_directory');
 
 function kws_gf_directory($atts) { 
-	global $wpdb,$wp_rewrite;
+	global $wpdb,$wp_rewrite,$post, $wpdb;
 	
 	//quit if version of wp is not supported
     if(!GFCommon::ensure_wp_version())
@@ -96,6 +98,15 @@ function kws_gf_directory($atts) {
         		return;
         	}
         };
+        
+        // Allow lightbox to determine whether showadminonly is valid without passing a query string in URL
+        if($entry === true && !empty($entrylightbox)) {
+        	if(get_transient('gf_form_'.$form['id'].'_post_'.$post->ID.'_showadminonly') != $showadminonly) {
+        		set_transient('gf_form_'.$form['id'].'_post_'.$post->ID.'_showadminonly', $showadminonly, 60*60);	
+        	}
+        } else {
+        	delete_transient('gf_form_'.$form['id'].'_post_'.$post->ID.'_showadminonly');
+        }
         
         
 		// Get a list of query args for the pagination links
@@ -335,12 +346,13 @@ function kws_gf_directory($atts) {
 											if($entry) {
 												$entrytitle = apply_filters('kws_gf_directory_detail_title', apply_filters('kws_gf_directory_detail_title_'.$value, $entrytitle));
                     							if($entrylightbox || $lightbox && $entrylightbox === '') { 
-													$href = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/entry-details.php?leadid=$value&amp;form={$form['id']}&amp;KeepThis=true&TB_iframe=true&amp;width=600"; $class = ' class="thickbox lightbox"'; 
+													$href = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/entry-details.php?leadid=$value&amp;form={$form['id']}&amp;post={$post->ID}&amp;KeepThis=true&amp;TB_iframe=true&amp;width=600"; $class = ' class="thickbox lightbox"'; 
 												} else {
-													if($wp_rewrite->using_permalinks()) {
+													$multisite = (function_exists('is_multisite') && is_multisite() && $wpdb->blogid == 1);
+													if($wp_rewrite->using_permalinks() && $multisite) {
 														// example.com/example-directory/entry/4/14/
 														$url = parse_url(add_query_arg(array()));
-														$href = trailingslashit($url['path']).'entry/'.$form['id'].'/'.$value.'/';
+														$href = trailingslashit($url['path']).'entry/'.$form['id'].'-'.$value.'/';
 														if(!empty($url['query'])) { $href .= '?'.$url['query']; }
 													} else {
 														// example.com/?page_id=24&leadid=14&form=4
@@ -969,12 +981,15 @@ if(in_array(RG_CURRENT_PAGE, array('post.php', 'page.php', 'page-new.php', 'post
 
 add_filter('get_shortlink', 'kws_gf_directory_shortlink');
 function kws_gf_directory_shortlink($link) {
-	$shortlink = apply_filters('kws_gf_directory_shortlink', true);
-	if($shortlink) {
+	global $post;
+	if(apply_filters('kws_gf_directory_shortlink', true)) {
 		$url = add_query_arg(array());
-		if(preg_match('/entry\/([0-9]+)\/([0-9]+)\/?/ism',$url, $matches)) {
+		if(preg_match('/entry\/([0-9]+)-([0-9]+)\/?/ism',$url, $matches)) {
 			return add_query_arg(array('leadid'=>$matches[2], 'form'=>$matches[1]), $link);
 		} elseif(isset($_REQUEST['leadid']) && isset($_REQUEST['form'])) {
+			if(empty($link)) {
+				$link = $post->guid.'?p='.$post->ID;
+			}
 			return add_query_arg(array('leadid'=>$_REQUEST['leadid'], 'form'=>$_REQUEST['form']), $link);
 		}
 		return $link;
@@ -983,17 +998,17 @@ function kws_gf_directory_shortlink($link) {
 
 add_action('wp_head', 'kws_gf_directory_canonical_add', 1);
 function kws_gf_directory_canonical_add() {
-	$canonical = apply_filters('kws_gf_directory_canonical_add', true);
-	if($canonical) {
+	if(apply_filters('kws_gf_directory_canonical_add', true)) {
 		add_filter('post_link', 'kws_gf_directory_canonical', 1, 3);
 		add_filter('page_link', 'kws_gf_directory_canonical', 1, 3);
 		function kws_gf_directory_canonical($permalink, $sentPost = '', $leavename = '') {
-			global $post;
-			$post->permalink = $permalink;
-			$url = add_query_arg(array());
-			// $post->ID === $sentPost->ID is so that add_query_arg match doesn't apply to other posts; just current
-			if($post->ID === $sentPost->ID && preg_match('/(entry\/(?:[0-9]+)\/(?:[0-9]+)\/?)/ism',$url, $matches)) {
+			global $post; $post->permalink = $permalink; $url = add_query_arg(array());
+			$sentPostID = is_object($sentPost) ? $sentPost->ID : $sentPost;
+			// $post->ID === $sentPostID is so that add_query_arg match doesn't apply to prev/next posts; just current
+			if($post->ID === $sentPostID && preg_match('/(entry\/[0-9]+-[0-9]+\/?)/ism',$url, $matches)) {
 				return trailingslashit($permalink).$matches[0];
+			} elseif($post->ID === $sentPostID && isset($_REQUEST['leadid']) && isset($_REQUEST['form'])) {
+				return add_query_arg(array('leadid' =>$_REQUEST['leadid'], 'form'=>$_REQUEST['form']), trailingslashit($permalink));
 			}
 			return $permalink;
 		}
@@ -1001,27 +1016,32 @@ function kws_gf_directory_canonical_add() {
 }
 
 function kws_gf_process_lead_detail($inline = true, $entryback = '', $showadminonly = false, $adminonlycolumns = array(), $approvedcolumn = null) {
-	global $wp,$post;
+	global $wp,$post,$wp_rewrite,$wpdb;
 	$formid = $leadid = false;
 	
 	if(isset($wp->query_vars['entry'])) {
-		list($formid, $leadid) = explode('/', $wp->query_vars['entry']);
+		list($formid, $leadid) = explode('-', $wp->query_vars['entry']);
 	}
+
 	$formid = isset($_REQUEST['form']) ? (int)$_REQUEST['form'] : $formid;
 	$leadid = isset($_REQUEST['leadid']) ? (int)$_REQUEST['leadid'] : $leadid;
 
 	if($leadid && $formid) {
 		if(!class_exists('GFEntryDetail')) { require_once(GFCommon::get_base_path() . "/entry_detail.php"); }
 		if(!class_exists('GFCommon')) { require_once(WP_PLUGIN_DIR . "/gravityforms/common.php"); }
+		if(!class_exists('RGFormsModel')) { require_once(WP_PLUGIN_DIR . "/gravityforms/forms_model.php"); }
 		
+		$form = RGFormsModel::get_form_meta((int)$formid);
 		$lead = RGFormsModel::get_lead((int)$leadid);
+		
+		if(empty($approvedcolumn)) { $approvedcolumn = kws_gf_get_approved_column($form); }
+		if(empty($adminonlycolumns) && !$showadminonly) { $adminonlycolumns = kws_gf_get_admin_only($form); }
+		
 		if(!$showadminonly)  {
 			$lead = kws_gf_remove_admin_only(array($lead), $adminonlycolumns, $approvedcolumn, true, true);
 			$lead = $lead[0];
 		}
-
-		if(!class_exists('RGFormsModel')) { require_once(WP_PLUGIN_DIR . "/gravityforms/forms_model.php"); }
-		$form = RGFormsModel::get_form_meta((int)$formid);
+		
 		if(!$showadminonly)  {
 			$form['fields'] = kws_gf_remove_admin_only($form['fields'], $adminonlycolumns, $approvedcolumn, false, true);
 		}
@@ -1031,8 +1051,13 @@ function kws_gf_process_lead_detail($inline = true, $entryback = '', $showadmino
 			$content = ob_get_contents(); // Get the output
 		ob_end_clean(); // Clear the cache
 		
-		$url = parse_url(add_query_arg(array(), remove_query_arg('row')));
-		$href = isset($post->permalink) ? $post->permalink : get_permalink(); 
+		$current = remove_query_arg(array('row', 'page_id', 'leadid', 'form'));
+		$url = parse_url(add_query_arg(array(), $current));
+		if(function_exists('is_multisite') && is_multisite() && $wpdb->blogid != 1) {
+			$href = $current;
+		} else {
+			$href = isset($post->permalink) ? $post->permalink : get_permalink();
+		}
 		if(!empty($url['query'])) { $href .= '?'.$url['query']; }
 		if(isset($_REQUEST['row'])) { $href .= '#lead_row_'.$leadid; }
 		$link = apply_filters('kws_gf_directory_backlink', '<p><a href="'.$href.'">'.esc_html($entryback).'</a></p>');
