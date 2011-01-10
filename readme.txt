@@ -127,6 +127,9 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 2.4.2 = 
+* Fixed display of textarea entry data for short content (<a href="http://wordpress.org/support/topic/504755" rel="nofollow">thanks, Tina</a>)
+
 = 2.4.1 =
 * Included entry-details.php file, required for lightbox viewing
 * Fixed issue with single-entry lightbox view - no longer shows admin-only columns if admin-only setting is turned off.
@@ -200,6 +203,9 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.4.2 = 
+* Fixed display of textarea entry data for short content (<a href="http://wordpress.org/support/topic/504755" rel="nofollow">thanks, Tina</a>)
 
 = 2.4.1 =
 * Included entry-details.php file, required for lightbox viewing

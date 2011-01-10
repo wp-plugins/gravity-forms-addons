@@ -1,6 +1,6 @@
 <?php 
 
-// Version: 2.4.1
+// Version: 2.4.2
 
 add_shortcode('directory', 'kws_gf_directory');
 
@@ -322,8 +322,14 @@ function kws_gf_directory($atts) {
                                         case "post_content" :
                                         case "post_excerpt" :
                                             if($fulltext) {
-												$value = get_gf_field_value_long($lead['id'], $field_id);
+												$long_text = "";
+                    							if(strlen($lead[$field_id]) >= GFORMS_MAX_FIELD_LENGTH)
+							                        $long_text = get_gf_field_value_long($lead["id"], $field_id);
+								
+								                $value = !empty($long_text) ? $long_text : $lead[$field_id];
+												
 												if($wpautop) { $value = wpautop($value); };
+												
 											} else {
                                             	$value = esc_html($value);
                                             }
