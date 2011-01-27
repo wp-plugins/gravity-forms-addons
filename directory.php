@@ -1,6 +1,6 @@
 <?php 
 
-// Version: 2.4.2
+// Version: 2.4.3
 
 add_shortcode('directory', 'kws_gf_directory');
 
@@ -668,12 +668,6 @@ function kws_gf_directory($atts) {
 	
 	function kws_gf_get_approved_column($form) {
 		foreach($form['fields'] as $key=>$col) {
-			if(strtolower($col['label']) == 'approved' && $col['type'] == 'checkbox') {
-				return $key;
-			}
-		}
-		
-		foreach($form['fields'] as $key=>$col) {
 			if(is_array($col['inputs'])) {
 				foreach($col['inputs'] as $key2=>$input) {
 					if(strtolower($input['label']) == 'approved' && $col['type'] == 'checkbox' && !empty($col['adminOnly'])) {
@@ -682,7 +676,13 @@ function kws_gf_directory($atts) {
 				}
 			}
 		}
-
+		
+		foreach($form['fields'] as $key=>$col) {
+			if(strtolower($col['label']) == 'approved' && $col['type'] == 'checkbox') {
+				return $key;
+			}
+		}
+		
 		return false;
 	}
 	

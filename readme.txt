@@ -127,6 +127,9 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 2.4.3 = 
+* Should fix issue with Approved checkbox not working in some cases where Admin-Only is enabled. Please report if still having issues.
+
 = 2.4.2 = 
 * Fixed display of textarea entry data for short content (<a href="http://wordpress.org/support/topic/504755" rel="nofollow">thanks, Tina</a>)
 
@@ -203,6 +206,9 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.4.3 = 
+* Should fix issue with Approved checkbox not working in some cases where Admin-Only is enabled. Please report if still having issues.
 
 = 2.4.2 = 
 * Fixed display of textarea entry data for short content (<a href="http://wordpress.org/support/topic/504755" rel="nofollow">thanks, Tina</a>)
