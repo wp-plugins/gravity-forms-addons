@@ -1,7 +1,7 @@
 === Gravity Forms Directory & Addons ===
 Tags: gravity forms, forms, gravity, form, crm, gravity form, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
-Tested up to: 3.0.4
+Tested up to: 3.1
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -59,6 +59,7 @@ This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-w
 2. This plugin adds an Edit link to Gravity Form entries
 3. Insert a directory
 4. How the Gravity Forms widget appears on the widgets page
+5. The Gravity Forms Addons settings page, found in the Forms > Addons menu link
 
 == Frequently Asked Questions == 
 
@@ -126,6 +127,10 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 2.4.4 = 
+* Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality.
+	* Choose to turn off referrer information, directory functionality, the Addons widget, and Gravity Forms backend modifications
 
 = 2.4.3 = 
 * Should fix issue with Approved checkbox not working in some cases where Admin-Only is enabled. Please report if still having issues.
@@ -206,6 +211,9 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.4.4 = 
+* Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality.
 
 = 2.4.3 = 
 * Should fix issue with Approved checkbox not working in some cases where Admin-Only is enabled. Please report if still having issues.

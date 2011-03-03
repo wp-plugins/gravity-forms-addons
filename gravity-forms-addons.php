@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Add directory functionality and improve usability for the great <a href="http://bit.ly/dvF8BI" rel="nofollow">Gravity Forms</a> plugin.
 Author: Katz Web Services, Inc.
-Version: 2.4.3
+Version: 2.4.4
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-
 // Get Gravity Forms over here!
 @include_once(WP_PLUGIN_DIR . "/gravityforms/gravityforms.php");
 @include_once(WP_PLUGIN_DIR . "/gravityforms/forms_model.php");
@@ -32,35 +31,146 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @include_once(WP_PLUGIN_DIR . "/gravityforms/form_display.php"); // 1.3
 
 // If Gravity Forms is installed and exists
-if(class_exists('RGForms') && class_exists('RGFormsModel')) { 
+if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 
-	// Load up the directory functionality
-	@include_once('directory.php');
+	//creates the subnav left menu
+   	add_filter("gform_addon_navigation", 'kws_gf_create_menu');
 	
-	register_activation_hook( __FILE__, 'kws_gf_flush_rules' );
-	register_deactivation_hook( __FILE__, 'kws_gf_flush_rules' );
-	
-	function kws_gf_flush_rules() {
-		global $wp_rewrite;
-		$wp_rewrite->flush_rules();
-		return;
-	}
-	
-	add_action('init', 'kws_gf_add_rewrite');
-	function kws_gf_add_rewrite() {
-		global $wp_rewrite;
-		if(!$wp_rewrite->using_permalinks()) { return; }
-		$wp_rewrite->add_permastruct('entry', '(.+)/entry/%entry%', true);
-		$wp_rewrite->add_endpoint('entry',EP_PERMALINK);
-		$wp_rewrite->flush_rules();
-	}
-	
-	// Load Joost's widget
-	@include_once('gravity-forms-widget.php');
-	
-	// Load Joost's referrer tracker
-	@include_once('gravity-forms-referrer.php');
+	function kws_gf_create_menu() {
+		// Adding submenu if user has access
+        $permission = kws_gf_has_access("gravityforms_addons");
+
+        if(!empty($permission)) {
+            $menus[] = array("name" => "gf_addons", "label" => __("Addons", "gravity-forms-addons"), "callback" =>  "kws_gf_settings_page", "permission" => $permission);
+		}
 		
+        return $menus;
+	}
+	
+	function kws_gf_get_settings() {
+		$settings = get_option("gf_addons_settings");
+        if(!$settings) {
+        	$settings = array(
+        		"directory" => true,
+        		"referrer" => true,
+        		"widget" => true,
+        		"modify_admin" => true
+        	);
+        }
+        return $settings;
+	}
+	
+	function kws_gf_settings_page(){
+
+		if($_POST["gf_addons_submit"]){
+            check_admin_referer("update", "gf_addons_update");
+            $settings = array(
+            	"directory" => isset($_POST["gf_addons_directory"]),
+            	"referrer" => isset($_POST["gf_addons_referrer"]),
+            	"widget" => isset($_POST["gf_addons_widget"]),
+            	"modify_admin" => isset($_POST["gf_addons_modify_admin"]),
+            );
+            update_option("gf_addons_settings", $settings);
+        }
+        
+        $settings = kws_gf_get_settings();
+        
+		?>
+        <form method="post" action="">
+            <?php wp_nonce_field("update", "gf_addons_update") ?>
+            <h3><?php _e("Gravity Forms Addons Settings", "gravity-forms-addons") ?></h3>
+            <p style="text-align: left;">
+                <?php _e('', "gravity-forms-addons") ?>
+            </p>
+
+            <table class="form-table">
+                <tr>
+                    <th scope="row"><label for="gf_addons_directory"><?php _e("Gravity Forms Directory", "gravity-forms-addons"); ?></label> </th>
+                    <td>
+                        <label for="gf_addons_directory" class="howto"><input type="checkbox" id="gf_addons_directory" name="gf_addons_directory" <?php checked($settings["directory"]); ?> /> Turn Gravity Forms into a directory plugin with this awesome functionality.</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="gf_addons_referrer"><?php _e("Add Referrer Data to Emails", "gravity-forms-addons"); ?></label> </th>
+                    <td>
+                        <label for="gf_addons_referrer" class="howto"><input type="checkbox" id="gf_addons_referrer" name="gf_addons_referrer" <?php checked($settings["referrer"]); ?> /> Adds referrer data to entries, including the path the user took to get to the form before submitting.</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="gf_addons_widget"><?php _e("Load Addons Widget", "gravity-forms-addons"); ?></label> </th>
+                    <td>
+                        <label for="gf_addons_widget" class="howto"><input type="checkbox" id="gf_addons_widget" name="gf_addons_widget" <?php checked($settings["widget"]); ?> /> Load the <a href="http://yoast.com/gravity-forms-widget-extras/" rel="nofollow">Gravity Forms Widget from Yoast.com</a></label>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="gf_addons_modify_admin"><?php _e("Modify Gravity Forms Admin", "gravity-forms-addons"); ?></label> </th>
+                    <td>
+                        <label for="gf_addons_modify_admin" class="howto"><input type="checkbox" id="gf_addons_modify_admin" name="gf_addons_modify_admin" <?php checked($settings["modify_admin"]); ?> /> Makes possible direct editing of entries from <a href="<?php echo admin_url('admin.php?page=gf_entries');?>">Entries list view</a>, option to expand all Edit Form fields. </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" ><input type="submit" name="gf_addons_submit" class="button-primary" value="<?php _e("Save Settings", "gravity-forms-addons") ?>" /></td>
+                </tr>
+            </table>
+        </form>
+        <?php
+    }
+	
+	function kws_gf_has_access($required_permission = ''){
+        $has_members_plugin = function_exists('members_get_capabilities');
+        $has_access = $has_members_plugin ? current_user_can($required_permission) : current_user_can("level_7");
+        if($has_access)
+            return $has_members_plugin ? $required_permission : "level_7";
+        else
+            return false;
+    }
+	
+
+	add_action('plugins_loaded', 'kws_gf_load_functionality');
+	
+	function kws_gf_load_functionality() {
+		$settings = kws_gf_get_settings();
+		extract($settings);
+		
+		if($directory) {
+			// Load up the directory functionality
+			@include_once('directory.php');
+			
+			register_activation_hook( __FILE__, 'kws_gf_flush_rules' );
+			register_deactivation_hook( __FILE__, 'kws_gf_flush_rules' );
+			
+			function kws_gf_flush_rules() {
+				global $wp_rewrite;
+				$wp_rewrite->flush_rules();
+				return;
+			}
+			
+			add_action('init', 'kws_gf_add_rewrite');
+			function kws_gf_add_rewrite() {
+				global $wp_rewrite;
+				if(!$wp_rewrite->using_permalinks()) { return; }
+				$wp_rewrite->add_permastruct('entry', '(.+)/entry/%entry%', true);
+				$wp_rewrite->add_endpoint('entry',EP_PERMALINK);
+				$wp_rewrite->flush_rules();
+			}
+		}
+		
+		if($widget) {
+			// Load Joost's widget
+			@include_once('gravity-forms-widget.php');	
+		}
+		
+		if($referrer) {
+			// Load Joost's referrer tracker
+			@include_once('gravity-forms-referrer.php');
+		}
+		
+		if($modify_admin) {
+			add_action('admin_head', 'kws_gf_head',1);
+		}
+	}
+
+	
 	$Forms = new RGForms();  $RG = new RGFormsModel(); 
 	if(class_exists('GFCommon')) { $Common = new GFCommon(); } else { $Common = false; }
 	if(class_exists('GFFormDisplay')) { $FormDisplay = new GFFormDisplay(); } else { $FormDisplay = false; }
@@ -224,8 +334,6 @@ EOD;
 		kws_gf_css();
 		kws_gf_js();
 	}
-	
-	add_action('admin_head', 'kws_gf_head',1);
 	
 	function gf_field_value($leadid, $fieldid) {
 		echo get_gf_field_value($leadid, $fieldid);
