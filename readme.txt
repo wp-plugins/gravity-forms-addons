@@ -129,7 +129,7 @@ To fix this issue, add this to your theme's `functions.php` file:
 == Changelog ==
 
 = 2.4.4 = 
-* Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality.
+* Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality. Access settings either using Forms > Addons link or Forms > Settings > Addons.
 	* Choose to turn off referrer information, directory functionality, the Addons widget, and Gravity Forms backend modifications
 
 = 2.4.3 = 

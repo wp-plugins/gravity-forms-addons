@@ -32,7 +32,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // If Gravity Forms is installed and exists
 if(class_exists('RGForms') && class_exists('RGFormsModel')) {
-
+	
+	$Forms = new RGForms();  $RG = new RGFormsModel(); 
+	if(class_exists('GFCommon')) { $Common = new GFCommon(); } else { $Common = false; }
+	if(class_exists('GFFormDisplay')) { $FormDisplay = new GFFormDisplay(); } else { $FormDisplay = false; }
+	
 	//creates the subnav left menu
    	add_filter("gform_addon_navigation", 'kws_gf_create_menu');
 	
@@ -52,7 +56,7 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
         if(!$settings) {
         	$settings = array(
         		"directory" => true,
-        		"referrer" => true,
+        		"referrer" => false,
         		"widget" => true,
         		"modify_admin" => true
         	);
@@ -99,7 +103,7 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
                 <tr>
                     <th scope="row"><label for="gf_addons_widget"><?php _e("Load Addons Widget", "gravity-forms-addons"); ?></label> </th>
                     <td>
-                        <label for="gf_addons_widget" class="howto"><input type="checkbox" id="gf_addons_widget" name="gf_addons_widget" <?php checked($settings["widget"]); ?> /> Load the <a href="http://yoast.com/gravity-forms-widget-extras/" rel="nofollow">Gravity Forms Widget from Yoast.com</a></label>
+                        <label for="gf_addons_widget" class="howto"><input type="checkbox" id="gf_addons_widget" name="gf_addons_widget" <?php checked($settings["widget"]); ?> /> Load the <a href="http://yoast.com/gravity-forms-widget-extras/" rel="nofollow">Gravity Forms Widget by Yoast</a></label>
                     </td>
                 </tr>
                 <tr>
@@ -132,6 +136,13 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 		$settings = kws_gf_get_settings();
 		extract($settings);
 		
+		
+		// Add menu in GF Settings
+		if(is_admin() && kws_gf_has_access("gravityforms_addons")){
+			global $Forms;
+			$Forms->add_settings_page("Addons", "kws_gf_settings_page");
+    	}
+		
 		if($directory) {
 			// Load up the directory functionality
 			@include_once('directory.php');
@@ -162,7 +173,7 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 		
 		if($referrer) {
 			// Load Joost's referrer tracker
-			@include_once('gravity-forms-referrer.php');
+			@include_once('gravity-forms-referrer.php');	
 		}
 		
 		if($modify_admin) {
@@ -170,10 +181,6 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 		}
 	}
 
-	
-	$Forms = new RGForms();  $RG = new RGFormsModel(); 
-	if(class_exists('GFCommon')) { $Common = new GFCommon(); } else { $Common = false; }
-	if(class_exists('GFFormDisplay')) { $FormDisplay = new GFFormDisplay(); } else { $FormDisplay = false; }
 	
 	function kws_gf_css() {
 		if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'gf_edit_forms' && isset($_REQUEST['id']) && is_numeric($_REQUEST['id'])) {
