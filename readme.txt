@@ -135,6 +135,7 @@ To fix this issue, add this to your theme's `functions.php` file:
 * Added formatting options for directory & entries: display as table (default), list (`<ul>`), or definition list (`<dl>`)
 * Added `kws_gf_directory_defaults` filter to update plugin defaults.
 * Added address formatting using `appendaddress` setting. This will add a column to the output with a combined, formatted address. Use new `hideaddresspieces` setting to turn off the individual address pieces. Instead of having Street, City, State, ZIP, now there's one column "Address"
+* Improved output for `fileupload` files - now able to show as images like with post images.
 * Added `truncatelink` option (explained below)
 * Added URL formatting filters to modify how links are truncated so you can choose to display the anchor text exactly as you want (the URL itself won't change). The link text `http://example.example.choicehotels.com/hotel/tx173` becomes `choicehotels.com`, but will still link to the full URL.
 	- Don't show http(s): `kws_gf_directory_anchor_text_striphttp`

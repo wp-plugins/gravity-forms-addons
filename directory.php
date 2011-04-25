@@ -480,23 +480,26 @@ function kws_gf_directory($atts) {
 												}
 											}
 										break;
-
+										
+										case "fileupload" :
 										case "post_image" :
-											list($url, $title, $caption, $description) = explode("|:|", $value);
+											$valueArray = explode("|:|", $value);
+											@list($url, $title, $caption, $description) = $valueArray;
 											$size = '';
 											if(!empty($url)){
 												//displaying thumbnail (if file is an image) or an icon based on the extension
 												 $icon = kws_gf_get_icon_url($url);
-												 if(!preg_match('/icon\_image\.gif/ism', $icon)) { 
+												 if(!preg_match('/icon\_image\.gif/ism', $icon)) {
 												 	$lightboxclass = '';
-												 	$size = @getimagesize($icon);
+												 	$src = $icon;
+												 	$size = @getimagesize($url);
 												 	$img = "<img src='$src' {$size[3]}/>";
 												 } else { // No thickbox for non-images please
 												 	switch(strtolower(trim($postimage))) {
 												 		case 'image':
 												 			$src = $url;
 												 			break;
-												 		case 'icon' :
+												 		case 'icon':
 												 		default:
 												 			$src = $icon;
 												 			break;
@@ -509,21 +512,11 @@ function kws_gf_directory($atts) {
 												 	'title' => $title,
 												 	'caption' => $caption,
 												 	'description' => $description,
-												 	'url' => $url,
+												 	'url' => esc_attr($url),
 												 	'code' => "<img src='$src' {$size[3]} />"
 												 );
 												 $img = apply_filters('kws_gf_directory_lead_image', apply_filters('kws_gf_directory_lead_image_'.$postimage, apply_filters('kws_gf_directory_lead_image_'.$lead['id'], $img)));
 												 $value = "<a href='$url'$target$lightboxclass>{$img['code']}</a>";
-											}
-										break;
-
-										case "fileupload" :
-											$file_path = $value;
-											if(!empty($file_path)){
-												//displaying thumbnail (if file is an image) or an icon based on the extension
-												 $thumb = kws_gf_get_icon_url($file_path);
-												 $file_path = esc_attr($file_path);
-												 $value = "<a href='$file_path'$target$nofollow$lightboxclass><img src='$thumb'/></a>";
 											}
 										break;
 
