@@ -1,13 +1,68 @@
 <?php 
 
-function kws_print_r($content) {
-	echo '<pre>'.print_r($content, true).'</pre>';
-	return $content;
+// Version: 2.5
+add_shortcode('directory', 'kws_gf_directory');
+
+function kws_gf_directory_defaults() {
+	$defaults = array(
+			'form' => 1, // Gravity Forms form ID
+			'approved' => false, // Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved' 
+			'directoryview' => 'table', // Table, list or DL
+			'entryview' => 'table', // Table, list or DL
+			'hovertitle' => true, // Show column name as user hovers over cell
+			'tableclass' => 'gf_directory widefat fixed', // Class for the <table>
+			'tablestyle' => '', // inline CSS for the <table>
+			'rowclass' => '', // Class for the <table>
+			'rowstyle' => '', // inline CSS for all <tbody><tr>'s
+			'valign' => 'baseline',
+			'sort' => 'date_created', // Use the input ID ( example: 1.3 or 7 or ip )
+			'dir' => 'DESC',
+			'wpautop' => true, // Convert bulk paragraph text to...paragraphs
+			'page_size' => 20, // Number of entries to show at once
+			'startpage' => 1, // If you want to show page 8 instead of 1
+			'lightbox' => true, // Do you want your image uploads to be lightboxed?
+			'showcount' => true, // Do you want to show "Displaying 1-19 of 19"?
+			'pagelinksshowall' => true, // Whether to show each page number, or just 7
+			'pagelinkstype' => 'plain', // 'plain' is just a string with the links separated by a newline character. The other possible values are either 'array' or 'list'. 
+			'showrowids' => true, // Whether or not to show the row ids, which are the entry IDs.
+			'fulltext' => true, // If there's a textarea or post content field, show the full content or a summary?
+			'linkemail' => true, // Convert email fields to email mailto: links
+			'linkwebsite' => true, // Convert URLs to links
+			'linknewwindow' => false, // Open links in new window? (uses target="_blank")
+			'nofollowlinks' => false, // Add nofollow to all links, including emails
+			'icon' => false, // show the GF icon as it does in admin?
+			'titleshow' => true, // Show a form title? By default, the title will be the form title.
+			'titleprefix' => 'Entries for ', // Default GF behavior is 'Entries : '
+			'tablewidth' => '100%', // 'width' attribute for the table
+			'searchtabindex' => false, // adds tabindex="" to the search field
+			'search' => true, // show the search field
+			'tfoot' => true, // show the <tfoot>
+			'thead' => true, // show the <thead>
+			'showadminonly' => false, // Admin only columns aren't shown by default, but can be (added 2.0.1)
+			'datecreatedformat' => get_option('date_format').' \a\t '.get_option('time_format'), // Use standard PHP date formats (http://php.net/manual/en/function.date.php)
+			'dateformat' => false, // Override the options from Gravity Forms, and use standard PHP date formats (http://php.net/manual/en/function.date.php)
+			'postimage' => 'icon', // Whether to show icon, thumbnail, or large image
+			'entry' => true, // If there's an Entry ID column, link to the full entry
+			'entrylightbox' => false,
+			'entrylink' => 'View entry details',
+			'entryth' => 'More Info',
+			'entryback' => '&larr; Back to directory',
+			'entryonly' => true,
+			'entrytitle' => 'Entry Detail',
+			'entryanchor' => true,
+			'truncatelink' => false,
+			'appendaddress' => false,
+			'hideaddresspieces' => false
+		);
+	return apply_filters('kws_gf_directory_defaults', $defaults);
 }
-#add_filter('kws_gf_directory_detail', 'kws_gf_convert_to_ul', 1, 2);
-#add_filter('kws_gf_directory_output', 'kws_gf_convert_to_ul', 1, 2);
-#add_filter('kws_gf_directory_detail', 'kws_gf_convert_to_dl', 1, 2);
-#add_filter('kws_gf_directory_output', 'kws_gf_convert_to_dl', 1, 2);
+
+if(!function_exists('kws_print_r')) {
+	function kws_print_r($content) {
+		echo '<pre>'.print_r($content, true).'</pre>';
+		return $content;
+	}
+}
 
 function kws_gf_pseudo_filter($content = null, $type = 'table', $single = false) {
 	switch($type) {
@@ -25,11 +80,9 @@ function kws_gf_pseudo_filter($content = null, $type = 'table', $single = false)
 }
 
 function kws_gf_convert_to_ul($content = null, $singleUL = false) {
-	#echo $content;
+
 	$strongHeader = apply_filters('kws_gf_convert_to_ul_strong_header', 1);
 	
-#	$content = preg_replace("/\ \ /ism"," ", $content);
-
 	// Directory View
 	if(!$singleUL) { 
 		$content = preg_replace("/<table([^>]*)>/ism","<ul$1>", $content);
@@ -89,70 +142,13 @@ function kws_gf_convert_to_dl($content) {
 	return $output;
 }
 
-// Version: 2.5
-add_shortcode('directory', 'kws_gf_directory');
-
-function kws_gf_directory_defaults() {
-	$defaults = array(
-			'form' => 1, // Gravity Forms form ID
-			'approved' => false, // Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved' 
-			'directoryview' => 'table', // Table, list or DL
-			'entryview' => 'table', // Table, list or DL
-			'hovertitle' => true, // Show column name as user hovers over cell
-			'tableclass' => 'gf_directory widefat fixed', // Class for the <table>
-			'tablestyle' => '', // inline CSS for the <table>
-			'rowclass' => '', // Class for the <table>
-			'rowstyle' => '', // inline CSS for all <tbody><tr>'s
-			'valign' => 'baseline',
-			'sort' => 'date_created', // Use the input ID ( example: 1.3 or 7 or ip )
-			'dir' => 'DESC',
-			'wpautop' => true, // Convert bulk paragraph text to...paragraphs
-			'page_size' => 20, // Number of entries to show at once
-			'startpage' => 1, // If you want to show page 8 instead of 1
-			'lightbox' => true, // Do you want your image uploads to be lightboxed?
-			'showcount' => true, // Do you want to show "Displaying 1-19 of 19"?
-			'pagelinksshowall' => true, // Whether to show each page number, or just 7
-			'pagelinkstype' => 'plain', // 'plain' is just a string with the links separated by a newline character. The other possible values are either 'array' or 'list'. 
-			'showrowids' => true, // Whether or not to show the row ids, which are the entry IDs.
-			'fulltext' => true, // If there's a textarea or post content field, show the full content or a summary?
-			'linkemail' => true, // Convert email fields to email mailto: links
-			'linkwebsite' => true, // Convert URLs to links
-			'linknewwindow' => false, // Open links in new window? (uses target="_blank")
-			'nofollowlinks' => false, // Add nofollow to all links, including emails
-			'icon' => false, // show the GF icon as it does in admin?
-			'titleshow' => true, // Show a form title? By default, the title will be the form title.
-			'titleprefix' => 'Entries for ', // Default GF behavior is 'Entries : '
-			'tablewidth' => '100%', // 'width' attribute for the table
-			'searchtabindex' => false, // adds tabindex="" to the search field
-			'search' => true, // show the search field
-			'tfoot' => true, // show the <tfoot>
-			'thead' => true, // show the <thead>
-			'showadminonly' => false, // Admin only columns aren't shown by default, but can be (added 2.0.1)
-			'datecreatedformat' => get_option('date_format').' \a\t '.get_option('time_format'), // Use standard PHP date formats (http://php.net/manual/en/function.date.php)
-			'dateformat' => false, // Override the options from Gravity Forms, and use standard PHP date formats (http://php.net/manual/en/function.date.php)
-			'postimage' => 'icon', // Whether to show icon, thumbnail, or large image
-			'entry' => true, // If there's an Entry ID column, link to the full entry
-			'entrylightbox' => false,
-			'entrylink' => 'View entry details',
-			'entryth' => 'More Info',
-			'entryback' => '&larr; Back to directory',
-			'entryonly' => true,
-			'entrytitle' => 'Entry Detail',
-			'entryanchor' => true,
-			'truncatelink' => false,
-			'appendaddress' => false,
-			'hideaddresspieces' => false
-		);
-	return apply_filters('kws_gf_directory_defaults', $defaults);
-}
-
 // Add this filter so it can be removed or overridden by users
-add_filter('kws_gf_directory_td_address', 'kws_gf_format_address');
+add_filter('kws_gf_directory_td_address', 'kws_gf_format_address', 1, 2);
 
 function kws_gf_prep_address_field($field) {
 	return !empty($field) ? trim($field) : '';
 }
-function kws_gf_format_address($address = array()) {
+function kws_gf_format_address($address = array(), $linknewwindow = false) {
 	$address_field_id = @kws_gf_prep_address_field($address['id']);
 	$street_value = @kws_gf_prep_address_field($address[$address_field_id . ".1"]);
 	$street2_value = @kws_gf_prep_address_field($address[$address_field_id . ".2"]);
@@ -172,7 +168,8 @@ function kws_gf_format_address($address = array()) {
 	if(!empty($address) && apply_filters('kws_gf_directory_td_address_map', 1)) {
 		$address_qs = str_replace("<br />", " ", $address); //replacing <br/> with spaces
 		$address_qs = urlencode($address_qs);
-		$address .= "<br/><a href='http://maps.google.com/maps?q=$address_qs' target='_blank' class='map-it-link'>Map It</a>";
+		$target = ''; if($linknewwindow) { $target = ' target="_blank"'; }
+		$address .= "<br/>".apply_filters('kws_gf_directory_map_link', "<a href='http://maps.google.com/maps?q=$address_qs'".$target." class='map-it-link'>".__('Map It')."</a>");
 	}
 	return $address;
 }
@@ -231,7 +228,7 @@ function kws_gf_directory($atts) {
 		$form = RGFormsModel::get_form_meta($form_id);
 		$link_params = array();
 		if(!empty($page_index)) { $link_params['page'] = $page_index; }
-		$formaction = remove_query_arg(array('gf_search','sort','dir'), add_query_arg($link_params));
+		$formaction = remove_query_arg(array('gf_search','sort','dir', 'page'), add_query_arg($link_params));
 		if($titleshow === true) { $title = $form["title"]; }
 		$sort_field_meta = RGFormsModel::get_field($form, $sort_field);
 		$is_numeric = $sort_field_meta["type"] == "number";
@@ -252,7 +249,6 @@ function kws_gf_directory($atts) {
 		} else{
 			$approvedleads = sizeof($leads);
 		}
-		#kws_print_r($leads);
 /*
 		// Todo: Fix page size when approved entries are turned on
 		if($approved) {
@@ -338,22 +334,10 @@ function kws_gf_directory($atts) {
 				if(not_empty(sort_field_id)) { var sort = "&sort=" + sort_field_id; } else {  var sort = ''; }
 				if(not_empty(sort_direction)) { var dir = "&dir=" + sort_direction; } else {  var dir = ''; }
 				var page = '<?php if($wp_rewrite->using_permalinks()) { echo '?'; } else { echo '&'; } ?>page='+<?php echo isset($_GET['page']) ? intval($_GET['page']) : '"1"'; ?>;
-				var location = "<?php echo remove_query_arg(array('gf_search','sort','dir'), add_query_arg(array())); ?>"+page+search+sort+dir;
+				var location = "<?php echo remove_query_arg(array('gf_search','sort','dir', 'page'), add_query_arg(array())); ?>"+page+search+sort+dir;
 				document.location = location;
 			}
 
-		<?php if($search) { ?>
-			jQuery(document).ready(function(){
-				jQuery("#lead_form").submit(function(event){
-					event.preventDefault();
-					Search(jQuery('#lead_search').val());
-					return false;
-				});
-
-				jQuery("#lead_form").attr('action', "<?php echo $formaction; ?>");
-
-			});
-		<?php } ?>
 		</script>
 		<link rel="stylesheet" href="<?php echo GFCommon::get_base_url() ?>/css/admin.css" type="text/css" />
 
@@ -430,7 +414,6 @@ function kws_gf_directory($atts) {
 				<?php } ?>
 				<tbody class="list:user user-list">
 					<?php
-					#kws_print_r($leads);
 					if(sizeof($leads) > 0 && $lead_count > 0){
 					
 						$field_ids = array_keys($columns);
@@ -445,7 +428,7 @@ function kws_gf_directory($atts) {
 #							 if(in_array(key() $adminonlycolumns )
 							
 							if($leadapproved && $approved || !$approved) {
-								$target = ''; if($linknewwindow) { $target = ' target="_blank"'; }
+								$target = ''; if($linknewwindow && !$lightbox) { $target = ' target="_blank"'; }
 								$valignattr = ''; if($valign && $directoryview == 'table') { $valignattr = ' valign="'.$valign.'"'; } 
 								$lightboxclass = ''; if($lightbox) { $lightboxclass = '	 class="thickbox"'; }
 								$nofollow = ''; if($nofollowlinks) { $nofollow = ' rel="nofollow"'; }
@@ -607,8 +590,6 @@ function kws_gf_directory($atts) {
 									}
 									if($is_first_column) { echo "\n"; }
 									if($value !== NULL) {
-#								kws_print_r($columns);
-#								kws_print_r($field_ids);
 										
 										if(isset($columns["{$field_id}"]['label']) && $hovertitle || $directoryview !== 'table') {
 											$celltitle = ' title="'.esc_html(apply_filters('kws_gf_directory_th', apply_filters('kws_gf_directory_th_'.$field_id, apply_filters('kws_gf_directory_th_'.sanitize_title($label), $columns["{$field_id}"]['label'])))).'"';
@@ -629,7 +610,7 @@ function kws_gf_directory($atts) {
 								}
 								
 								if(is_array($address) && !empty($address) && $appendaddress) {
-									$address = apply_filters('kws_gf_directory_td_address', $address);
+									$address = apply_filters('kws_gf_directory_td_address', $address, $linknewwindow);
 									if(!is_array($address)) {
 										echo "\t\t\t\t\t\t\t".'<td class="address" title="'.esc_html(apply_filters('kws_gf_directory_th', apply_filters('kws_gf_directory_th_address', 'Address'))).'">'.$address.'</td>';
 									}
@@ -1101,6 +1082,7 @@ function kws_gf_make_field($type, $id, $default, $label) {
 			$output .= '">'.$label.'</label>'."\n";
 	} elseif($type == 'radio') {
 		if(is_array($default)) {
+			$output .= '<em>'.$label.'</em>';
 			foreach($default as $opt) {
 				if(!empty($opt['default'])) { $checked = ' checked="checked"'; } else { $checked = ''; }
 				$id_opt = $id.'_'.sanitize_title($opt['value']);
@@ -1110,7 +1092,7 @@ function kws_gf_make_field($type, $id, $default, $label) {
 	} elseif($type == 'select') {
 		if(is_array($default)) {
 			$output .= '
-			<label for="'.$id.'">
+			<label for="'.$id.'">'.$label.'
 			<select name="'.$id.'" id="'.$id.'">';
 			foreach($default as $opt) {
 				if(!empty($opt['default'])) { $checked = ' selected="selected"'; } else { $checked = ''; }
@@ -1118,7 +1100,7 @@ function kws_gf_make_field($type, $id, $default, $label) {
 				$output .= '<option'.$checked.' value="'.$opt['value'].'"> '.$opt['label'].'</option>'."\n";	
 			}
 			$output .= '</select>
-			'.$label.'</label>
+			</label>
 			';
 		} else {
 			$output = '';
@@ -1191,30 +1173,44 @@ function kws_gf_make_popup_options($js = false) {
 		}
 	}
 		
-		$advanced = array(	  
-				 array('checkbox', 'approved' , false, "Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved')"),
-				 array('checkbox', 'showadminonly', false, "Show admin only columns (the Approved column can always be shown, if desired.)"),
-				array('checkbox', 'wpautop' , true, "Convert bulk paragraph text to...paragraphs"),
-				array('checkbox', 'lightbox' , true, "Do you want your image uploads to be lightboxed?"),
+		$content = array(
+				array('checkbox', 'wpautop' , true, "Convert bulk paragraph text to paragraphs (using the WordPress function <code><a href='http://codex.wordpress.org/Function_Reference/wpautop'>wpautop()</a></code>)"),
+				array('checkbox', 'lightbox' , true, "Show images in a lightbox (this window is a \"lightbox\")"),
 				array('radio'	, 'postimage' , array(array('label' =>'<img src="'.GFCommon::get_base_url().'/images/doctypes/icon_image.gif" /> Show image icon', 'value'=>'icon', 'default'=>'1'), array('label' =>'Show full image', 'value'=>'image')), "How do you want images to appear in the directory?"),
-				array('checkbox', 'showcount' , true, "Do you want to show 'Displaying 1-19 of 19'?"),
-				array('checkbox', 'pagelinksshowall' , true, "Whether to show each page number, or just 7"),
-				array('checkbox', 'showrowids' , true, "Whether or not to show the row ids, which are the entry IDs."),
-				array('checkbox', 'fulltext' , true, "If there's a textarea or post content field, show the full content?"),
-				array('checkbox', 'linkemail' , true, "Convert email fields to email mailto: links"),
-				array('checkbox', 'linkwebsite' , true, "Convert URLs to links"),
-				array('checkbox', 'linknewwindow' , false, "Open links in new window? (uses target='_blank')"),
-				array('checkbox', 'nofollowlinks' , false, "Add nofollow to all links, including emails"),
-				array('checkbox', 'icon' , false, "Show the GF icon as it does in admin?"),
-				array('checkbox', 'titleshow' , true, "Show a form title? By default, the title will be the form title."),
-				array('checkbox', 'searchtabindex' , false, "Adds tabindex='' to the search field"),
-				array('checkbox', 'tfoot' , true, "Show the <tfoot>"),
-				array('checkbox', 'thead' , true, "Show the <thead>"),
-				array('checkbox', 'dateformat', false, "Override the options from Gravity Forms, and use standard PHP date formats"),
-				array('checkbox', 'truncatelink', false, "Show more simple links for URLs (strip <code>http://</code>, <code>www.</code>, etc.)"),	#'truncatelink' => false,
-				array('checkbox', 'appendaddress' , false, "Add the formatted address as a column at the end of the table"),
-				array('checkbox', 'hideaddresspieces' , false, "Hide the pieces that make up an address (Street, City, State, ZIP, Country, etc.)")
+				array('checkbox', 'fulltext' , true, "Show full content of a textarea or post content field, rather than an excerpt"),
+				
 		);
+		
+		$administration = array(
+			array('checkbox', 'approved' , false, "Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved')"),
+			array('checkbox', 'showadminonly', false, "Show admin only columns (the Approved column can always be shown, if desired.)"),
+		);	
+		
+		$formatting = array( 
+			array('checkbox', 'titleshow' , true, "<strong>Show a form title?</strong> By default, the title will be the form title."),
+			array('checkbox', 'showcount' , true, "Do you want to show 'Displaying 1-19 of 19'?"),
+			array('checkbox', 'thead' , true, "Show the top heading row (<code>&lt;thead&gt;</code>)"),
+			array('checkbox', 'tfoot' , true, "Show the bottom heading row (<code>&lt;tfoot&gt;</code>)"),
+			array('checkbox', 'pagelinksshowall' , true, "Show each page number (otherwise, only 7 are shown)"),
+			array('checkbox', 'showrowids' , true, "Show the row ids, which are the entry IDs, in the HTML; eg: <code>&lt;tr id=&quot;lead_row_565&quot;&gt;</code>"),
+			array('checkbox', 'icon' , false, "Show the GF icon as it does in admin? <img src=\"". GFCommon::get_base_url()."/images/gravity-title-icon-32.png\" width=\"16\" height=\"16\" />"),
+			array('checkbox', 'searchtabindex' , false, "Adds tabindex='' to the search field"),
+			array('checkbox', 'dateformat', false, "Override the options from Gravity Forms, and use standard PHP date formats"),
+		);
+				
+		$links = array( 
+			array('checkbox', 'linkemail' , true, "Convert email fields to email links"),
+			array('checkbox', 'linkwebsite' , true, "Convert URLs to links"),
+			array('checkbox', 'truncatelink', false, "Show more simple links for URLs (strip <code>http://</code>, <code>www.</code>, etc.)"),	#'truncatelink' => false,
+			array('checkbox', 'linknewwindow' , false, "<strong>Open links in new window?</strong> (uses <code>target='_blank'</code>)"),
+			array('checkbox', 'nofollowlinks' , false, "<strong>Add <code>nofollow</code> to all links</strong>, including emails"),
+		);
+				
+		$address = array(
+			array('checkbox', 'appendaddress' , false, "Add the formatted address as a column at the end of the table"),
+			array('checkbox', 'hideaddresspieces' , false, "Hide the pieces that make up an address (Street, City, State, ZIP, Country, etc.)")
+		);
+		
 		$entry = array(
 			array('checkbox', 'entry', true, "If there's a displayed Entry ID column, add link to each full entry"),
 			array('checkbox', 'entrylightbox', false, "Open entry details in lightbox (defaults to lightbox settings)"),
@@ -1226,12 +1222,13 @@ function kws_gf_make_popup_options($js = false) {
 			array('checkbox', 'entryanchor', true, "When returning to directory view from single entry, link to specific anchor row?"),
 		);
 	
+	$fieldsets = array('Content Settings' => $content, 'Administration of Entries'=>$administration,'Formatting Options'=>$formatting,'Link Settings'=>$links,'Address Options'=>$address);
+	
 	if(!$js) {
 		echo '<a href="#kws_gf_advanced_settings" class="kws_gf_advanced_settings">Show advanced settings</a>';
 		echo '<div style="display:none;" id="kws_gf_advanced_settings">';
-		echo "<fieldset><legend style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em; padding:.5em 0;'>Advanced Settings</legend>";
-		echo "<h3 style='padding-top:1em; margin:0;'>Single Entry View</h3>";
-		echo '<p class="howto">These settings control whether users can view each entry as a separate page or lightbox. Single entries will show all data associated with that entry.</p>';
+		echo "<h2 style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em;'>Single-Entry View</h2>";
+		echo '<span class="howto">These settings control whether users can view each entry as a separate page or lightbox. Single entries will show all data associated with that entry.</span>';
 		echo '<ul style="padding:0 15px 0 15px; width:100%;">';
 		foreach($entry as $o) {
 			if(isset($o[3])) { $o3 = esc_html($o[3]); } else { $o3 = '';}
@@ -1239,13 +1236,19 @@ function kws_gf_make_popup_options($js = false) {
 		}
 		echo '</ul>';
 		echo '<hr style="margin-top:1em; display:block; border:none; outline:none; border-bottom:1px solid #ccc;" />';
-		echo "<h3 style='padding-top:1em; margin:0;'>Checkboxes Galore</h3>";
-		echo '<ul style="padding: 0 15px 0 15px; width:100%;">'; 		 
-		foreach($advanced as $o) {
-			kws_gf_make_field($o[0], $o[1], maybe_serialize($o[2]), esc_html($o[3]));
+		
+		echo "<h2 style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em;'>Directory View</h2>";
+		echo '<span class="howto">These settings affect how multiple entries are shown at once.</span>';
+		
+		foreach($fieldsets as $title => $fieldset) {
+			echo "<fieldset><legend><h3 style='padding-top:1em; padding-bottom:.5em; margin:0;'>{$title}</h3></legend>";
+			echo '<ul style="padding: 0 15px 0 15px; width:100%;">'; 		 
+			foreach($fieldset as $o) {
+				kws_gf_make_field($o[0], $o[1], maybe_serialize($o[2]), $o[3]);
+			}
+			echo '</ul></fieldset>';
+			echo '<hr style="margin-top:1em; display:block; border:none; outline:none; border-bottom:1px solid #ccc;" />';
 		}
-		echo '</ul>';
-		echo '<hr style="margin-top:1em; display:block; border:none; outline:none; border-bottom:1px solid #ccc;" />';
 		echo "<h3 style='padding-top:1em; margin:0;'>Text Inputs Galore</h3>";
 		echo '<ul style="padding: 0 15px 0 15px; width:100%;">';
 	} else {
@@ -1253,13 +1256,15 @@ function kws_gf_make_popup_options($js = false) {
 			$out[$i] = kws_gf_make_popup_js($o[0], $o[1]);
 			$i++;
 		}
-		foreach($advanced as $o) {
-			$out[$i] = kws_gf_make_popup_js($o[0], $o[1]);
-			$i++;
+		foreach($fieldsets as $title => $fieldset) {
+			foreach($fieldset as $o) {
+				$out[$i] = kws_gf_make_popup_js($o[0], $o[1]);
+				$i++;
+			}
 		}
 	}
 		$advanced = array(
-				 array('text','tableclass', 'gf_directory widefat fixed', "Class for the <table>"),
+				array('text','tableclass', 'gf_directory widefat fixed', "Class for the <table>"),
 				array('text','tablestyle', '', "inline CSS for the <table>"),
 				array('text','rowclass', '', "Class for the <table>"),
 				array('text','rowstyle', '', "Inline CSS for all <tbody><tr>'s"),
