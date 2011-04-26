@@ -19,8 +19,7 @@ function show_table() {
 			echo "<div class='wrap' style='padding:1.25em .5em'>".apply_filters('kws_gf_directory_detail', apply_filters('kws_gf_directory_detail_'.(int)$_REQUEST['leadid'], kws_gf_process_lead_detail(false, '', apply_filters('kws_gf_directory_showadminonly_lightbox', apply_filters('kws_gf_directory_showadminonly_lightbox_'.$_REQUEST['form'], $transient)))))."</div>";
 	}
 }
-#iframe_header();
-#echo show_table();
+
 wp_iframe('show_table');
-#iframe_footer();
+
 ?>
