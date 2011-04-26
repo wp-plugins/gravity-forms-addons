@@ -1182,8 +1182,8 @@ function kws_gf_make_popup_options($js = false) {
 		);
 		
 		$administration = array(
-			array('checkbox', 'approved' , false, "Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved')"),
-			array('checkbox', 'showadminonly', false, "Show admin only columns (the Approved column can always be shown, if desired.)"),
+			array('checkbox', 'approved' , false, "Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved'). <span class='description'><strong>Note:</strong> This will hide entries that have not been explicitly approved.</span>"),
+			array('checkbox', 'showadminonly', false, "Show Admin-Only columns <span class='description'>(in Gravity Forms, Admin-Only fields are defined by clicking the Advanced tab on a field in the Edit Form view, then editing Visibility > Admin Only)</span>"),
 		);	
 		
 		$formatting = array( 
@@ -1193,8 +1193,8 @@ function kws_gf_make_popup_options($js = false) {
 			array('checkbox', 'tfoot' , true, "Show the bottom heading row (<code>&lt;tfoot&gt;</code>)"),
 			array('checkbox', 'pagelinksshowall' , true, "Show each page number (otherwise, only 7 are shown)"),
 			array('checkbox', 'showrowids' , true, "Show the row ids, which are the entry IDs, in the HTML; eg: <code>&lt;tr id=&quot;lead_row_565&quot;&gt;</code>"),
-			array('checkbox', 'icon' , false, "Show the GF icon as it does in admin? <img src=\"". GFCommon::get_base_url()."/images/gravity-title-icon-32.png\" width=\"16\" height=\"16\" />"),
-			array('checkbox', 'searchtabindex' , false, "Adds tabindex='' to the search field"),
+	#		array('checkbox', 'icon' , false, "Show the GF icon as it does in admin? <img src=\"". GFCommon::get_base_url()."/images/gravity-title-icon-32.png\" />"),
+	#		array('checkbox', 'searchtabindex' , false, "Adds tabindex='' to the search field"),
 			array('checkbox', 'dateformat', false, "Override the options from Gravity Forms, and use standard PHP date formats"),
 		);
 				
@@ -1249,7 +1249,8 @@ function kws_gf_make_popup_options($js = false) {
 			echo '</ul></fieldset>';
 			echo '<hr style="margin-top:1em; display:block; border:none; outline:none; border-bottom:1px solid #ccc;" />';
 		}
-		echo "<h3 style='padding-top:1em; margin:0;'>Text Inputs Galore</h3>";
+		echo "<h2 style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em;'>Additional Settings</h2>";
+		echo '<span class="howto">These settings affect both the directory view and single entry view.</span>';
 		echo '<ul style="padding: 0 15px 0 15px; width:100%;">';
 	} else {
 		foreach($entry as $o) {
