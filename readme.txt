@@ -148,6 +148,8 @@ To fix this issue, add this to your theme's `functions.php` file:
 * Fixed issue with malformed pagination link URLs
 * Improved "Expand All Menus" checkbox layout
 * Discovered an issue: pagination on approved-only entries doesn't work well. To compensate, you could set your page size to a large number that contains all the entries. This likely will not be fixed soon.
+* Fixed search behavior with pagination (a new search will always go to page 1)
+* Improved the grouping of the directory insert options (still a jumble, but better)
 
 = 2.4.4 = 
 * Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality. Access settings either using Forms > Addons link or Forms > Settings > Addons.
