@@ -4,8 +4,8 @@ function kws_print_r($content) {
 	echo '<pre>'.print_r($content, true).'</pre>';
 	return $content;
 }
-add_filter('kws_gf_directory_detail', 'kws_gf_convert_to_ul', 1, 2);
-add_filter('kws_gf_directory_output', 'kws_gf_convert_to_ul', 1, 2);
+#add_filter('kws_gf_directory_detail', 'kws_gf_convert_to_ul', 1, 2);
+#add_filter('kws_gf_directory_output', 'kws_gf_convert_to_ul', 1, 2);
 #add_filter('kws_gf_directory_detail', 'kws_gf_convert_to_dl', 1, 2);
 #add_filter('kws_gf_directory_output', 'kws_gf_convert_to_dl', 1, 2);
 
@@ -17,7 +17,6 @@ function kws_gf_pseudo_filter($content = null, $type = 'table', $single = false)
 		case 'ul':
 			$content = kws_gf_convert_to_ul($content, $single);
 			break;	
-		case 'table':
 		case 'dl':
 			$content = kws_gf_convert_to_dl($content, $single);
 			break;
