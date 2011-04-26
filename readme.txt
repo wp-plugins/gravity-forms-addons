@@ -1,7 +1,7 @@
 === Gravity Forms Directory & Addons ===
 Tags: gravity forms, forms, gravity, form, crm, gravity form, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
-Tested up to: 3.1
+Tested up to: 3.1.1
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -24,13 +24,14 @@ Gravity Forms is already the easiest form plugin - its functionality makes WordP
 * Easily re-organize the columns inside Gravity Forms
 * Has an option to <strong>show only approved listings</strong>
 * Show or hide any column
+* Display directory & entries as a table (default), list (`<ul>`), or definition list (`<dl>`)
 * Directory features pagination
 * Define custom styles inside the shortcode
 * Includes lightbox support for uploaded images
 * Option to __view single entries__ in their own page or in a lightbox
 
 ####Insert a totally configurable table using the editor
-There are over 30 configurable options for how you want the directory to display. 
+There are over 30 configurable options for how you want the directory to display.
 
 ###Improve Gravity Forms Functionality and Usability
 
@@ -86,6 +87,7 @@ If you want to modify the output of the plugin, you can do so by adding code to 
 <h3>Plugin filters</h3>
 
 - `kws_gf_directory_output`, `kws_gf_directory_output_'.$form_id` - Modify output for all directories or just a single directory, by ID
+- `kws_gf_directory_detail`, `kws_gf_directory_detail_'.$lead_id` - Modify output for single entries
 - `kws_gf_directory_value`, `kws_gf_directory_value_'.$input_type`, `kws_gf_directory_value_'.$field_id` - Modify output for fields in general, or based on type (`text`, `date`, `textarea`, etc...), or based on field id.
 - `kws_gf_directory_th`, `kws_gf_directory_th_'.$field_id`, `kws_gf_directory_th_'.sanitize_title($label)` - Modify the `<th>` names en masse, by field ID, or by field name (lowercase like a slug)
 - `kws_gf_directory_lead_image`, `kws_gf_directory_lead_image_icon`, `kws_gf_directory_lead_image_image`, `kws_gf_directory_lead_image_'.$lead_id`
@@ -127,6 +129,27 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 2.5 = 
+* Improved directory shortcode insertion by checking values against defaults; now inserts into code only non-default items (the default shortcode is now 20 characters instead of 815!)
+* Added formatting options for directory & entries: display as table (default), list (`<ul>`), or definition list (`<dl>`)
+* Added `kws_gf_directory_defaults` filter to update plugin defaults.
+* Added address formatting using `appendaddress` setting. This will add a column to the output with a combined, formatted address. Use new `hideaddresspieces` setting to turn off the individual address pieces. Instead of having Street, City, State, ZIP, now there's one column "Address"
+* Improved output for `fileupload` files - now able to show as images like with post images.
+* Added `truncatelink` option (explained below)
+* Added URL formatting filters to modify how links are truncated so you can choose to display the anchor text exactly as you want (the URL itself won't change). The link text `http://example.example.choicehotels.com/hotel/tx173` becomes `choicehotels.com`, but will still link to the full URL.
+	- Don't show http(s): `kws_gf_directory_anchor_text_striphttp`
+	- Strip www: `kws_gf_directory_anchor_text_stripwww`
+	- Show root only, not the linked to page (`example.com/inner-page/` becomes `example.com`): `kws_gf_directory_anchor_text_rootonly`
+	- Strip all subdomains, including www: `kws_gf_directory_anchor_text_nosubdomain`
+	- Hide "query strings" (`example.com?search=example&action=search` becomes `example.com`): `kws_gf_directory_anchor_text_noquerystring`
+* Submit a form using the keyboard, not just clicking the button
+* Added filter to change directory pagination settings (results page links): `kws_gf_results_pagination`
+* Fixed issue with malformed pagination link URLs
+* Improved "Expand All Menus" checkbox layout
+* Discovered an issue: pagination on approved-only entries doesn't work well. To compensate, you could set your page size to a large number that contains all the entries. This likely will not be fixed soon.
+* Fixed search behavior with pagination (a new search will always go to page 1)
+* Improved the grouping of the directory insert options (still a jumble, but better)
 
 = 2.4.4 = 
 * Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality. Access settings either using Forms > Addons link or Forms > Settings > Addons.

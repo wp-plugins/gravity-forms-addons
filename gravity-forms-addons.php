@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Add directory functionality and improve usability for the great <a href="http://bit.ly/dvF8BI" rel="nofollow">Gravity Forms</a> plugin.
 Author: Katz Web Services, Inc.
-Version: 2.4.4
+Version: 2.5
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -38,14 +38,14 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 	if(class_exists('GFFormDisplay')) { $FormDisplay = new GFFormDisplay(); } else { $FormDisplay = false; }
 	
 	//creates the subnav left menu
-   	add_filter("gform_addon_navigation", 'kws_gf_create_menu');
+   	#Fadd_filter("gform_addon_navigation", 'kws_gf_create_menu');
 	
 	function kws_gf_create_menu() {
 		// Adding submenu if user has access
         $permission = kws_gf_has_access("gravityforms_addons");
 
         if(!empty($permission)) {
-            $menus[] = array("name" => "gf_addons", "label" => __("Addons", "gravity-forms-addons"), "callback" =>  "kws_gf_settings_page", "permission" => $permission);
+            $menus[] = array("name" => "gravityforms_addons", "label" => __("Directory &amp; Addons", "gravity-forms-addons"), "callback" =>  "kws_gf_settings_page", "permission" => $permission);
 		}
 		
         return $menus;
@@ -66,7 +66,7 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 	
 	function kws_gf_settings_page(){
 
-		if($_POST["gf_addons_submit"]){
+		if(isset($_POST["gf_addons_submit"])){
             check_admin_referer("update", "gf_addons_update");
             $settings = array(
             	"directory" => isset($_POST["gf_addons_directory"]),
@@ -140,7 +140,7 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 		// Add menu in GF Settings
 		if(is_admin() && kws_gf_has_access("gravityforms_addons")){
 			global $Forms;
-			$Forms->add_settings_page("Addons", "kws_gf_settings_page");
+			$Forms->add_settings_page("Directory &amp; Addons Plugin", "kws_gf_settings_page");
     	}
 		
 		if($directory) {
@@ -187,6 +187,13 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 			$style = '<style type="text/css">
 				.gforms_edit_form_expanded ul.menu li.add_field_button_container ul,
 				.gforms_edit_form_expanded ul.menu li.add_field_button_container ul ol { display:block!important; }
+				.gforms_expend_all_menus_form {
+					 margin:1.17em 0!important;
+					 float:right;
+					 position:absolute;
+					 right:0;
+					 top:-1.17em;
+				}
 			</style>';
 			$style= apply_filters('kws_gf_display_all_fields', $style);
 			echo $style;
@@ -199,11 +206,8 @@ if(class_exists('RGForms') && class_exists('RGFormsModel')) {
 			echo '<script src="'.$Common->get_base_url().'/js/jquery.simplemodal-1.3.min.js"></script>'; // Added for the new IDs popup
 		}
 		if(isset($_REQUEST['page']) && ($_REQUEST['page'] == 'gf_edit_forms' || $_REQUEST['page'] == 'gf_entries')) {
-			echo '<script type="text/javascript">
-			jQuery(document).ready(function($) {';
-				kws_gf_add_edit_js(isset($_REQUEST['id']));
-			echo '});
-			</script>';
+
+				echo kws_gf_add_edit_js(isset($_REQUEST['id']));
 		}
 	}
 		
@@ -241,9 +245,12 @@ EOD;
 	add_filter('gform_pre_render','kws_gf_show_field_ids');
 	
 	function kws_gf_add_edit_js($edit_forms = false) {
-			if($edit_forms) {
-				?>
-				$('div.gforms_edit_form #add_fields #floatMenu').prepend('<div class="alignright" style="margin:1.17em 0!important;"><label for="expandAllMenus"><input type="checkbox" id="expandAllMenus" value="1" /> Expand All Menus</label></div>');
+	?>
+		<script type="text/javascript">
+			// Edit link for Gravity Forms entries
+			jQuery(document).ready(function($) {
+	<?php if($edit_forms) { ?>
+				$('div.gforms_edit_form #add_fields #floatMenu').prepend('<div class="alignright gforms_expend_all_menus_form"><label for="expandAllMenus"><input type="checkbox" id="expandAllMenus" value="1" /> Expand All Menus</label></div>');
 				$('input#expandAllMenus').live('change click', function() {
 					if($(this).is(':checked')) {
 						$('div.gforms_edit_form').addClass('gforms_edit_form_expanded');
@@ -277,12 +284,11 @@ EOD;
 				});
 				
 				<?php
-				return;
-			}
-			
+				
+			} 
 			if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'gf_entries') {
 				?>
-				$(".row-actions span.edit:contains('Delete')").each(function() { 
+				$(".row-actions span.edit:contains('Delete')").each(function() {
 					var editLink = $(this).parents('tr').find('.column-title a').attr('href');
 					editLink = editLink + '&screen_mode=edit';
 					//alert();
@@ -331,8 +337,10 @@ EOD;
 						});
 			         });
 
-				<?php 
-			}	
+				<?php } ?>
+			});
+		</script>
+		<?php
 	}
 	// Allows for edit links to work with a link instead of a form (GET instead of POST)
 	if(isset($_GET["screen_mode"])) { $_POST["screen_mode"] = $_GET["screen_mode"]; }

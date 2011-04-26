@@ -16,11 +16,10 @@ function show_table() {
 				$transient = get_transient('gf_form_'.$_REQUEST['form'].'_post_'.$_REQUEST['post'].'_showadminonly');
 			} 
 			
-			echo "<div class='wrap' style='padding:1.25em .5em'>".apply_filters('kws_gf_directory_detail', apply_filters('kws_gf_directory_detail_'.(int)$_REQUEST['lid'], kws_gf_process_lead_detail(false, '', apply_filters('kws_gf_directory_showadminonly_lightbox', apply_filters('kws_gf_directory_showadminonly_lightbox_'.$_REQUEST['form'], $transient)))))."</div>";
+			echo "<div class='wrap' style='padding:1.25em .5em'>".apply_filters('kws_gf_directory_detail', apply_filters('kws_gf_directory_detail_'.(int)$_REQUEST['leadid'], kws_gf_process_lead_detail(false, '', apply_filters('kws_gf_directory_showadminonly_lightbox', apply_filters('kws_gf_directory_showadminonly_lightbox_'.$_REQUEST['form'], $transient)))))."</div>";
 	}
 }
-#iframe_header();
-#echo show_table();
+
 wp_iframe('show_table');
-#iframe_footer();
+
 ?>
