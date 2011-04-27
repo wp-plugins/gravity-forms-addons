@@ -128,7 +128,18 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
+= How do I format rows to have more spacing between them in List or Definition List view? =
+
+Separating entries can be achieved by defining the `rowstyle` attribute; you can make modifications like this:
+
+Instead of simply `[directory form="1" directoryview="ul"]`, you can add a `rowstyle` attribute with custom CSS:
+
+`[directory form="1" directoryview="ul" rowstyle="padding-bottom: 1em; border-bottom:1px solid #ccc; margin-bottom:1em;"]`
+
 == Changelog ==
+
+= 2.5.1 = 
+* Added alternating `class` of even and odd for rows
 
 = 2.5 = 
 * Improved directory shortcode insertion by checking values against defaults; now inserts into code only non-default items (the default shortcode is now 20 characters instead of 815!)

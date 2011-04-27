@@ -418,6 +418,7 @@ function kws_gf_directory($atts) {
 					
 						$field_ids = array_keys($columns);
 						
+						$evenodd = '';
 						foreach($leads as $lead){
 							echo "\n\t\t\t\t\t\t";
 							
@@ -432,8 +433,9 @@ function kws_gf_directory($atts) {
 								$valignattr = ''; if($valign && $directoryview == 'table') { $valignattr = ' valign="'.$valign.'"'; } 
 								$lightboxclass = ''; if($lightbox) { $lightboxclass = '	 class="thickbox"'; }
 								$nofollow = ''; if($nofollowlinks) { $nofollow = ' rel="nofollow"'; }
+								$evenodd = ($evenodd == ' odd') ? ' even' : ' odd';
 									
-							?><tr<?php if($showrowids){ ?> id="lead_row_<?php echo $lead["id"] ?>" <?php } ?>class='<?php echo $rowclass; echo $lead["is_starred"] ? " featured" : "" ?>'<?php echo $rowstyle ? ' style="'.$rowstyle.'"' : ''; echo $valignattr; ?>><?php
+							?><tr<?php if($showrowids){ ?> id="lead_row_<?php echo $lead["id"] ?>" <?php } ?>class='<?php echo $rowclass.$evenodd; echo $lead["is_starred"] ? " featured" : "" ?>'<?php echo $rowstyle ? ' style="'.$rowstyle.'"' : ''; echo $valignattr; ?>><?php
 								$class = "";
 								$is_first_column = true;
 								$full_address = '';
