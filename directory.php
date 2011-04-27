@@ -434,8 +434,9 @@ function kws_gf_directory($atts) {
 								$lightboxclass = ''; if($lightbox) { $lightboxclass = '	 class="thickbox"'; }
 								$nofollow = ''; if($nofollowlinks) { $nofollow = ' rel="nofollow"'; }
 								$evenodd = ($evenodd == ' odd') ? ' even' : ' odd';
+								$evenodd = apply_filters('kws_gf_directory_evenodd', $evenodd);
 									
-							?><tr<?php if($showrowids){ ?> id="lead_row_<?php echo $lead["id"] ?>" <?php } ?>class='<?php echo $rowclass.$evenodd; echo $lead["is_starred"] ? " featured" : "" ?>'<?php echo $rowstyle ? ' style="'.$rowstyle.'"' : ''; echo $valignattr; ?>><?php
+							?><tr<?php if($showrowids){ ?> id="lead_row_<?php echo $lead["id"] ?>" <?php } ?>class='<?php echo trim($rowclass.$evenodd); echo $lead["is_starred"] ? " featured" : "" ?>'<?php echo $rowstyle ? ' style="'.$rowstyle.'"' : ''; echo $valignattr; ?>><?php
 								$class = "";
 								$is_first_column = true;
 								$full_address = '';
