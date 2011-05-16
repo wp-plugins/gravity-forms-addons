@@ -1,6 +1,6 @@
 <?php 
 
-// Version: 2.5
+// Version: 2.5.2
 add_shortcode('directory', 'kws_gf_directory');
 
 function kws_gf_directory_defaults() {
@@ -52,7 +52,8 @@ function kws_gf_directory_defaults() {
 			'entryanchor' => true,
 			'truncatelink' => false,
 			'appendaddress' => false,
-			'hideaddresspieces' => false
+			'hideaddresspieces' => false,
+			'jssearch' => true
 		);
 	return apply_filters('kws_gf_directory_defaults', $defaults);
 }
@@ -120,25 +121,28 @@ function kws_gf_convert_to_ul($content = null, $singleUL = false) {
 	return $content;
 }
 
-function kws_gf_convert_to_dl($content) {
+function kws_gf_convert_to_dl($content, $singleDL = false) {
 	$back = '';
-	$output = '<dl>';
 	// Get the back link, if it exists
 	preg_match("/\<p\sclass=\"entryback\"\>(.*?)\<\/p\>/", $content, $matches);
 	if(isset($matches[0])) { $back = $matches[0]; }
 	$content = preg_replace("/\<p\sclass=\"entryback\"\>(.*?)\<\/p\>/", "", $content);
 	$content = preg_replace("/<\/?table[^>]*>|<\/?tbody[^>]*>/","", $content);
 	$content = preg_replace("/<thead[^>]*>.*<\/thead>|<tfoot[^>]*>.*<\/tfoot>/is","", $content);
-#	$content = preg_replace("/<tr([^>]*)>/","<dl$1>", $content);
-#	$content = preg_replace("/<\/tr[^>]*>/","</dl>", $content);
-	$content = preg_replace("/<tr([^>]*)>/","", $content);
-	$content = preg_replace("/<\/tr[^>]*>/","", $content);
+	if(!$singleDL) {
+		$content = preg_replace("/<tr([^>]*)>/","<dl$1>", $content);
+		$content = preg_replace("/<\/tr[^>]*>/","</dl>", $content);
+	} else {
+		$content = preg_replace("/<tr([^>]*)>/","", $content);
+		$content = preg_replace("/<\/tr[^>]*>/","", $content);
+	}
 	$content = preg_replace("/\<td([^>]*)\>(\&nbsp;|)\<\/td\>/","", $content);
 	$content = preg_replace("/\<th([^>]*)\>(.*?)<\/th\>/ism","<dt$1>$2</dt>", $content);
 	$content = preg_replace('/<td(.*?)(title="(.*?)")?>(.*?)<\/td[^>]*>/ism',"<dt$1>$3</dt><dd>$4</dd>", $content);
-	$output .= $back;
+	$output = $back;
+	$output .= "\n\t\t\t\t\t\t\t\t".'<dl>';
 	$output .= $content;
-	$output .= '</dl>';
+	$output .= "\t\t\t\t\t\t".'</dl>';
 	return $output;
 }
 
@@ -320,7 +324,12 @@ function kws_gf_directory($atts) {
 		<script src="<?php echo GFCommon::get_base_url() ?>/js/jquery.json-1.3.js"></script>
 
 		<script type="text/javascript">
+			<?php if($lightbox || $entrylightbox) { ?>
+
+			var tb_pathToImage = "<?php bloginfo('url'); ?>/wp-includes/js/thickbox/loadingAnimation.gif";
+			var tb_closeImage = "<?php bloginfo('url'); ?>/wp-includes/js/thickbox/tb-close.png";
 			
+			<?php } ?>
 			function not_empty(variable) { 
 				if(variable == '' || variable == null || variable == 'undefined' || typeof(variable) == 'undefined') {
 					return false;
@@ -328,16 +337,16 @@ function kws_gf_directory($atts) {
 					return true;
 				}
 			}
-			
+			<?php if(isset($jssearch) && $jssearch) { ?>
 			function Search(search, sort_field_id, sort_direction){
 				if(not_empty(search)) { var search = "&gf_search=" + search; } else {  var search = ''; }
 				if(not_empty(sort_field_id)) { var sort = "&sort=" + sort_field_id; } else {  var sort = ''; }
 				if(not_empty(sort_direction)) { var dir = "&dir=" + sort_direction; } else {  var dir = ''; }
 				var page = '<?php if($wp_rewrite->using_permalinks()) { echo '?'; } else { echo '&'; } ?>page='+<?php echo isset($_GET['page']) ? intval($_GET['page']) : '"1"'; ?>;
-				var location = "<?php echo remove_query_arg(array('gf_search','sort','dir', 'page'), add_query_arg(array())); ?>"+page+search+sort+dir;
+				var location = "<?php echo get_permalink(); ?>"+page+search+sort+dir;
 				document.location = location;
 			}
-
+		<?php } ?>
 		</script>
 		<link rel="stylesheet" href="<?php echo GFCommon::get_base_url() ?>/css/admin.css" type="text/css" />
 
@@ -387,14 +396,24 @@ function kws_gf_directory($atts) {
 							if(is_array($adminonlycolumns) && !in_array($field_id, $adminonlycolumns) || (is_array($adminonlycolumns) && in_array($field_id, $adminonlycolumns) && $showadminonly) || !$showadminonly) {
 							if($field_info['type'] == 'address' && $appendaddress && $hideaddresspieces) { $addressesExist = true; continue; }
 							?>
+							<?php if(isset($jssearch) && $jssearch) { ?>
 							<th scope="col" class="manage-column" onclick="Search('<?php echo $search_query ?>', '<?php echo $field_id ?>', '<?php echo $dir ?>');" style="cursor:pointer;"><?php 
+							} else { ?>
+							<th scope="col" class="manage-column" onclick="Search('<?php echo $search_query ?>', '<?php echo $field_id ?>', '<?php echo $dir ?>');">
+							<a href="<?php 
+								$searchpage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+								echo add_query_arg(array('gf_search' => $search_query, 'sort' => $field_id, 'dir' => $dir, 'page' => $searchpage), get_permalink()); 
+							?>"><?php
+							}
 							if($field_info['type'] == 'id' && $entry) { $label = $entryth; }
 							else { $label = $field_info["label"]; }
 							
 							$label = apply_filters('kws_gf_directory_th', apply_filters('kws_gf_directory_th_'.$field_id, apply_filters('kws_gf_directory_th_'.sanitize_title($label), $label)));
 							echo esc_html($label); 
-						   
-							 ?></th>
+						   if(!isset($jssearch) || !$jssearch) { ?>
+						   </a>
+						   <?php } ?>
+						   </th>
 							<?php
 							}
 						}
@@ -557,8 +576,13 @@ function kws_gf_directory($atts) {
 													$multisite = (function_exists('is_multisite') && is_multisite() && $wpdb->blogid == 1);
 													if($wp_rewrite->using_permalinks() && $multisite) {
 														// example.com/example-directory/entry/4/14/
-														$url = parse_url(add_query_arg(array()));
-														$href = trailingslashit($url['path']).'entry/'.$form['id'].'-'.$value.'/';
+														if(isset($post->ID)) {
+															$url = get_permalink($post->ID);
+														} else {
+															$url = parse_url(add_query_arg(array()));
+															$url = $url['path'];
+														}
+														$href = trailingslashit($url).'entry/'.$form['id'].'-'.$value.'/';
 														if(!empty($url['query'])) { $href .= '?'.$url['query']; }
 													} else {
 														// example.com/?page_id=24&leadid=14&form=4
@@ -579,10 +603,10 @@ function kws_gf_directory($atts) {
 											$input_type = 'text';
 											if(is_email($value) && $linkemail) {$value = "<a href='mailto:$value'$nofollow>$value</a>"; } 
 											elseif(preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $value) && $linkwebsite) {
-												if($lightbox) { 
+												if($lightbox) {
 													$elwidth = apply_filters('kws_gf_directory_lightbox_width', 600);
 													$elheight = apply_filters('kws_gf_directory_lightbox_height', 400); 
-													$href = $value .'?KeepThis=true&TB_iframe=true&amp;width='.$elwidth.'&amp;height='.$elheight; $linkClass = ' class="thickbox lightbox"'; 
+													$href = $value .'?KeepThis=true&amp;TB_iframe=true&amp;width='.$elwidth.'&amp;height='.$elheight; $linkClass = ' class="thickbox lightbox"'; 
 												}
 												if($truncatelink) {
 													$value = apply_filters('kws_gf_directory_anchor_text', $value);
@@ -959,7 +983,7 @@ function kws_gf_directory($atts) {
 	//Action target that adds the "Insert Form" button to the post/page edit screen
 	function kws_gf_add_form_button($context){
 		$image_btn = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/form-button-1.png";
-		$out = '<a href="#TB_inline?width=640&inlineId=select_gf_directory" class="select_gf_directory thickbox" title="' . __("Add a Gravity Forms Directory", 'gravityforms') . '"><img src="'.$image_btn.'" alt="' . __("Add Gravity Form", 'gravityform') . '" /></a>';
+		$out = '<a href="#TB_inline?width=640&amp;inlineId=select_gf_directory" class="select_gf_directory thickbox" title="' . __("Add a Gravity Forms Directory", 'gravityforms') . '"><img src="'.$image_btn.'" alt="' . __("Add Gravity Form", 'gravityform') . '" /></a>';
 		return $context . $out;
 	}
 
@@ -1198,6 +1222,7 @@ function kws_gf_make_popup_options($js = false) {
 			array('checkbox', 'showrowids' , true, "Show the row ids, which are the entry IDs, in the HTML; eg: <code>&lt;tr id=&quot;lead_row_565&quot;&gt;</code>"),
 	#		array('checkbox', 'icon' , false, "Show the GF icon as it does in admin? <img src=\"". GFCommon::get_base_url()."/images/gravity-title-icon-32.png\" />"),
 	#		array('checkbox', 'searchtabindex' , false, "Adds tabindex='' to the search field"),
+			array('checkbox', 'jssearch', true, "Use JavaScript for sorting (otherwise, <em>links</em> will be used for sorting by column)"),
 			array('checkbox', 'dateformat', false, "Override the options from Gravity Forms, and use standard PHP date formats"),
 		);
 				

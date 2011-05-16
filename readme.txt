@@ -31,7 +31,7 @@ Gravity Forms is already the easiest form plugin - its functionality makes WordP
 * Option to __view single entries__ in their own page or in a lightbox
 
 ####Insert a totally configurable table using the editor
-There are over 30 configurable options for how you want the directory to display.
+There are over 30 configurable options for how you want the directory to display. 
 
 ###Improve Gravity Forms Functionality and Usability
 
@@ -128,15 +128,14 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
-= How do I format rows to have more spacing between them in List or Definition List view? =
-
-Separating entries can be achieved by defining the `rowstyle` attribute; you can make modifications like this:
-
-Instead of simply `[directory form="1" directoryview="ul"]`, you can add a `rowstyle` attribute with custom CSS:
-
-`[directory form="1" directoryview="ul" rowstyle="padding-bottom: 1em; border-bottom:1px solid #ccc; margin-bottom:1em;"]`
-
 == Changelog ==
+
+= 2.5.2 = 
+* Fixed broken image for lightbox close button (<a href="http://wordpress.org/support/topic/570042" rel="nofollow">issue #570042</a>)
+* Fixed definition list (DL) display mode: each entry in directory view is now wrapped with a `dl`; single-entry view entries are now wrapped with single `dl`
+* HTML generation fix: `<liclass` now `<li class` (<a href="http://www.seodenver.com/gravity-forms-addons/#dsq-comment-header-193118389">thanks @lolawson</a>)
+* Improved JavaScript table sorting function (thanks to <a href="http://wordpress.org/support/topic/565544" rel="nofollow">feedback from heavymark</a>)
+* Added option to use links to sort tables instead of JavaScript (`jssearch`, under Formatting Options)
 
 = 2.5.1 = 
 * Added alternating `class` of even and odd for rows
@@ -146,7 +145,6 @@ Instead of simply `[directory form="1" directoryview="ul"]`, you can add a `rows
 * Added formatting options for directory & entries: display as table (default), list (`<ul>`), or definition list (`<dl>`)
 * Added `kws_gf_directory_defaults` filter to update plugin defaults.
 * Added address formatting using `appendaddress` setting. This will add a column to the output with a combined, formatted address. Use new `hideaddresspieces` setting to turn off the individual address pieces. Instead of having Street, City, State, ZIP, now there's one column "Address"
-* Improved output for `fileupload` files - now able to show as images like with post images.
 * Added `truncatelink` option (explained below)
 * Added URL formatting filters to modify how links are truncated so you can choose to display the anchor text exactly as you want (the URL itself won't change). The link text `http://example.example.choicehotels.com/hotel/tx173` becomes `choicehotels.com`, but will still link to the full URL.
 	- Don't show http(s): `kws_gf_directory_anchor_text_striphttp`
@@ -159,8 +157,6 @@ Instead of simply `[directory form="1" directoryview="ul"]`, you can add a `rows
 * Fixed issue with malformed pagination link URLs
 * Improved "Expand All Menus" checkbox layout
 * Discovered an issue: pagination on approved-only entries doesn't work well. To compensate, you could set your page size to a large number that contains all the entries. This likely will not be fixed soon.
-* Fixed search behavior with pagination (a new search will always go to page 1)
-* Improved the grouping of the directory insert options (still a jumble, but better)
 
 = 2.4.4 = 
 * Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality. Access settings either using Forms > Addons link or Forms > Settings > Addons.
@@ -245,6 +241,34 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 2.5.2 = 
+* Fixed broken image for lightbox close button (<a href="http://wordpress.org/support/topic/570042" rel="nofollow">issue #570042</a>)
+* Fixed definition list (DL) display mode: each entry in directory view is now wrapped with a `dl`; single-entry view entries are now wrapped with single `dl`
+* HTML generation fix: `<liclass` now `<li class` (<a href="http://www.seodenver.com/gravity-forms-addons/#dsq-comment-header-193118389">thanks @lolawson</a>)
+* Improved JavaScript table sorting function (thanks to <a href="http://wordpress.org/support/topic/565544" rel="nofollow">feedback from heavymark</a>)
+* Added option to use links to sort tables instead of JavaScript (`jssearch`, under Formatting Options)
+
+= 2.5.1 = 
+* Added alternating `class` of even and odd for rows
+
+= 2.5 = 
+* Improved directory shortcode insertion by checking values against defaults; now inserts into code only non-default items (the default shortcode is now 20 characters instead of 815!)
+* Added formatting options for directory & entries: display as table (default), list (`<ul>`), or definition list (`<dl>`)
+* Added `kws_gf_directory_defaults` filter to update plugin defaults.
+* Added address formatting using `appendaddress` setting. This will add a column to the output with a combined, formatted address. Use new `hideaddresspieces` setting to turn off the individual address pieces. Instead of having Street, City, State, ZIP, now there's one column "Address"
+* Added `truncatelink` option (explained below)
+* Added URL formatting filters to modify how links are truncated so you can choose to display the anchor text exactly as you want (the URL itself won't change). The link text `http://example.example.choicehotels.com/hotel/tx173` becomes `choicehotels.com`, but will still link to the full URL.
+	- Don't show http(s): `kws_gf_directory_anchor_text_striphttp`
+	- Strip www: `kws_gf_directory_anchor_text_stripwww`
+	- Show root only, not the linked to page (`example.com/inner-page/` becomes `example.com`): `kws_gf_directory_anchor_text_rootonly`
+	- Strip all subdomains, including www: `kws_gf_directory_anchor_text_nosubdomain`
+	- Hide "query strings" (`example.com?search=example&action=search` becomes `example.com`): `kws_gf_directory_anchor_text_noquerystring`
+* Submit a form using the keyboard, not just clicking the button
+* Added filter to change directory pagination settings (results page links): `kws_gf_results_pagination`
+* Fixed issue with malformed pagination link URLs
+* Improved "Expand All Menus" checkbox layout
+* Discovered an issue: pagination on approved-only entries doesn't work well. To compensate, you could set your page size to a large number that contains all the entries. This likely will not be fixed soon.
 
 = 2.4.4 = 
 * Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality.

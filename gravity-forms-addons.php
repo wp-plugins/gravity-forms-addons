@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Add directory functionality and improve usability for the great <a href="http://bit.ly/dvF8BI" rel="nofollow">Gravity Forms</a> plugin.
 Author: Katz Web Services, Inc.
-Version: 2.5.1
+Version: 2.5.2
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
