@@ -13,7 +13,8 @@ Add directory capabilities and other functionality to the great <a href="http://
 > This plugin requires the <a href="http://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!
 
 __How easy is <a href="http://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089" rel="nofollow">Gravity Forms</a>? Check out the video below:__
-[vimeo http://player.vimeo.com/video/27276636]
+
+[vimeo http://vimeo.com/27276636]
 
 ### Turn Gravity Forms into a Directory plugin
 Gravity Forms is already the easiest form plugin - its functionality makes WordPress <em>close</em> to having user-submitted directory capabilities. Finally, the Gravity Forms Directory & Addons plugin does just that.
