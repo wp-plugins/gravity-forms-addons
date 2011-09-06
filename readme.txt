@@ -6,14 +6,17 @@ Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Add directory capabilities and other functionality to the great <a href="http://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089" rel="nofollow">Gravity Forms</a> plugin.
+Add directory capabilities and other functionality to the great <a href="http://wordpressformplugin.com/?r=addonreadme" rel="nofollow">Gravity Forms</a> plugin.
 
 == Description ==
 
-> This plugin requires the <a href="http://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!
+> This plugin requires the <a href="http://wordpressformplugin.com/?r=addonreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://wordpressformplugin.com/?r=addonreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!
+
+__How easy is <a href="http://wordpressformplugin.com/?r=addonreadme" rel="nofollow">Gravity Forms</a>? Check out the video below:__
+[youtube http://www.youtube.com/watch?v=cRtE_riFwaw]
 
 ### Turn Gravity Forms into a Directory plugin
-Gravity Forms is already the easiest form plugin - its functionality makes WordPress <em>close</em> to having user-submitted directory capabilities. Finally, the Gravity Forms Directory & Addons plugin does just that. 
+Gravity Forms is already the easiest form plugin - its functionality makes WordPress <em>close</em> to having user-submitted directory capabilities. Finally, the Gravity Forms Directory & Addons plugin does just that.
 
 * Completely shortcode based, using the `[directory]` shortcode
 * Includes built-in __searching__
@@ -62,7 +65,7 @@ This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-w
 == Frequently Asked Questions == 
 
 = Does this plugin require Gravity Forms? =
-This plugin requires the [Gravity Forms plugin](http://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089). __Don't use Gravity Forms? [Buy the plugin](http://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089)__ and start using this add-on plugin!
+This plugin requires the [Gravity Forms plugin](http://wordpressformplugin.com/?r=addonreadme). __Don't use Gravity Forms? [Buy the plugin](http://wordpressformplugin.com/?r=addonreadme)__ and start using this add-on plugin!
 
 = How do I find a field ID? =
 On the Gravity Forms "Edit Forms" page, hover over the form and click the link called "IDs" that appears.
