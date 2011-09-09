@@ -1,28 +1,32 @@
 === Gravity Forms Directory & Addons ===
 Tags: gravity forms, forms, gravity, form, crm, gravity form, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
-Tested up to: 3.1.2
+Tested up to: 3.2.1
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Add directory capabilities and other functionality to the great <a href="http://wordpressformplugin.com/?r=addonreadme" rel="nofollow">Gravity Forms</a> plugin.
+Add directory capabilities and other functionality to the great <a href="http://wordpressformplugin.com?r=addonsdesc" rel="nofollow">Gravity Forms</a> plugin.
 
 == Description ==
 
-> This plugin requires the <a href="http://wordpressformplugin.com/?r=addonreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://wordpressformplugin.com/?r=addonreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!
+> This plugin requires the <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!
 
-__How easy is <a href="http://wordpressformplugin.com/?r=addonreadme" rel="nofollow">Gravity Forms</a>? Check out the video below:__
-[youtube http://www.youtube.com/watch?v=cRtE_riFwaw] 
+__How easy is <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms</a>? Check out the video below:__
+[youtube http://www.youtube.com/watch?v=cRtE_riFwaw]
+
 
 ### Turn Gravity Forms into a Directory plugin
-Gravity Forms is already the easiest form plugin - its functionality makes WordPress <em>close</em> to having user-submitted directory capabilities. Finally, the Gravity Forms Directory & Addons plugin does just that.
+
+Gravity Forms is already the easiest form plugin...now, the Gravity Forms Directory & Addons plugin turns Gravity Forms into a great directory.
+
+[youtube http://www.youtube.com/watch?v=PMI7Jb-RP2I]
 
 * Completely shortcode based, using the `[directory]` shortcode
 * Includes built-in __searching__
 * Sort by column
 * Easily re-organize the columns inside Gravity Forms
-* Has an option to <strong>show only approved listings</strong>
+* Has an option to <strong>show only approved listings</strong> with an easy approval process
 * Show or hide any column
 * Display directory & entries as a table (default), list (`<ul>`), or definition list (`<dl>`)
 * Directory features pagination
@@ -46,9 +50,14 @@ This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-w
 * Track the referrer for the form submission using Google Analytics (adds referrer data and the search keyword[s] used to the notification emails.)
 * A Gravity Forms widget (see <a href="http://wordpress.org/extend/plugins/gravity-forms-addons/screenshots/" rel="nofollow">plugin Screenshots</a>)
 
-### Check out other Gravity Forms integrations:
+#### Other Gravity Forms Add-ons:
 
+* <a href="http://wordpress.org/extend/plugins/gravity-forms-salesforce/">Gravity Forms Salesforce Add-on</a> - Integrate Gravity Forms with Salesforce.com
+* <a href="http://wordpress.org/extend/plugins/gravity-forms-highrise/">Gravity Forms Highrise Add-on</a> - Integrate Gravity Forms with Highrise, a CRM
 * <a href="http://wordpress.org/extend/plugins/gravity-forms-constant-contact/">Gravity Forms + Constant Contact</a> - If you use Constant Contact and Gravity Forms, this plugin is for you.
+* <a href="http://wordpress.org/extend/plugins/gravity-forms-mad-mimi/">Gravity Forms Mad Mimi Add-on</a> - Integrate Mad Mimi, a great email marketing company, and Gravity Forms.
+* <a href="http://wordpress.org/extend/plugins/gravity-forms-exacttarget/">Gravity Forms ExactTarget Add-on</a> - Integrate with ExactTarget, an enterprise-class email marketing service
+
 
 #### Have an idea or issue with this Gravity Forms add-on plugin?
 
@@ -56,16 +65,29 @@ This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-w
 
 == Screenshots ==
 
-1. How the Gravity Forms 'Add Fields' boxes look after plugin is activated
-2. This plugin adds an Edit link to Gravity Form entries
-3. Insert a directory
-4. How the Gravity Forms widget appears on the widgets page
-5. The Gravity Forms Addons settings page, found in the Forms > Addons menu link
+1. Approving directory entries is very easy
+2. When using the Form Editor, your form fields will have a Directory tab for easily modifying your display options.
+3. This plugin adds an Edit link to Gravity Form entries
+4. Insert a directory
+5. How the Gravity Forms widget appears on the widgets page
+6. The Gravity Forms Addons settings page, found in the Forms > Directory & Addons menu link
+7. How the Gravity Forms 'Add Fields' boxes look after plugin is activated
 
 == Frequently Asked Questions == 
 
+= I want the URL to be different than `/entry/` - can I do that? =
+You can! Add the following to your theme's `functions.php` file:
+
+`
+add_filter('kws_gf_directory_endpoint', 'different_directory_endpoint');
+
+function different_directory_endpoint($endpoint) {
+		return 'example'; // Use your preferred text here. Note: punctuation may screw things up.
+}
+`	
+
 = Does this plugin require Gravity Forms? =
-This plugin requires the [Gravity Forms plugin](http://wordpressformplugin.com/?r=addonreadme). __Don't use Gravity Forms? [Buy the plugin](http://wordpressformplugin.com/?r=addonreadme)__ and start using this add-on plugin!
+This plugin requires the [Gravity Forms plugin](http://wordpressformplugin.com?r=addonsfaq). __Don't use Gravity Forms? [Buy the plugin](http://wordpressformplugin.com?r=addonsfaq)__ and start using this add-on plugin!
 
 = How do I find a field ID? =
 On the Gravity Forms "Edit Forms" page, hover over the form and click the link called "IDs" that appears.
@@ -91,7 +113,7 @@ If you want to modify the output of the plugin, you can do so by adding code to 
 - `kws_gf_directory_value`, `kws_gf_directory_value_'.$input_type`, `kws_gf_directory_value_'.$field_id` - Modify output for fields in general, or based on type (`text`, `date`, `textarea`, etc...), or based on field id.
 - `kws_gf_directory_th`, `kws_gf_directory_th_'.$field_id`, `kws_gf_directory_th_'.sanitize_title($label)` - Modify the `<th>` names en masse, by field ID, or by field name (lowercase like a slug)
 - `kws_gf_directory_lead_image`, `kws_gf_directory_lead_image_icon`, `kws_gf_directory_lead_image_image`, `kws_gf_directory_lead_image_'.$lead_id`
-
+- And many more - search for `apply_filters` and `do_action` in the `gravity-forms-addons.php` file
 <pre>
 // This replaces "John" in a first name field with "Jack"
 add_filter('kws_gf_directory_value_text', 'john_to_jack');
@@ -129,6 +151,40 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 3.0 = 
+* Completely revamped the admin approval process! Now approving an entry is as easy as checking a box in the Entries view.
+	- Supports bulk approve and un-approve
+* Added "Directory Fields" in the Form Editor
+	- "Approved" field: Add this to your form to have a pre-configured admin-only checkbox.
+	- "Entry Link" field: Use this text as a link to the single entry view
+* Added "Directory" tab to fields in the Form Editor
+	- Use Field As Link to Single Entry
+	- Text for Link to Single Entry
+		* Use field values from entry
+		* Use the Field Label as link text
+		* Use custom link text.
+	- Hide Field in Directory View
+	- Hide Field in Single Entry View
+* Added a how-to video and improved instructions on settings page
+* Improved how settings work & some new settings
+	* Added "Smart Approval" - Automatically convert directory into Approved-only mode when an Approved field is detected
+	* Added configuration for default directory settings on the Directory & Addons settings page
+	* Added `jstable` setting to enable javascript sorting using the Tablesorter script. Includes `kws_gf_directory_tablesorter_options` filter to modify Tablesorter settings.
+	* Updated `page_size` setting: setting a page size of 0 now shows all entries.
+	* Added credit link setting for directories
+* Fixed bugs & issues
+	* Fixed search and entry counts for Approved-only directories
+	* Improved internationalization support
+* Structural & display improvements
+	* Added proper enqueuing of scripts and styles with `enqueue_files` function.
+	* Hides search and page count when there are no results
+	* Restructured plugin to use the `GFDirectory` class.
+	* Added a host of new actions and filters to allow for inserting custom content throughout the directory
+	* Added support for custom endpoints (instead of `entries`...see FAQ for more information)
+* And much, much more!
+
+Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.2.8 and Gravity Forms 1.6 beta.
 
 = 2.5.2 = 
 * Fixed broken image for lightbox close button (<a href="http://wordpress.org/support/topic/570042" rel="nofollow">issue #570042</a>)
@@ -242,6 +298,40 @@ error_reporting(0);
 
 == Upgrade Notice ==
 
+= 3.0 = 
+* Completely revamped the admin approval process! Now approving an entry is as easy as checking a box in the Entries view.
+	- Supports bulk approve and un-approve
+* Added "Directory Fields" in the Form Editor
+	- "Approved" field: Add this to your form to have a pre-configured admin-only checkbox.
+	- "Entry Link" field: Use this text as a link to the single entry view
+* Added "Directory" tab to fields in the Form Editor
+	- Use Field As Link to Single Entry
+	- Text for Link to Single Entry
+		* Use field values from entry
+		* Use the Field Label as link text
+		* Use custom link text.
+	- Hide Field in Directory View
+	- Hide Field in Single Entry View
+* Added a how-to video and improved instructions on settings page
+* Improved how settings work & some new settings
+	* Added "Smart Approval" - Automatically convert directory into Approved-only mode when an Approved field is detected
+	* Added configuration for default directory settings on the Directory & Addons settings page
+	* Added `jstable` setting to enable javascript sorting using the <a href="http://tablesorter.com/docs/" rel="nofollow">Tablesorter</a> script. Includes `kws_gf_directory_tablesorter_options` filter to modify Tablesorter settings.
+	* Updated `page_size` setting: setting a page size of 0 now shows all entries.
+	* Added credit link setting for directories
+* Fixed bugs & issues
+	* Fixed search and entry counts for Approved-only directories
+	* Improved internationalization support
+* Structural & display improvements
+	* Added proper enqueuing of scripts and styles with `enqueue_files` function.
+	* Hides search and page count when there are no results
+	* Restructured plugin to use the `GFDirectory` class.
+	* Added a host of new actions and filters to allow for inserting custom content throughout the directory
+	* Added support for custom endpoints (instead of `entries`...see FAQ for more information)
+* And much, much more!
+
+Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.2.8 and Gravity Forms 1.6 beta.
+
 = 2.5.2 = 
 * Fixed broken image for lightbox close button (<a href="http://wordpress.org/support/topic/570042" rel="nofollow">issue #570042</a>)
 * Fixed definition list (DL) display mode: each entry in directory view is now wrapped with a `dl`; single-entry view entries are now wrapped with single `dl`
@@ -345,4 +435,13 @@ error_reporting(0);
 3. Go to the post or page where you want the directory
 4. Click "Add a Gravity Forms Directory" button (likely just to the right of the Gravity Forms button)
 5. Choose a form from the drop down, (you may click advanced options for lots of additional options)
+6. Click "Insert Directory". A "shortcode" should appear in the content editor that looks similar to `[directory form="#"]`
+7. Save the post
 
+### Configuring Fields & Columns
+
+When editing a form, click on a field to expand the field. Next, click the "Directory" tab. There, you will find options to:
+
+* Choose whether you would like the field to be a link to the Single Entry View;
+* Hide the field in Directory View; and
+* Hide the field in Single Entry View
