@@ -158,6 +158,8 @@ To fix this issue, add this to your theme's `functions.php` file:
 == Changelog ==
 
 = 3.0.1 = 
+This release should fix some major issues users were having with 3.0. Sorry for the problems.
+
 * Fixed issue where Directory Fields buttons weren't being rendered (the JavaScript hadn't been loaded)
 * Fixed issue with support for <a href="http://wordpress.org/extend/plugins/members/" rel="nofollow">Members plugin</a>
 * Added improved support for filter by date
