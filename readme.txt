@@ -1,5 +1,5 @@
 === Gravity Forms Directory & Addons ===
-Tags: gravity forms, forms, gravity, form, crm, gravity form, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
+Tags: gravity forms, gravity form, forms, gravity, form, crm, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
 Tested up to: 3.2.1
 Stable tag: trunk
@@ -86,6 +86,11 @@ function different_directory_endpoint($endpoint) {
 }
 `	
 
+= How do I add a date filter? =
+To add a filter by date, you add either a `start_date` or `end_date` parameter--or both--in `YYYY-MM-DD` format. Here's an example:
+
+`[directory form="14" start_date="1984-10-22" end_date="2011-09-07"]`
+
 = Does this plugin require Gravity Forms? =
 This plugin requires the [Gravity Forms plugin](http://wordpressformplugin.com?r=addonsfaq). __Don't use Gravity Forms? [Buy the plugin](http://wordpressformplugin.com?r=addonsfaq)__ and start using this add-on plugin!
 
@@ -151,6 +156,15 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 3.0.1 = 
+* Fixed issue where Directory Fields buttons weren't being rendered (the JavaScript hadn't been loaded)
+* Fixed issue with support for <a href="http://wordpress.org/extend/plugins/members/" rel="nofollow">Members plugin</a>
+* Added improved support for filter by date
+	- Added `start_date` and `end_date` settings to Insert Directory form with datepicker
+	- Now allows for sorting using the query string (for example, adding `?start_date=YYYY-MM-DD` to the directory URL)
+* Removed bulk update Approve and Unapprove options when form not approval-enabled
+* Fixed display of Directory & Addons menu - now showing on all admin pages.
 
 = 3.0 = 
 * Completely revamped the admin approval process! Now approving an entry is as easy as checking a box in the Entries view.
@@ -297,6 +311,15 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 3.0.1 = 
+* Fixed issue where Directory Fields buttons weren't being rendered (the JavaScript hadn't been loaded)
+* Fixed issue with support for <a href="http://wordpress.org/extend/plugins/members/" rel="nofollow">Members plugin</a>
+* Added improved support for filter by date
+	- Added `start_date` and `end_date` settings to Insert Directory form with datepicker
+	- Now allows for sorting using the query string (for example, adding `?start_date=YYYY-MM-DD` to the directory URL)
+* Removed bulk update Approve and Unapprove options when form not approval-enabled
+* Fixed display of Directory & Addons menu - now showing on all admin pages.
 
 = 3.0 = 
 * Completely revamped the admin approval process! Now approving an entry is as easy as checking a box in the Entries view.

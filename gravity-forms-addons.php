@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.0
+Version: 3.0.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -23,7 +23,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-register_activation_hook( __FILE__, array('GFDirectory', 'add_activation_notice')  );
+
+register_activation_hook( __FILE__, array('GFDirectory', 'activation')  );
 add_action('plugins_loaded',  array('GFDirectory', 'plugins_loaded'));
 add_action('plugins_loaded',  'kws_gf_load_functions');
 
@@ -63,18 +64,20 @@ class GFDirectory {
 		if(!self::is_gravityforms_supported()){
            return;
         }
-
+	
         if(is_admin()){
 		   //creates a new Settings page on Gravity Forms' settings screen
             if(self::has_access("gravityforms_directory")){
-                RGForms::add_settings_page("Directory & Addons", array("GFDirectory", "settings_page"));
+                RGForms::add_settings_page("Directory & Addons", array("GFDirectory", "settings_page"), "");
             }
+            add_filter("gform_addon_navigation", array('GFDirectory', 'create_menu')); //creates the subnav left menu
             
             //Adding "embed form" button
 			add_action('media_buttons_context', array("GFDirectory", 'add_form_button'), 999);
 			
 			if(in_array(RG_CURRENT_PAGE, array('post.php', 'page.php', 'page-new.php', 'post-new.php'))){
 				add_action('admin_footer',	array("GFDirectory", 'add_mce_popup'));
+				wp_enqueue_script("gforms_ui_datepicker", GFCommon::get_base_url() . "/js/jquery-ui/ui.datepicker.js", array("jquery"), GFCommon::$version, true);
 			}
 			
         } else {
@@ -89,11 +92,15 @@ class GFDirectory {
 			add_filter('kws_gf_directory_anchor_text', array('GFDirectory', 'directory_anchor_text'));
         }
         
+        //integrating with Members plugin
+        if(function_exists('members_get_capabilities')) {
+            add_filter('members_get_capabilities', array("GFDirectory", "members_get_capabilities"));
+        }
+        
 		add_filter('gform_pre_render',array('GFDirectory', 'show_field_ids'));
 		
 		if(self::is_gravity_page()) {
-        	add_filter("gform_addon_navigation", array('GFDirectory', 'create_menu')); //creates the subnav left menu
-			add_filter('gform_tooltips', array('GFDirectory', 'directory_tooltips')); //Filter to add a new tooltip
+        	add_filter('gform_tooltips', array('GFDirectory', 'directory_tooltips')); //Filter to add a new tooltip
 			add_action("gform_editor_js", array('GFDirectory', "editor_script")); //Action to inject supporting script to the form editor page
 			add_action("gform_field_advanced_settings", array('GFDirectory',"use_as_entry_link_settings"), 10, 2);
 			add_filter("gform_add_field_buttons", array('GFDirectory',"directory_add_field_buttons"));
@@ -107,8 +114,9 @@ class GFDirectory {
         if(self::is_directory_page()){
 
             //enqueueing sack for AJAX requests
-            wp_enqueue_script(array("sack"));
+            wp_enqueue_script(array("sack", 'datepicker'));
 			wp_enqueue_style('gravityforms-admin', GFCommon::get_base_url().'/css/admin.css');
+			
          }
          else if(self::is_gravity_page('gf_entries')) {
          	add_filter("gform_get_field_value", array('GFDirectory','add_lead_approved_hidden_input'), 1, 3);
@@ -126,8 +134,25 @@ class GFDirectory {
 	    
     }
     
+    //Target of Member plugin filter. Provides the plugin with Gravity Forms lists of capabilities
+    public static function members_get_capabilities( $caps ) {
+        return array_merge($caps, array("gravityforms_directory", "gravityforms_directory_uninstall"));
+    }
+    
+    public function activation() {
+    	self::add_activation_notice();
+		self::add_permissions();
+		self::flush_rules();
+    }
+    
     private static function is_gravityforms_installed(){
         return class_exists("RGForms");
+    }
+    
+    public static function add_permissions(){
+        global $wp_roles;
+        $wp_roles->add_cap("administrator", "gravityforms_directory");
+        $wp_roles->add_cap("administrator", "gravityforms_directory_uninstall");
     }
     
     // If the classes don't exist, the plugin won't do anything useful.
@@ -179,11 +204,6 @@ class GFDirectory {
 		$settings = GFDirectory::get_settings();
 		extract($settings);
 		
-		if($directory) {
-			// Load up the directory functionality
-			register_activation_hook( __FILE__, array('GFDirectory', 'flush_rules')  );
-		}
-		
 		if($widget) {
 			// Load Joost's widget
 			@include_once('gravity-forms-widget.php');	
@@ -194,7 +214,7 @@ class GFDirectory {
 			@include_once('gravity-forms-referrer.php');	
 		}
 		
-		if($modify_admin) {
+		if(!empty($modify_admin)) {
 			add_action('admin_head', array('GFDirectory', 'admin_head'), 1);
 		}
 	}
@@ -226,7 +246,7 @@ class GFDirectory {
 		if(!empty($settings['modify_admin']['ids'])) {
 			echo '<script src="'.GFCommon::get_base_url().'/js/jquery.simplemodal-1.3.min.js"></script>'; // Added for the new IDs popup
 		}
-
+		
 		if(isset($_REQUEST['page']) && ($_REQUEST['page'] == 'gf_edit_forms' || $_REQUEST['page'] == 'gf_entries')) {
 				echo self::add_edit_js(isset($_REQUEST['id']), $settings);
 		}
@@ -875,6 +895,10 @@ class GFDirectory {
 			$sort_field = empty($_GET["sort"]) ? $sort : $_GET["sort"];
 			$sort_direction = empty($_GET["dir"]) ? $dir : $_GET["dir"];
 			$search_query = !empty($_GET["gf_search"]) ? $_GET["gf_search"] : null;
+			
+			$start_date = !empty($_GET["start_date"]) ? $_GET["start_date"] : $start_date;
+			$end_date = !empty($_GET["end_date"]) ? $_GET["end_date"] : $end_date;
+			
 			$page_index = empty($_GET["page"]) ? $startpage -1 : intval($_GET["page"]) - 1;
 			$star = (isset($_GET["star"]) && is_numeric($_GET["star"])) ? intval($_GET["star"]) : null;
 			$read = (isset($_GET["read"]) && is_numeric($_GET["read"])) ? intval($_GET["read"]) : null;
@@ -947,7 +971,7 @@ class GFDirectory {
 	
 			if($page_size > 0) {
 				
-				$lead_count = self::get_lead_count($form_id, $search_query, $star, $read, $approvedcolumn, $approved, $leads);
+				$lead_count = self::get_lead_count($form_id, $search_query, $star, $read, $approvedcolumn, $approved, $leads, $start_date, $end_date);
 				
 				$page_links = array(
 					'base' =>  @add_query_arg('page','%#%'),// get_permalink().'%_%',
@@ -1471,7 +1495,7 @@ class GFDirectory {
 
     public function directory_add_default_values() {
 			global $_gform_directory_approvedcolumn, $process_bulk_update_message; 
-			if(!self::is_gravity_page('gf_entries')) { return; }
+			if(!self::is_gravity_page('gf_entries') && (!self::is_gravity_page('gf_edit_forms') || !isset($_GET['id']))) { return; }
 			 ?>
 		<style type="text/css">
 		
@@ -1490,13 +1514,18 @@ class GFDirectory {
 		<script type="text/javascript">
 			
 			<?php 
-		        $formID = RGForms::get("id");
-		        if(empty($formID)) {
-			        $forms = RGFormsModel::get_forms(null, "title");
-		            $formID = $forms[0]->id;
-		        }
-		    echo 'formID = '.$formID.';';
-		        ?>
+			
+			$formID = RGForms::get("id");
+	        if(empty($formID)) {
+		        $forms = RGFormsModel::get_forms(null, "title");
+	            $formID = $forms[0]->id;
+	        }
+		   	
+		   	$_gform_directory_approvedcolumn = empty($_gform_directory_approvedcolumn) ? self::globals_get_approved_column($formID) : $_gform_directory_approvedcolumn;
+		   	     		
+			if(!empty($_gform_directory_approvedcolumn)) {
+			    echo 'formID = '.$formID.';';
+		       ?>
 		        
 		    function UpdateApproved(lead_id, approved) {
 		    	var mysack = new sack("<?php echo admin_url("admin-ajax.php")?>" );
@@ -1514,7 +1543,9 @@ class GFDirectory {
 		        return true;
 		    }
 		 
-		 <?php if(!function_exists('gform_get_meta')) { ?>
+		 <?php 
+		 	
+		 if(!function_exists('gform_get_meta')) { ?>
 		 	
 		    function displayMessage(message, messageClass, container){
 
@@ -1539,7 +1570,7 @@ class GFDirectory {
 
             }
             
-         <?php } ?>
+         <?php } // end meta check for 1.6         ?>
 		    
 			jQuery(document).ready(function($) {
 		    	
@@ -1601,7 +1632,7 @@ class GFDirectory {
 		    	UpdateApprovedColumns($('table'), true);
 		    	    	
 		    });
-			
+			<?php } // end if(!empty($_gform_directory_approvedcolumn)) check ?>
 			function SetDefaultValues_entrylink(field) {
 					field.label = "<?php _e("Go to Entry", "gravity-forms-addons"); ?>";
 		            
@@ -1668,6 +1699,15 @@ class GFDirectory {
 	    
 	        $_gform_directory_processed_meta = array();
 	        
+	        if(empty($formID)) {
+		        $formID = RGForms::get("id");
+		        
+		        if(empty($formID)) {
+			        $forms = RGFormsModel::get_forms(null, "title");
+		            $formID = $forms[0]->id;
+		        }
+		    }
+	        
 	        if(!empty($formID)) {
 	        	$_gform_directory_activeform = RGFormsModel::get_form_meta($formID);
 	        } else if(isset($_GET['id'])) {
@@ -1715,7 +1755,7 @@ class GFDirectory {
             $entry_count = count($leads) > 1 ? sprintf(__("%d entries", "gravityforms"), count($leads)) : __("1 entry", "gravityforms");
 
 			$bulk_action = explode('-', $bulk_action);
-			if(!isset($bulk_action[1])) { return; }
+			if(!isset($bulk_action[1]) || empty($leads)) { return false; }
 			
             switch($bulk_action[0]){
                 case "approve":
@@ -1733,6 +1773,9 @@ class GFDirectory {
     
     private function directory_update_bulk($leads, $approved, $form_id) {
     	global $_gform_directory_approvedcolumn;
+    	
+    	if(empty($leads)) { return false; }
+    	
     	$_gform_directory_approvedcolumn = empty($_gform_directory_approvedcolumn) ? self::globals_get_approved_column($_POST['form_id']) : $_gform_directory_approvedcolumn;
 
 		$approved = empty($approved) ? 0 : 'Approved';
@@ -2056,53 +2099,7 @@ class GFDirectory {
         </div>
         <?php
     }
-	
-    private static function test_api($debug = false){
-    	$api = false;
-
-        return self::send_request(array(), $debug);
-        
-    }
-
-	public static function send_request($post, $debug = false) {
-		global $wp_version;
-        $post['oid'] 			= get_option("gf_directory_oid");
-		$post['debug']			= $debug;
 		
-		if(empty($post['oid'])) { return false; }
-		
-		// Set SSL verify to false because of server issues.
-		$args = array( 	
-			'body' 		=> $post,
-			'headers' 	=> array(
-				'user-agent' => 'Gravity Forms Directory Add-on plugin - WordPress/'.$wp_version.'; '.get_bloginfo('url'),
-			),
-			'sslverify'	=> false,  
-		);
-		
-		$sub = $debug ? 'test' : 'www';
-		
-		$result = wp_remote_post('https://'.$sub.'.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8', $args);
-		
-		#echo '<pre>'; print_r($result); print_r($args); ;
-		
-		if(wp_remote_retrieve_response_code($result) !== 200) { // Server is down.
-			return array();
-		} elseif(!isset($result['headers']['is-processed'])) { // For a valid debug test
-			return $result;
-		} else if ($result['headers']['is-processed'] === "true") { // For a valid request
-			return $result;
-		} elseif(strpos($result['headers']['is-processed'], 'Exception')) { // For an invalid request
-			return false;
-		}
-		
-		return $result;
-	}
-	
-   	public static function getLabel($temp, $field = '', $input = false){
-		return $temp;
-    }
-
     public static function disable_directory(){
         delete_option("gf_directory_oid");
     }
@@ -2187,8 +2184,8 @@ class GFDirectory {
         if(!is_numeric($form_id) || !is_numeric($sort_field_number)|| !is_numeric($offset)|| !is_numeric($page_size))
             return "";
 
-        $lead_detail_table_name = self::get_lead_details_table_name();
-        $lead_table_name = self::get_lead_table_name();
+        $lead_detail_table_name = RGFormsModel::get_lead_details_table_name();
+        $lead_table_name = RGFormsModel::get_lead_table_name();
 
         $orderby = $is_numeric_sort ? "ORDER BY query, (value+0) $sort_direction" : "ORDER BY query, value $sort_direction";
 
@@ -2431,7 +2428,25 @@ EOD;
 			}
 						
 			jQuery('document').ready(function($) { 
+				
 			
+			    jQuery('.datepicker').each(
+			        function (){
+			            var element = jQuery(this);
+			            var format = "yy-mm-dd";
+			
+			            var image = "";
+			            var showOn = "focus";
+			            if(element.hasClass("datepicker_with_icon")){
+			                showOn = "both";
+			                image = jQuery('#gforms_calendar_icon_' + this.id).val();
+			            }
+			
+			            element.datepicker({ yearRange: '-100:+10', showOn: showOn, buttonImage: image, buttonImageOnly: true, dateFormat: format });
+			        }
+			    );
+
+
 				$('#select_gf_directory_form').bind('submit', function(e) {
 					e.preventDefault();
 					var shortcode = InsertGFDirectory();
@@ -2491,7 +2506,35 @@ EOD;
 		});
 			
 		</script>
-
+		<style type="text/css">
+				.ui-datepicker-div,
+				.ui-datepicker-inline,
+				#ui-datepicker-div {/*resets*/margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 100%; list-style: none; font-family: Verdana,Arial,sans-serif; background: #ffffff; font-size: 1em; border: 4px solid #aaaaaa; width: 15.5em; padding: 2.5em .5em .5em; position: relative}
+				.ui-datepicker-div,
+				#ui-datepicker-div {z-index: 9999; /*must have*/display: none}
+				.ui-datepicker-inline {float: left; display: block}
+				.ui-datepicker-control {display: none}
+				.ui-datepicker-current {display: none}
+				.ui-datepicker-next,
+				.ui-datepicker-prev {position: absolute; left: .5em; top: .5em; background: #e6e6e6}
+				.ui-datepicker-next {left: 14.6em}
+				.ui-datepicker-next:hover,
+				.ui-datepicker-prev:hover {background: #dadada}
+				.ui-datepicker-next a,
+				.ui-datepicker-prev a {text-indent: -999999px; width: 1.3em; height: 1.4em; display: block; font-size: 1em; background: url(../images/datepicker_arrow_left.gif) 50% 50% no-repeat; border: 1px solid #d3d3d3; cursor: pointer}
+				.ui-datepicker-next a {background: url(../images/datepicker_arrow_right.gif) 50% 50% no-repeat}
+				.ui-datepicker-header select {border: 1px solid #d3d3d3; color: #555555; background: #e6e6e6; font-size: 1em; line-height: 1.4em; position: absolute; top: .5em; margin: 0!important}
+				.ui-datepicker-header option:focus,.ui-datepicker-header option:hover {background: #dadada}
+				.ui-datepicker-header select.ui-datepicker-new-month {width: 7em; left: 2.2em}
+				.ui-datepicker-header select.ui-datepicker-new-year {width: 5em; left: 9.4em}
+				table.ui-datepicker {width: 15.5em; text-align: right}
+				table.ui-datepicker td a {padding: .1em .3em .1em 0; display: block; color: #555555; background: #e6e6e6; cursor: pointer; border: 1px solid #ffffff}
+				table.ui-datepicker td a:hover {border: 1px solid #999999; color: #212121; background: #dadada}
+				table.ui-datepicker td a:active {border: 1px solid #aaaaaa; color: #212121; background: #ffffff}
+				table.ui-datepicker .ui-datepicker-title-row td {padding: .3em 0; text-align: center; font-size: .9em; color: #222222; text-transform: uppercase}
+				table.ui-datepicker .ui-datepicker-title-row td a {color: #222222}
+				.ui-datepicker-cover {display: none; display: block; position: absolute; z-index: -1; filter: mask(); top: -4px; left: -4px; width: 193px; height: 200px}
+		</style>
 	<div id="select_gf_directory" style="overflow-x:hidden; overflow-y:auto;display:none;">
 		<form action="#" method="get" id="select_gf_directory_form">
 			<div class="wrap">
@@ -2569,12 +2612,14 @@ EOD;
 		}
 			
 			$content = array(
-					array('checkbox',  'wpautop'  ,  true, __( "Convert bulk paragraph text to paragraphs (using the WordPress function <code><a href='http://codex.wordpress.org/Function_Reference/wpautop'>wpautop(, 'gravity-forms-addons'))</a></code>)")),
+					array('checkbox',  'wpautop'  ,  true, __( "Convert bulk paragraph text to paragraphs (using the WordPress function <code><a href='http://codex.wordpress.org/Function_Reference/wpautop'>wpautop()</a></code>)", 'gravity-forms-addons')),
 					array('checkbox',  'lightbox'  ,  true, __( sprintf("Show images in a %slightbox%s", '<a href="http://en.wikipedia.org/wiki/Lightbox_(JavaScript)" target="_blank">', '</a>'), 'gravity-forms-addons')),
 					array('checkbox',  'getimagesize'  ,  false, __( "Calculate image sizes (Warning: this may slow down the directory loading speed!)", 'gravity-forms-addons')),
 					array('radio'	, 'postimage' , array(array('label' =>'<img src="'.GFCommon::get_base_url().'/images/doctypes/icon_image.gif" /> Show image icon', 'value'=>'icon', 'default'=>'1'), array('label' =>'Show full image', 'value'=>'image')), "How do you want images to appear in the directory?"),
 					array('checkbox', 'fulltext' , true, __("Show full content of a textarea or post content field, rather than an excerpt", 'gravity-forms-addons')),
 					
+					array('date', 'start_date' ,  false, __('Start date (in <code>YYYY-MM-DD</code> format)', 'gravity-forms-addons')),
+					array('date', 'end_date' ,  false, __('End date (in <code>YYYY-MM-DD</code> format)', 'gravity-forms-addons')),
 			);
 			
 			$administration = array(
@@ -2702,6 +2747,13 @@ EOD;
 		$label = str_replace('&lt;code&gt;', '<code>', str_replace('&lt;/code&gt;', '</code>', $label));
 		$output = '<li class="setting-container" style="width:90%; clear:left; border-bottom: 1px solid #cfcfcf; padding:.25em .25em .4em; margin-bottom:.25em;">';
 		$default = maybe_unserialize($default);
+		
+		$class = '';
+		if($type == 'date') {
+			$type = 'text';
+			$class = ' class="datepicker"';
+		}
+		
 		if($type == "checkbox") { 
 				if(!empty($defaults["{$rawid}"]) || ($defaults["{$rawid}"] === '1' || $defaults["{$rawid}"] === 1)) { 
 					$checked = ' checked="checked"';
@@ -2710,7 +2762,7 @@ EOD;
 		} 
 		elseif($type == "text") {
 				$default = $defaults["{$rawid}"];
-				$output .= '<label for="gf_settings_'.$rawid.'"><input type="text" id="gf_settings_'.$rawid.'" value="'.htmlspecialchars(stripslashes($default)).'" style="width:40%;" name="'.$id.'" /> <span class="howto">'.$label.$idLabel.'</span></label>'."\n";
+				$output .= '<label for="gf_settings_'.$rawid.'"><input type="text" id="gf_settings_'.$rawid.'" value="'.htmlspecialchars(stripslashes($default)).'" style="width:40%;" name="'.$id.'"'.$class.' /> <span class="howto">'.$label.$idLabel.'</span></label>'."\n";
 		} elseif($type == 'radio') {
 			if(is_array($default)) {
 				$output .= $label.'<ul class="ul-disc">';
@@ -2757,7 +2809,7 @@ EOD;
 		
 		if($type == "checkbox") {
 			$js = 'var '.$id.' = jQuery("#gf_settings_'.$id.'").is(":checked") ? "true" : "false";';
-		} elseif($type == "text") {
+		} elseif($type == "text" || $type == "date") {
 			$js = 'var '.$id.' = jQuery("#gf_settings_'.$id.'").val();';
 		} elseif($type == 'radio') {
 			$js = '
@@ -2893,7 +2945,7 @@ EOD;
 				}
 				$href = trailingslashit($url).sanitize_title(apply_filters('kws_gf_directory_endpoint', 'entry')).'/'.$form_id.apply_filters('kws_gf_directory_endpoint_separator', '/').$lead_id.'/';
 				#if(!empty($url['query'])) { $href .= '?'.$url['query']; }
-				$href = add_query_arg(array('gf_search' => isset($_REQUEST['gf_search']) ? $_REQUEST['gf_search'] : null, 'sort' => isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null, 'dir' => isset($_REQUEST['dir']) ? $_REQUEST['dir'] : null, 'page' => isset($_REQUEST['page']) ? $_REQUEST['page'] : null), $href);
+				$href = add_query_arg(array('gf_search' => isset($_REQUEST['gf_search']) ? $_REQUEST['gf_search'] : null, 'sort' => isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null, 'dir' => isset($_REQUEST['dir']) ? $_REQUEST['dir'] : null, 'page' => isset($_REQUEST['page']) ? $_REQUEST['page'] : null, 'start_date' => isset($_REQUEST['start_date']) ? $_REQUEST['start_date'] : null, 'end_date' => isset($_REQUEST['start_date']) ? $_REQUEST['end_date'] : null), $href);
 			} else {
 				// example.com/?page_id=24&leadid=14&form=4
 				$href = add_query_arg(array('leadid'=>$lead_id, 'form' => $form_id));
@@ -3032,7 +3084,7 @@ EOD;
 		return GFCommon::get_base_url() . "/images/doctypes/$file_name";
 	}
   
-  	function get_lead_count($form_id, $search, $star=null, $read=null, $column, $approved = false, $leads = array()){
+  	function get_lead_count($form_id, $search, $star=null, $read=null, $column, $approved = false, $leads = array(), $start_date = null, $end_date = null){
 		global $wpdb;
 
 		if(!is_numeric($form_id))
@@ -3311,7 +3363,7 @@ function kws_gf_load_functions() {
 		}
 		
 		function kws_gf_directory($atts) {
-			GFDirectory::kws_gf_directory($atts);
+			GFDirectory::make_directory($atts);
 		}
 		
 		
