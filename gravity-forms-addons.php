@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.0.2
+Version: 3.0.3
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -33,7 +33,7 @@ class GFDirectory {
 	private static $path = "gravity-forms-addons/gravity-forms-addons.php";
 	private static $url = "http://www.gravityforms.com";
 	private static $slug = "gravity-forms-addons";
-	private static $version = "3.0";
+	private static $version = "3.0.3";
 	private static $min_gravityforms_version = "1.3.9";
 	
 	public static function plugins_loaded() {
@@ -920,7 +920,6 @@ class GFDirectory {
 				$approved = false; // Otherwise, show entries as normal.
 			}
 			
-			
 			$entrylinkcolumns = self::get_entrylink_column($form, $entry);
 			$adminonlycolumns = self::get_admin_only($form);
 			
@@ -955,11 +954,11 @@ class GFDirectory {
 			
 			// Allow lightbox to determine whether showadminonly is valid without passing a query string in URL
 			if($entry === true && !empty($entrylightbox)) {
-				if(get_transient('gf_form_'.$form['id'].'_post_'.$post->ID.'_showadminonly') != $showadminonly) {
-					set_transient('gf_form_'.$form['id'].'_post_'.$post->ID.'_showadminonly', $showadminonly, 60*60);	
+				if(get_transient('gf_form_'.$form_id.'_post_'.$post->ID.'_showadminonly') != $showadminonly) {
+					set_transient('gf_form_'.$form_id.'_post_'.$post->ID.'_showadminonly', $showadminonly, 60*60);	
 				}
 			} else {
-				delete_transient('gf_form_'.$form['id'].'_post_'.$post->ID.'_showadminonly');
+				delete_transient('gf_form_'.$form_id.'_post_'.$post->ID.'_showadminonly');
 			}
 			
 			
@@ -1012,8 +1011,8 @@ class GFDirectory {
 				<script type="text/javascript">
 					<?php if($lightbox || !empty($entrylightbox)) { ?>
 		
-					var tb_pathToImage = "<?php bloginfo('url'); ?>/wp-includes/js/thickbox/loadingAnimation.gif";
-					var tb_closeImage = "<?php bloginfo('url'); ?>/wp-includes/js/thickbox/tb-close.png";
+					var tb_pathToImage = "<?php echo site_url('/wp-includes/js/thickbox/loadingAnimation.gif'); ?>";
+					var tb_closeImage = "<?php echo site_url('/wp-includes/js/thickbox/tb-close.png'); ?>";
 					var tb_height = 600;
 					<?php } ?>
 					function not_empty(variable) { 
@@ -1081,7 +1080,7 @@ class GFDirectory {
 						<?php
 				   }
 					 
-				do_action('kws_gf_before_directory_after_nav', do_action('kws_gf_before_directory_after_nav_form_'.$form['id'], $form, $leads, compact($approved,$sort_field,$sort_direction,$search_query,$first_item_index,$page_size,$star,$read,$is_numeric,$start_date,$end_date)));
+				do_action('kws_gf_before_directory_after_nav', do_action('kws_gf_before_directory_after_nav_form_'.$form_id, $form, $leads, compact($approved,$sort_field,$sort_direction,$search_query,$first_item_index,$page_size,$star,$read,$is_numeric,$start_date,$end_date)));
 				?>
 					
 					<table class="<?php echo $tableclass; ?>" cellspacing="0"<?php if(!empty($tablewidth)) { echo ' width="'.$tablewidth.'"'; } echo $tablestyle ? ' style="'.$tablestyle.'"' : ''; ?>>
@@ -1101,7 +1100,7 @@ class GFDirectory {
 								?>
 								<?php if(isset($jssearch) && $jssearch && !isset($jstable)) { ?>
 								<th scope="col" class="manage-column" onclick="Search('<?php echo $search_query ?>', '<?php echo $field_id ?>', '<?php echo $dir ?>');" style="cursor:pointer;"><?php 
-								} elseif(isset($jstable)) {?>
+								} elseif(isset($jstable) && $jstable) {?>
 									<th scope="col" class="manage-column">
 								<?php } else { ?>
 								<th scope="col" class="manage-column">
@@ -1324,7 +1323,7 @@ class GFDirectory {
 												} else {
 													$linkvalue = $value;
 												}
-										 		$value = self::make_entry_link($options, $linkvalue, $lead['id'], $form['id'], $field_id);
+										 		$value = self::make_entry_link($options, $linkvalue, $lead['id'], $form_id, $field_id);
 											}
 											
 										 	$value = apply_filters('kws_gf_directory_value', apply_filters('kws_gf_directory_value_'.$input_type, apply_filters('kws_gf_directory_value_'.$field_id, $value)));
@@ -1413,7 +1412,7 @@ class GFDirectory {
 					</table>
 					<?php
 					
-						do_action('kws_gf_after_directory_before_nav', do_action('kws_gf_after_directory_before_nav_form_'.$form['id'], $form, $leads, compact($approved,$sort_field,$sort_direction,$search_query,$first_item_index,$page_size,$star,$read,$is_numeric,$start_date,$end_date)));
+						do_action('kws_gf_after_directory_before_nav', do_action('kws_gf_after_directory_before_nav_form_'.$form_id, $form, $leads, compact($approved,$sort_field,$sort_direction,$search_query,$first_item_index,$page_size,$star,$read,$is_numeric,$start_date,$end_date)));
 					
 						
 					//Displaying paging links if appropriate
@@ -1445,7 +1444,7 @@ class GFDirectory {
 				echo "\n".'<!-- Directory generated by Gravity Forms Directory & Addons : http://wordpress.org/extend/plugins/gravity-forms-addons/ -->'."\n";
 			}
 				
-			do_action('kws_gf_after_directory', do_action('kws_gf_after_directory_form_'.$form['id'], $form, $leads, compact($approved,$sort_field,$sort_direction,$search_query,$first_item_index,$page_size,$star,$read,$is_numeric,$start_date,$end_date)));
+			do_action('kws_gf_after_directory', do_action('kws_gf_after_directory_form_'.$form_id, $form, $leads, compact($approved,$sort_field,$sort_direction,$search_query,$first_item_index,$page_size,$star,$read,$is_numeric,$start_date,$end_date)));
 			
 			$content = ob_get_contents(); // Get the output
 			ob_end_clean(); // Clear the cache
@@ -1821,8 +1820,8 @@ class GFDirectory {
 			'dir' => 'DESC',
 			
 			'status' => 'active', // Added in 2.0
-			'start_date' => false, // Added in 2.0
-			'end_date' => false, // Added in 2.0
+			'start_date' => '', // Added in 2.0
+			'end_date' => '', // Added in 2.0
 			
 			'wpautop' => true, // Convert bulk paragraph text to...paragraphs
 			'page_size' => 20, // Number of entries to show at once
@@ -2835,11 +2834,10 @@ EOD;
 		
 		$set = 'var '.$id.'Output = (jQuery.trim('.$id.') == "'.trim(addslashes(stripslashes_deep($defaults["{$id}"]))).'") ? "" : " '.$idCode.'";';
 		
-		/* // Debug
+		 // Debug
 		$set .= '
 		console.log("'.$id.' = "+'.$id.'Output+" - Default: '.trim(addslashes($defaults["{$id}"])).'");
 		';
-*/
 		
 		$return = array('js'=>$js, 'id' => $id, 'idcode'=>$idCode, 'setvalue' => $set);
 		
@@ -2937,7 +2935,7 @@ EOD;
 		if(!empty($entrylightbox)) {
 			$elwidth = apply_filters('kws_gf_directory_lightbox_entry_width', 600);
 			$elheight = apply_filters('kws_gf_directory_lightbox_entry_height', 'auto'); 
-			$href = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/entry-details.php?leadid=$lead_id&amp;form={$form['id']}&amp;post={$post->ID}&amp;KeepThis=true&amp;TB_iframe=true&amp;width=$elwidth&amp;height=$elheight"; $linkClass = ' class="thickbox lightbox"'; 
+			$href = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/entry-details.php?leadid=$lead_id&amp;form={$form_id}&amp;post={$post->ID}&amp;KeepThis=true&amp;TB_iframe=true&amp;width=$elwidth&amp;height=$elheight"; $linkClass = ' class="thickbox lightbox"'; 
 		} else {
 			$multisite = (function_exists('is_multisite') && is_multisite() && $wpdb->blogid == 1);
 			if($wp_rewrite->using_permalinks()) {

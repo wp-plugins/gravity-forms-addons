@@ -157,6 +157,15 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 3.0.3 = 
+Sorry for the many updates in one day, but I can only fix many bugs as they get reported.
+
+* Fixed "close thickbox" button image path for IIS (Windows) servers by using `site_url()` instead of `get_bloginfo()`
+* Fixed potential incorrect form ID in the link generation to single entries
+* Improved `start_date` and `end_date` shortcode generation
+* Fixed `Warning: require_once(directory.php): failed to open stream: No such file or directory` warning when using lightbox to view single entries.
+* Fixed non-javascript links to sort by column
+
 = 3.0.2 = 
 * Fixed "This form does not have any entries yet." issue - the filtering code was not compatible with Gravity Forms 1.5, only 1.6 beta. This has been resolved.
 
@@ -316,6 +325,13 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 3.0.3 = 
+* Fixed "close thickbox" button image path for IIS (Windows) servers by using `site_url()` instead of `get_bloginfo()`
+* Fixed potential incorrect form ID in the link generation to single entries
+* Improved `start_date` and `end_date` shortcode generation
+* Fixed `Warning: require_once(directory.php): failed to open stream: No such file or directory` warning when using lightbox to view single entries.
+* Fixed non-javascript links to sort by column
 
 = 3.0.2 = 
 * Fixed "This form does not have any entries yet." issue - the filtering code was not compatible with Gravity Forms 1.5, only 1.6 beta. This has been resolved.
