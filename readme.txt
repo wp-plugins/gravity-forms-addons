@@ -157,6 +157,9 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 3.0.2 = 
+* Fixed "This form does not have any entries yet." issue - the filtering code was not compatible with Gravity Forms 1.5, only 1.6 beta. This has been resolved.
+
 = 3.0.1 = 
 This release should fix some major issues users were having with 3.0. Sorry for the problems.
 
@@ -313,6 +316,9 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 3.0.2 = 
+* Fixed "This form does not have any entries yet." issue - the filtering code was not compatible with Gravity Forms 1.5, only 1.6 beta. This has been resolved.
 
 = 3.0.1 = 
 * Fixed issue where Directory Fields buttons weren't being rendered (the JavaScript hadn't been loaded)

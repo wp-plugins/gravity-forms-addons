@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.0.1
+Version: 3.0.2
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -784,7 +784,6 @@ class GFDirectory {
 			// Only the Go to Entry button adds disableMargins.
 			
 			if($col['type'] === 'hidden' && !empty($col['useAsEntryLink']) && !empty($col['disableMargins'])) {
-				#kws_print_r($col);
 				continue;
 			}
 			if(!empty($col['adminOnly'])) {
@@ -883,7 +882,7 @@ class GFDirectory {
 		
 		$atts['approved'] = isset($atts['approved']) ? $atts['approved'] : -1;
 		$options = shortcode_atts( self::directory_defaults(), $atts );
-#		kws_print_r($options);	
+
 		extract( $options );
 			
 			$form_id = $form;
@@ -947,6 +946,7 @@ class GFDirectory {
 			// Or start to generate the directory
 			//
 			$leads = GFDirectory::get_leads($form_id, $sort_field, $sort_direction, $search_query, $first_item_index, $page_size, $star, $read, $is_numeric, $start_date, $end_date, 'active', $approvedcolumn);
+			
 			if(!$showadminonly)	 {
 				$columns = self::remove_admin_only($columns, $adminonlycolumns, $approvedcolumn, false, false, $form);
 				$leads = self::remove_admin_only($leads, $adminonlycolumns, $approvedcolumn, true, false, $form);
@@ -992,6 +992,7 @@ class GFDirectory {
 				$page_links = false;
 				$lead_count = sizeof($leads);
 			}
+			
 			
 			if(!isset($directory_shown)) {
 				$directory_shown = true;
@@ -2165,8 +2166,8 @@ class GFDirectory {
         //getting results
         
         $results = $wpdb->get_results($sql);
-		
-		$return = '';
+        
+        $return = '';
 		if(function_exists('gform_get_meta')) {
 			$return = @RGFormsModel::build_lead_array($results); // This is a private function until 1.6
 		}
@@ -2268,7 +2269,11 @@ class GFDirectory {
 
         $star_filter = $star !== null && $status == 'active' ? $wpdb->prepare(" AND is_starred=%d AND status='active' ", $star) : "";
         $read_filter = $read !== null && $status == 'active' ? $wpdb->prepare(" AND is_read=%d AND status='active' ", $read) :  "";
-        $status_filter = $wpdb->prepare(" AND status=%s ", $status);
+        if(function_exists('gform_get_meta')) {
+	        $status_filter = $wpdb->prepare(" AND status=%s ", $status);
+	    } else {
+	    	$status_filter = '';
+	    }
 
         $start_date_filter = empty($start_date) ? "" : " AND datediff(date_created, '$start_date') >=0";
         $end_date_filter = empty($end_date) ? "" : " AND datediff(date_created, '$end_date') <=0";
@@ -3095,7 +3100,11 @@ EOD;
 
 		$star_filter = $star !== null ? $wpdb->prepare("AND is_starred=%d ", $star) : "";
 		$read_filter = $read !== null ? $wpdb->prepare("AND is_read=%d ", $read) : "";
-		$status_filter = $wpdb->prepare("AND status='active'");
+		if(function_exists('gform_get_meta')) {
+	        $status_filter = $wpdb->prepare(" AND status=%s ", 'active');
+	    } else {
+	    	$status_filter = '';
+	    }
 		$start_date_filter = empty($start_date) ? "" : " AND datediff(date_created, '$start_date') >=0";
 		$end_date_filter = empty($end_date) ? "" : " AND datediff(date_created, '$end_date') <=0";
 
