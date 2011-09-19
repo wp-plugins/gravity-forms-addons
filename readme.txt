@@ -10,7 +10,7 @@ Add directory capabilities and other functionality to the great <a href="http://
 
 == Description ==
 
-> This plugin requires the <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!
+> <em></em>This plugin requires the <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!<em></em>
 
 __How easy is <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms</a>? Check out the video below:__
 [youtube http://www.youtube.com/watch?v=cRtE_riFwaw]
