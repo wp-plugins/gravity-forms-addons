@@ -272,65 +272,6 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 	- Add entry detail links by having Entry ID column added to directory
 * Fixed footer column filters
 
-= 2.3.1 = 
-* Added "Expand All Menus" checkbox to easily change whether the Add Fields menus are expanded in the Form Editor
-
-= 2.3 =
-* Added new directory option: `postimage`. When your directory has an image, you can choose to show a generic icon (default) or show the full image.
-* Directory entry images now have alt, width and height attributes
-* Added powerful `kws_gf_directory_lead_image` filters (see "Plugin filters" in the FAQ)
-
-= 2.2.1 = 
-* Added fix for Add Fields Column shifting out of view, <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-add-fields-column-shifts-in-the-edit-forms-view" rel="nofollow">as reported here</a> and on the plugin support page. See the FAQ item "I can't see the fields in the Add Fields box!"
-
-= 2.2 = 
-* Fixed visibility of Insert a Directory form in the admin screen
-* Added multiple filters to modify output before showing the directory (See FAQ for more information)
-* Since Gravity Forms 1.4 (and the advent of Ajax submission), every time someone submitted an Ajax form, admin-ajax.php would show as a visited page. This should now be fixed.
-* Fixed various PHP warnings.
-* Fixed lightbox functionality on links
-
-= 2.1.2 =
-* Fixed <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-widget-admin-bug" rel="nofollow">reported bug</a> with the widget where checkboxes weren't staying checked. No other changes.
-
-= 2.1.1 =
-* Fixed "Insert Directory" modal ("lightbox") functionality (<a href="http://www.seodenver.com/gravity-forms-addons/comment-page-1/#comment-3152">as reported on the plugin page</a>)
-
-= 2.1.0 =
-* Incorporated Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank">Gravity Forms Widget + Extras</a> plugin.
-* Removed some code that may have been negatively affecting the display of the form fields on the Form Editor page
-
-= 2.0.2 =
-* Fixed  `Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 522` and 
-`Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 528` PHP Warnings. Please note: you should turn off PHP warnings on your production website. To do this, add the following to your `wp-config.php` file:
-<pre>
-error_reporting(0);
-@ini_set(‘display_errors’, 0);
-</pre>
-
-= 2.0.1 = 
-* Fixed Admin-only columns being shown if in Select Columns view
-* Turned off Admin-only columns by default, and added option to force showing of Admin-only options the Approved column will always be able to be shown.
-
-= 2.0 =
-* This upgrade deserves a new version number. Added directory capabilities. <em>Killer</em> directory capabilities.
-* Added a form field identifier to more easily find out the form ID. Check out the FAQ "How do I find a field ID?"
-
-= 1.2.1.1 = 
-* Updated with GPL information. Did you know Gravity Forms is also GPL? Any WordPress plugin is.
-
-= 1.2.1 = 
-* Fixed whitespace issue if site is gzip'ed. No need to upgrade if you aren't getting the `Warning: Cannot modify header information - headers already sent by...` PHP error.
-
-= 1.2 = 
-* Compatibility with Gravity Forms 1.3
-
-= 1.1 =
-* Added Edit link to Entries page to directly edit an entry
-* Added a bunch of functions to use in directly accessing form and entry data from outside the plugin
-
-= 1.0 =
-* Launched plugin
 
 == Upgrade Notice ==
 
@@ -338,6 +279,7 @@ error_reporting(0);
 * Added much-requested option for front-end User editing of entries. Must be enabled (off by default).
 * Added option for front-end Administrator editing of entries (except for approval status). Must be enabled (off by default).
 * Fixed issue where multiple-word searches were being converted into one word.
+* Shortened changelog to only show versions after 2.4
 
 = 3.0.3 = 
 * Fixed "close thickbox" button image path for IIS (Windows) servers by using `site_url()` instead of `get_bloginfo()`
@@ -440,48 +382,6 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 	- Entries in separate page have their own permalink (http://example.com/directory/entry/[form#]/[entry#]/)
 	- Add entry detail links by having Entry ID column added to directory
 * Fixed footer column filters
-
-= 2.3.1 = 
-* Added "Expand All Menus" checkbox to easily change whether the Add Fields menus are expanded in the Form Editor
-
-= 2.3 =
-* Added new directory option: `postimage`. When your directory has an image, you can choose to show a generic icon (default) or show the full image.
-* Added powerful `kws_gf_directory_lead_image` filters (see "Plugin filters" in the FAQ)
-
-= 2.2.1 = 
-* Added fix for Add Fields Column shifting out of view, <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-add-fields-column-shifts-in-the-edit-forms-view" rel="nofollow">as reported here</a> and on the plugin support page. See the FAQ item "I can't see the fields in the Add Fields box!"
-
-= 2.2 = 
-* Fixed visibility of Insert a Directory form in the admin screen
-* Added multiple filters to modify output before showing the directory (See FAQ for more information)
-* Since Gravity Forms 1.4 (and the advent of Ajax submission), every time someone submitted an Ajax form, admin-ajax.php would show as a visited page. This should now be fixed.
-* Fixed various PHP warnings.
-* Fixed lightbox functionality on links
-
-= 2.1.2 =
-* Fixed <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-addons-widget-admin-bug" rel="nofollow">reported bug</a> with the widget where checkboxes weren't staying checked. No other changes.
-
-= 2.1.1 =
-* Fixed "Insert Directory" modal ("lightbox") functionality (<a href="http://www.seodenver.com/gravity-forms-addons/comment-page-1/#comment-3152">as reported on the plugin page</a>)
-
-= 2.1.0 =
-* Incorporated Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank">Gravity Forms Widget + Extras</a> plugin.
-* Removed some code that may have been negatively affecting the display of the form fields on the Form Editor page.
-
-= 2.0.2 = 
-* Fixed  `Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 522` and 
-`Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 528` PHP Warnings. Please note: you should turn off PHP warnings on your production website. To do this, add the following to your `wp-config.php` file:
-<pre>
-error_reporting(0);
-@ini_set(‘display_errors’, 0);
-</pre>
-
-= 2.0.1 = 
-* Fixed Admin-only columns being shown if in Select Columns view
-* Turned off Admin-only columns by default, and added option to force showing of Admin-only options the Approved column will always be able to be shown.
-
-= 2.0 =
-* This upgrade deserves a new version number. Added directory capabilities. Killer directory capabilities.
 
 
 == Installation == 
