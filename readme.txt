@@ -62,7 +62,7 @@ This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-w
 
 #### Have an idea or issue with this Gravity Forms add-on plugin?
 
-* [Leave suggestions, comments, and/or bug reports](http://www.seodenver.com/gravity-forms-addons/)
+* [Leave suggestions, comments, and/or bug reports](http://www.seodenver.com/forums/forum/gravity-forms-addons/)
 
 == Screenshots ==
 
