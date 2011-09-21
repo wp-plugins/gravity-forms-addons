@@ -24,6 +24,7 @@ Gravity Forms is already the easiest form plugin...now, the Gravity Forms Direct
 
 * Completely shortcode based, using the `[directory]` shortcode
 * Includes built-in __searching__
+* Allow logged-in users to edit their directory listings
 * Sort by column
 * Easily re-organize the columns inside Gravity Forms
 * Has an option to <strong>show only approved listings</strong> with an easy approval process
