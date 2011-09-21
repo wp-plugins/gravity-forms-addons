@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.0.3
+Version: 3.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -342,10 +342,11 @@ class GFDirectory {
     public function shortlink($link = '') {
 		global $post;
 		if(empty($post)) { return; }
-
-		if(empty($link)) { 
+		if(empty($link) && isset($post->guid)) {
 			$link = $post->guid;
+			return $link;
 		}
+		
 		$url = add_query_arg(array());
 		if(preg_match('/'.sanitize_title(apply_filters('kws_gf_directory_endpoint', 'entry')).'\/([0-9]+)(?:\/|-)([0-9]+)\/?/ism',$url, $matches)) {
 			$link = add_query_arg(array('form'=>(int)$matches[1], 'leadid'=>(int)$matches[2]), $link);
@@ -464,13 +465,18 @@ class GFDirectory {
 			'fields' => array(
 				array(
 					'class' => 'button',
-					'value' => 'Approved',
+					'value' => __('Approved', 'gravity-forms-addons'),
 					'onclick' => "StartAddField('directoryapproved');"
 				), 
 				array(
 					'class' => 'button',
-					'value' => 'Entry Link',
+					'value' => __('Entry Link', 'gravity-forms-addons'),
 					'onclick' => "StartAddField('entrylink');"
+				), 
+				array(
+					'class' => 'button',
+					'value' => __('User Edit Link', 'gravity-forms-addons'),
+					'onclick' => "StartAddField('usereditlink');"
 				)
 			)
 		);
@@ -640,8 +646,63 @@ class GFDirectory {
 	    </script>
 	    <?php
 	}
+	public function edit_lead_detail($Form, $lead, $options) {
+		global $current_user, $_gform_directory_approvedcolumn;
+		
+		if(empty($_gform_directory_approvedcolumn)) { $_gform_directory_approvedcolumn = self::get_approved_column($Form); }
+		
+		$adminonlycolumns = self::get_admin_only($Form);
+		
+		// If you want to allow users to edit their own approval (?) add a filter and return true.
+		if(apply_filters('kws_gf_directory_allow_user_edit_approved', false) === false) {
+			$Form['fields'] = self::remove_approved_column('form', $Form['fields'], $_gform_directory_approvedcolumn);
+		}
+		
+		if(isset($_GET['edit']) && !wp_verify_nonce(RGForms::get('edit'), 'edit')) {
+			_e(sprintf('%sYou do not have permission to edit this form.%s', '<div class="error">', '</div>'), 'gravity-forms-addons');
+			return;
+		}
+
+		
+		if(
+			(!empty($options['useredit']) && is_user_logged_in() && $current_user->id === $lead['created_by']) === true || 
+			(!empty($options['adminedit']) && self::has_access("gravityforms_directory")) === true
+		  ) {
+			
+			if(RGForms::post("action") === "update") {
+	            check_admin_referer('gforms_save_entry', 'gforms_save_entry');
+	            $lead = apply_filters('kws_gf_directory_lead_being_updated', $lead, $Form);
+	            do_action('kws_gf_directory_pre_update_lead', $lead, $Form);
+	            RGFormsModel::save_lead($Form, $lead);
+	            $lead = RGFormsModel::get_lead($lead["id"]);
+	            do_action('kws_gf_directory_post_update_lead', $lead, $Form);
+	            _e(apply_filters('kws_gf_directory_lead_updated_message', sprintf("%sThe entry was successfully updated.%s", "<p class='updated' id='message' style='padding:.5em .75em; background-color:#ffffcc; border:1px solid #ccc;'>", "</p>"), $lead, $Form), 'gravity-forms-addons');
+			} elseif(isset($_GET['edit'])) {
+				add_filter('kws_gf_directory_backlink', array('GFDirectory', 'edit_entry_backlink'), 1, 2); ?>
+				<form method="post" id="entry_form" enctype="multipart/form-data" action="<?php echo remove_query_arg(array('gf_search','sort','dir', 'page', 'edit'), add_query_arg(array()));?>">
+		            <?php wp_nonce_field('gforms_save_entry', 'gforms_save_entry') ?>
+		            <input type="hidden" name="action" id="action" value="update"/>
+		            <input type="hidden" name="screen_mode" id="screen_mode" value="edit" />
+		            <?php
+						GFEntryDetail::lead_detail_edit($Form, $lead);
+						$update_button = '<input class="button-primary" type="submit" tabindex="4" value="Update Entry" name="save" onclick="' . $button_click . '"/>';				echo $update_button;
+					?>
+				</form>
+				<?php 
+				return false;
+			}
+		}
+		return $lead;
+	}
+	
+	public function edit_entry_backlink($content = '', $href = '', $entryback = '') {
+		return '<p class="entryback"><a href="'.add_query_arg(array(), remove_query_arg(array('edit'))).'">'.esc_html(__(apply_filters('kws_gf_directory_edit_entry_cancel', "&larr; Cancel Editing"), "gravity-forms-addons")).'</a></p>';
+	}
 	
 	public function lead_detail($Form, $lead, $allow_display_empty_fields=false, $inline = true, $options = array()) {
+			global $current_user, $_gform_directory_approvedcolumn;
+			get_currentuserinfo();
+			
 			$display_empty_fields = ''; $allow_display_empty_fields = true;
 			if($allow_display_empty_fields){
 				$display_empty_fields = @rgget("gf_display_empty_fields", $_COOKIE);
@@ -649,7 +710,14 @@ class GFDirectory {
 			if(empty($options)) {
 				$options = self::directory_defaults();
 			}
+			
+			// Process editing leads
+			$lead = self::edit_lead_detail($Form, $lead, $options);
+			
+			if($lead === false) { return; }
+			
 			extract($options);
+			
 			?>
 			<table cellspacing="0" class="widefat fixed entry-detail-view">
 			<?php if($inline) { ?>
@@ -675,7 +743,7 @@ class GFDirectory {
 					<?php
 					$count = 0;
 					$field_count = sizeof($Form["fields"]);
-					
+#					kws_print_r($Form);
 					foreach($Form["fields"] as $field){
 						
 						// Don't show fields defined as hide in single.
@@ -771,6 +839,27 @@ class GFDirectory {
 							<?php
 						}
 					}
+					
+					// Edit link
+					if(
+						!empty($options['useredit']) && is_user_logged_in() && $current_user->id === $lead['created_by'] || // Is user who created the entry 
+						!empty($options['adminedit']) && self::has_access("gravityforms_directory") // Or is an administrator
+					) {
+					
+					if(!empty($options['adminedit']) && self::has_access("gravityforms_directory")) {
+						$editbuttontext = apply_filters('kws_gf_directory_edit_entry_text_admin', __("Edit Entry", 'gravity-forms-addons'));
+					} else {
+						$editbuttontext = apply_filters('kws_gf_directory_edit_entry_text_user', __("Edit Your Entry", 'gravity-forms-addons'));
+					}
+					
+					?>
+						<tr>
+							<th scope="row" class="entry-view-field-name"><?php _e(apply_filters('kws_gf_directory_edit_entry_th', "Edit"), "gravity-forms-addons"); ?></th>
+								<td class="entry-view-field-value useredit"><a href="<?php echo add_query_arg(array('edit' => wp_create_nonce('edit'))); ?>"><?php _e($editbuttontext); ?></a></td>
+						</tr>
+					<?php
+					}
+					
 					?>
 				</tbody>
 			</table>
@@ -817,6 +906,8 @@ class GFDirectory {
 			$form = apply_filters('kws_gf_directory_lead_detail_form', RGFormsModel::get_form_meta((int)$formid));
 			$lead = apply_filters('kws_gf_directory_lead_detail', RGFormsModel::get_lead((int)$leadid));
 			
+			#kws_print_r($lead);
+			
 			if(empty($approvedcolumn)) { $approvedcolumn = self::get_approved_column($form); }
 			if(empty($adminonlycolumns) && !$showadminonly) { $adminonlycolumns = self::get_admin_only($form); }
 			
@@ -831,7 +922,7 @@ class GFDirectory {
 				$content = ob_get_contents(); // Get the output
 			ob_end_clean(); // Clear the cache
 			
-			$current = remove_query_arg(array('row', 'page_id', 'leadid', 'form'));
+			$current = remove_query_arg(array('row', 'page_id', 'leadid', 'form', 'edit'));
 			$url = parse_url(add_query_arg(array(), $current));
 			if(function_exists('is_multisite') && is_multisite() && $wpdb->blogid != 1) {
 				$href = $current;
@@ -839,11 +930,12 @@ class GFDirectory {
 				$href = isset($post->permalink) ? $post->permalink : get_permalink();
 			}
 			if(!empty($url['query'])) { $href .= '?'.$url['query']; }
-			if(isset($_REQUEST['row'])) { $href .= '#lead_row_'.$leadid; }
+			
+			if(!empty($options['entryanchor']) && !empty($options['showrowids'])) { $href .= '#lead_row_'.$leadid; }
 			
 			// If there's a back link, format it
 			if(!empty($entryback) && !empty($entryonly)) {
-				$link = apply_filters('kws_gf_directory_backlink', '<p class="entryback"><a href="'.$href.'">'.esc_html($entryback).'</a></p>');
+				$link = apply_filters('kws_gf_directory_backlink', '<p class="entryback"><a href="'.$href.'">'.esc_html($entryback).'</a></p>', $href, $entryback);
 			} else { 
 				$link = ''; 
 			}
@@ -904,7 +996,7 @@ class GFDirectory {
 			$first_item_index = $page_index * $page_size;
 			$link_params = array();
 			if(!empty($page_index)) { $link_params['page'] = $page_index; }
-			$formaction = remove_query_arg(array('gf_search','sort','dir', 'page'), add_query_arg($link_params));
+			$formaction = remove_query_arg(array('gf_search','sort','dir', 'page', 'edit'), add_query_arg($link_params));
 			$tableclass .= !empty($jstable) ? ' tablesorter' : '';
 			$title = $form["title"];
 			$sort_field_meta = RGFormsModel::get_field($form, $sort_field);
@@ -927,6 +1019,7 @@ class GFDirectory {
 			// Show only a single entry
 			//
 			if(!empty($entry) && $detail = self::process_lead_detail(true, $entryback, $showadminonly, $adminonlycolumns, $approvedcolumn, $options, $entryonly)) {
+				
 				echo $detail;
 				if(!empty($entryonly)) {
 					do_action('kws_gf_after_directory', do_action('kws_gf_after_directory_form_'.$form_id, $form, compact($approved,$sort_field,$sort_direction,$search_query,$first_item_index,$page_size,$star,$read,$is_numeric,$start_date,$end_date)));
@@ -1031,7 +1124,7 @@ class GFDirectory {
 					});
 				<?php } else if(isset($jssearch) && $jssearch) { ?>
 					function Search(search, sort_field_id, sort_direction){
-						if(not_empty(search)) { var search = "&gf_search=" + search; } else {  var search = ''; }
+						if(not_empty(search)) { var search = "&gf_search=" + encodeURIComponent(search); } else {  var search = ''; }
 						if(not_empty(sort_field_id)) { var sort = "&sort=" + sort_field_id; } else {  var sort = ''; }
 						if(not_empty(sort_direction)) { var dir = "&dir=" + sort_direction; } else {  var dir = ''; }
 						var page = '<?php if($wp_rewrite->using_permalinks()) { echo '?'; } else { echo '&'; } ?>page='+<?php echo isset($_GET['page']) ? intval($_GET['page']) : '"1"'; ?>;
@@ -1046,12 +1139,11 @@ class GFDirectory {
 			<div class="wrap">
 				<?php if($icon) { ?><img alt="<?php _e("Gravity Forms", "gravity-forms-addons") ?>" src="<?php echo GFCommon::get_base_url()?>/images/gravity-title-icon-32.png" style="float:left; margin:15px 7px 0 0;"/><?php } ?>
 				<?php if($titleshow) { ?><h2><?php echo $titleprefix.$title; ?> </h2><?php } ?>
-				<?php if($search && $lead_count > 0) { ?>
+				<?php if($search && ($lead_count > 0 || !empty($_GET['gf_search']))) { ?>
 				<form id="lead_form" method="get" action="<?php echo $formaction; ?>">
 					<p class="search-box">
 						<label class="hidden" for="lead_search"><?php _e("Search Entries:", "gravity-forms-addons"); ?></label>
 						<input type="text" name="gf_search" id="lead_search" value="<?php echo $search_query ?>"<?php if($searchtabindex) { echo ' tabindex="'.intval($searchtabindex).'"';}?> />
-						<input type="hidden" name="p" value="<?php echo isset($post->ID) ? $post->ID : 0; ?>" />
 						<input type="submit" class="button" id="lead_search_button" value="<?php _e("Search", "gravity-forms-addons") ?>"<?php if($searchtabindex) { echo ' tabindex="'.intval($searchtabindex++).'"';}?> />
 					</p>
 				</form>
@@ -1654,6 +1746,27 @@ class GFDirectory {
 		           	return field;
 			}
 			
+			function SetDefaultValues_usereditlink(field) {
+					field.label = "<?php _e("Edit", "gravity-forms-addons"); ?>";
+		            
+		            field.adminOnly = true;
+		            
+		            if(!field.choices)
+		                field.choices = new Array(new Choice("<?php _e("User Edit", "gravity-forms-addons"); ?>"));
+		
+		            field.inputs = new Array();
+		            for(var i=1; i<=field.choices.length; i++)
+		                field.inputs.push(new Input(field.id + (i/10), field.choices[i-1].text));
+		            
+		            field.hideInSingle = false;
+		            field.useAsEntryLink = false;
+		            
+		            field.type = 'hidden';
+		            field.disableMargins = 2;
+		            
+		           	return field;
+			}
+			
 			function SetDefaultValues_directoryapproved(field) {
 					field.label = "<?php _e("Approved? (Admin-only)", "gravity-forms-addons"); ?>";
 		            
@@ -1818,6 +1931,8 @@ class GFDirectory {
 			'valign' => '',
 			'sort' => 'date_created', // Use the input ID ( example: 1.3 or 7 or ip )
 			'dir' => 'DESC',
+			'useredit' => false,
+			'adminedit' => false,
 			
 			'status' => 'active', // Added in 2.0
 			'start_date' => '', // Added in 2.0
@@ -1946,8 +2061,25 @@ class GFDirectory {
             .ul-square li { list-style: square!important; }
             .ol-decimal li { list-style: decimal!important; }
             .form-table label { font-size: 1em!important; margin: .4em 0; display: block;}
-/*             div.label-divider { display: none!important; } */
             li.setting-container { border: none!important; }
+            #kws_gf_donate {
+				float: right;
+				width: 300px;
+				padding: 0 10px;
+				color: #333;
+				margin-bottom: 10px;
+			}
+			#kws_gf_donate .button-primary {
+				display:block; float:left; margin:5px 0; text-align:center;
+			}
+			#kws_gf_donate img {
+				float: left;
+				margin-right: 10px;
+				margin-bottom: .5em;
+				-moz-border-radius: 5px;
+				-webkit-border-radius: 5px;
+			}
+
         </style>
         <script type="text/javascript">
         	jQuery('document').ready(function($) {
@@ -1976,11 +2108,14 @@ class GFDirectory {
 				
 				$('#kws_gf_instructions_button').click(function(e) {
 					e.preventDefault();
+					visible = $('#kws_gf_instructions').is(':visible');
+					if(!visible) { $('#kws_gf_donate').slideUp(150); }
 					$('#kws_gf_instructions').slideToggle(function() {
 						var $this = $(this);
 						var $that = $('#kws_gf_instructions_button');
 						$that.text(function() {
-							if($this.is(':visible')) {
+							if(visible) {
+								$('#kws_gf_donate').slideDown(100);
 								return '<?php _e('Hide Instructions', 'gravity-forms-addons'); ?>';
 							} else {
 								return '<?php _e('View Directory Instructions', 'gravity-forms-addons'); ?>';
@@ -2004,9 +2139,17 @@ class GFDirectory {
 				echo "<div class='fade below-h2 updated' id='message'>".wpautop($message)."</div>";
 			}
 		
+		// if you must, you can filter this out...
+		if(apply_filters('kws_gf_show_donate_box', true)) {
 		?>
-		
-		<p class="submit"><a href="#" class="button button-primary submit" id="kws_gf_instructions_button"><?php 
+		<div id="kws_gf_donate" class="alert_gray">
+			<p>
+			<?php if(!is_ssl()) {?><img src="http://www.gravatar.com/avatar/f0f175f8545912adbdab86f0b586f4c3?s=64" alt="Zack Katz, plugin author" height="64" width="64" /> <?php } _e('Hi there! If you find this plugin useful, consider showing your appreciation by making a small donation to its author!', 'gravity-forms-addons'); ?>
+			<a href="http://katz.si/35" target="_blank" class="button button-primary"><?php _e('Donate using PayPal', 'gravity-forms-addons'); ?></a>
+			</p>
+		</div>
+		<?php } ?>
+		<p class="submit"><span style="padding-right:.5em;" class="description">Need help getting started?</span> <a href="#" class="button button-secondary" id="kws_gf_instructions_button"><?php 
 			if(!empty($settings['saved']) && !isset($_REQUEST['viewinstructions'])) {
 				_e('View Directory Instructions', 'gravity-forms-addons'); 
 			} else {
@@ -2014,7 +2157,7 @@ class GFDirectory {
 			}
 		?></a></p>
 		
-		<div id="kws_gf_instructions"<?php if(!empty($settings['saved']) && !isset($_REQUEST['viewinstructions'])) {?>  class="hide-if-js" <?php } ?>>
+		<div id="kws_gf_instructions"<?php if(!empty($settings['saved']) && !isset($_REQUEST['viewinstructions'])) {?>  class="hide-if-js clear" <?php } ?>>
 			<div class="delete-alert alert_gray">
 				<div class="alignright" style="margin:1em 1.2em;">
 					<iframe width="400" height="255" src="http<?php echo is_ssl() ? 's' : '';?>://www.youtube.com/embed/PMI7Jb-RP2I?hd=1" frameborder="0" allowfullscreen></iframe>
@@ -2043,9 +2186,8 @@ class GFDirectory {
 			
 			<div class="hr-divider"></div>
 	    </div>
-        <form method="post" action="">
+        <form method="post" action="" class="clear">
             <?php wp_nonce_field("update", "gf_directory_update") ?>
-            <h3><?php _e("Gravity Forms Addons Settings", "gravity-forms-addons") ?></h3>
             <table class="form-table">
                 <tr>
                     <th scope="row"><label for="gf_addons_directory"><?php _e("Gravity Forms Directory", "gravity-forms-addons"); ?></label> </th>
@@ -2056,8 +2198,8 @@ class GFDirectory {
                 <tr id="directory_settings_row">
                 	<th scope="row"></th>
                 	<td>
-                		<h3 style="margin-bottom:0; padding-bottom:0;"><?php _e("Directory Default Settings", "gravity-forms-addons"); ?></h3>
-                		<h4 class="description" style="margin-top:0;"><?php _e("Note: these defaults can be over-written when inserting a directory.", "gravity-forms-addons"); ?></h4>
+                		<h2 style="margin-bottom:0; padding-bottom:0;"><?php _e("Directory Default Settings", "gravity-forms-addons"); ?></h2>
+                		<h3><?php _e("These defaults can be over-written when inserting a directory.", "gravity-forms-addons"); ?></h3>
                 		
                 		<?php 
                 		self::make_popup_options(false);
@@ -2628,6 +2770,8 @@ EOD;
 			
 			$administration = array(
 				array('checkbox', 'showadminonly' ,  false, __("Show Admin-Only columns <span class='description'>(in Gravity Forms, Admin-Only fields are defined by clicking the Advanced tab on a field in the Edit Form view, then editing Visibility > Admin Only)</span>", 'gravity-forms-addons')),
+				array('checkbox', 'useredit' , false, __(sprintf("Allow logged-in users to edit entries they created. Will add an 'Edit Your Entry' field to the Single Entry View. %sNote: feature in beta. Test thoroughly before use on production sites!%s", '<strong>', '</strong>'), 'gravity-forms-addons')),
+				array('checkbox', 'adminedit' , false, __(sprintf('Allow %sadministrators%s to edit entries they created. Will add an \'Edit Your Entry\' field to the Single Entry View. %sNote: feature in beta. Test thoroughly before use on production sites!%s', '<strong>', '</strong>', '<strong>', '</strong>'), 'gravity-forms-addons')),
 			);	
 			
 			$formatting = array( 
@@ -2755,7 +2899,7 @@ EOD;
 		$class = '';
 		if($type == 'date') {
 			$type = 'text';
-			$class = ' class="datepicker"';
+			$class = ' class="gf_addons_datepicker datepicker"';
 		}
 		
 		if($type == "checkbox") { 
@@ -2948,17 +3092,13 @@ EOD;
 				}
 				$href = trailingslashit($url).sanitize_title(apply_filters('kws_gf_directory_endpoint', 'entry')).'/'.$form_id.apply_filters('kws_gf_directory_endpoint_separator', '/').$lead_id.'/';
 				#if(!empty($url['query'])) { $href .= '?'.$url['query']; }
-				$href = add_query_arg(array('gf_search' => isset($_REQUEST['gf_search']) ? $_REQUEST['gf_search'] : null, 'sort' => isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null, 'dir' => isset($_REQUEST['dir']) ? $_REQUEST['dir'] : null, 'page' => isset($_REQUEST['page']) ? $_REQUEST['page'] : null, 'start_date' => isset($_REQUEST['start_date']) ? $_REQUEST['start_date'] : null, 'end_date' => isset($_REQUEST['start_date']) ? $_REQUEST['end_date'] : null), $href);
+				$href = add_query_arg(array('gf_search' => !empty($_REQUEST['gf_search']) ? $_REQUEST['gf_search'] : null, 'sort' => isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null, 'dir' => isset($_REQUEST['dir']) ? $_REQUEST['dir'] : null, 'page' => isset($_REQUEST['page']) ? $_REQUEST['page'] : null, 'start_date' => isset($_REQUEST['start_date']) ? $_REQUEST['start_date'] : null, 'end_date' => isset($_REQUEST['start_date']) ? $_REQUEST['end_date'] : null), $href);
 			} else {
 				// example.com/?page_id=24&leadid=14&form=4
 				$href = add_query_arg(array('leadid'=>$lead_id, 'form' => $form_id));
 			}
 		}
-		if($showrowids && $entryanchor) {
-			// example.com/?page_id=24&leadid=14&form=4&row=58
-			// example.com/example-directory/entry/4/14/?row=58
-			$href = add_query_arg(array('row'=>$lead_id), $href);
-		} 
+
 		$value = '<a href="'.$href.'"'.$linkClass.' title="'.$entrytitle.'">'.$entrylink.'</a>';
 		return $value;
 	}
@@ -3178,6 +3318,17 @@ EOD;
 		}
 		
 		return false;
+	}
+	
+	function remove_approved_column($type = 'form', $fields, $approvedcolumn) {
+		
+		foreach($fields as $key => $column) {
+			if((int)floor($column['id']) === (int)floor($approvedcolumn)) {
+				unset($fields["{$key}"]);
+			}
+		}
+		
+		return $fields;
 	}
 	
 	function remove_admin_only($leads, $adminOnly, $approved, $isleads, $single = false, $form) {

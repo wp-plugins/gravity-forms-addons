@@ -157,6 +157,13 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 3.1 = 
+* Added much-requested option for front-end User editing of entries. Must be enabled (off by default).
+* Added option for front-end Administrator editing of entries (except for approval status). Must be enabled (off by default).
+* Fixed issue where multiple-word searches were being converted into one word.
+* Removed `?row=#` for the back-link to the directory. There was no need for it to get the lead ID.
+* Added actions and filters for the new editing capabilities. Check out the code if you a) know what this means, and b) want to see. Search for `apply_filters` and `do_action`.
+
 = 3.0.3 = 
 Sorry for the many updates in one day, but I can only fix many bugs as they get reported.
 
@@ -325,6 +332,11 @@ error_reporting(0);
 * Launched plugin
 
 == Upgrade Notice ==
+
+= 3.1 = 
+* Added much-requested option for front-end User editing of entries. Must be enabled (off by default).
+* Added option for front-end Administrator editing of entries (except for approval status). Must be enabled (off by default).
+* Fixed issue where multiple-word searches were being converted into one word.
 
 = 3.0.3 = 
 * Fixed "close thickbox" button image path for IIS (Windows) servers by using `site_url()` instead of `get_bloginfo()`
