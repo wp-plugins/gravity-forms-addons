@@ -24,6 +24,7 @@ Gravity Forms is already the easiest form plugin...now, the Gravity Forms Direct
 
 * Completely shortcode based, using the `[directory]` shortcode
 * Includes built-in __searching__
+* Allow logged-in users to edit their directory listings
 * Sort by column
 * Easily re-organize the columns inside Gravity Forms
 * Has an option to <strong>show only approved listings</strong> with an easy approval process
@@ -304,7 +305,7 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 `Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 528` PHP Warnings. Please note: you should turn off PHP warnings on your production website. To do this, add the following to your `wp-config.php` file:
 <pre>
 error_reporting(0);
-@ini_set(‘display_errors’, 0);
+@ini_set(ëdisplay_errorsí, 0);
 </pre>
 
 = 2.0.1 = 
@@ -472,7 +473,7 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 `Warning: in_array() [function.in-array]: Wrong datatype for second argument in /gravity-forms-addons/directory.php on line 528` PHP Warnings. Please note: you should turn off PHP warnings on your production website. To do this, add the following to your `wp-config.php` file:
 <pre>
 error_reporting(0);
-@ini_set(‘display_errors’, 0);
+@ini_set(ëdisplay_errorsí, 0);
 </pre>
 
 = 2.0.1 = 
