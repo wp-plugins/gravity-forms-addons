@@ -158,6 +158,9 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 3.1.1 =
+* Fixes issue where entries not showing on sort (<a href="http://www.seodenver.com/forums/topic/entries-not-showing-on-sort/">as reported in the plugin support forums</a>)
+
 = 3.1 = 
 * Added much-requested option for front-end User editing of entries. Must be enabled (off by default).
 * Added option for front-end Administrator editing of entries (except for approval status). Must be enabled (off by default).
@@ -274,6 +277,9 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.1.1 =
+* Fixes issue where entries not showing on sort (<a href="http://www.seodenver.com/forums/topic/entries-not-showing-on-sort/">as reported in the plugin support forums</a>) - NoteL this only affected users using versions of Gravity Forms older than 1.6.
 
 = 3.1 = 
 * Added much-requested option for front-end User editing of entries. Must be enabled (off by default).

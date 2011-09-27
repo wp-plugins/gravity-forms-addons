@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.1
+Version: 3.1.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -1560,7 +1560,7 @@ class GFDirectory {
     	}
     }
     
-    public function attr($default = '<span class="kws_gf_credit" style="font-weight:normal; text-align:center; display:block; margin:0 auto;">Powered by <a href="http://seodenver.com/gravity-forms-addons/">Gravity Forms Directory</a></span>') {
+    public function attr($default = '<span class="kws_gf_credit" style="font-weight:normal; text-align:center; display:block; margin:0 auto;">Powered by <a href="http://www.seodenver.com/plugins/gravity-forms-addons/">Gravity Forms Directory</a></span>') {
 		
 		include_once(ABSPATH . WPINC . '/feed.php');
 		
@@ -2345,7 +2345,10 @@ class GFDirectory {
 
         //status clause
         $where = empty($search) ? "WHERE" : "AND";
-        $search_filter .= $wpdb->prepare("$where status=%s ", $status);
+        
+        if(function_exists('gform_get_meta')) {
+	        $search_filter .= $wpdb->prepare("$where status=%s ", $status);
+	    }
 
         $field_number_min = $sort_field_number - 0.001;
         $field_number_max = $sort_field_number + 0.001;
