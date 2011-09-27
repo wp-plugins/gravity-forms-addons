@@ -2982,9 +2982,9 @@ EOD;
 		$set = 'var '.$id.'Output = (jQuery.trim('.$id.') == "'.trim(addslashes(stripslashes_deep($defaults["{$id}"]))).'") ? "" : " '.$idCode.'";';
 		
 		 // Debug
-		$set .= '
-		console.log("'.$id.' = "+'.$id.'Output+" - Default: '.trim(addslashes($defaults["{$id}"])).'");
-		';
+//		$set .= '
+//		console.log("'.$id.' = "+'.$id.'Output+" - Default: '.trim(addslashes($defaults["{$id}"])).'");
+//		';
 		
 		$return = array('js'=>$js, 'id' => $id, 'idcode'=>$idCode, 'setvalue' => $set);
 		
