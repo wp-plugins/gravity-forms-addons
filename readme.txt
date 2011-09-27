@@ -76,6 +76,13 @@ This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-w
 
 == Frequently Asked Questions == 
 
+= How do I sort by a column? =
+The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms “Edit Forms” page, hover over the form and click the link called "IDs" that appears.
+
+If you want to sort by last name, you find the last name id (`1.6` for example). Then, you add `sort="1.6"` to your `[directory]` shortcode.
+
+Your shortcode could then look something like `[directory form="1" sort="1.6"]`
+
 = I want the URL to be different than `/entry/` - can I do that? =
 You can! Add the following to your theme's `functions.php` file:
 
