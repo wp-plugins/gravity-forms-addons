@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.1.1
+Version: 3.2
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -36,6 +36,94 @@ class GFDirectory {
 	private static $version = "3.0.3";
 	private static $min_gravityforms_version = "1.3.9";
 	
+	public static function directory_defaults($args = array()) {
+    	$defaults = array(
+			
+			'form' => 1, // Gravity Forms form ID
+			'approved' => false, // Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved' 
+			'smartapproval' => true, // Auto-convert form into Approved-only when an Approved field is detected.
+			'directoryview' => 'table', // Table, list or DL
+			'entryview' => 'table', // Table, list or DL
+			'hovertitle' => true, // Show column name as user hovers over cell
+			'tableclass' => 'gf_directory widefat fixed', // Class for the <table>
+			'tablestyle' => '', // inline CSS for the <table>
+			'rowclass' => '', // Class for the <table>
+			'rowstyle' => '', // inline CSS for all <tbody><tr>'s
+			'valign' => '',
+			'sort' => 'date_created', // Use the input ID ( example: 1.3 or 7 or ip )
+			'dir' => 'DESC',
+			
+			'useredit' => false,
+			'limituser' => false,
+			'adminedit' => false,
+			
+			'status' => 'active', // Added in 2.0
+			'start_date' => '', // Added in 2.0
+			'end_date' => '', // Added in 2.0
+			
+			'wpautop' => true, // Convert bulk paragraph text to...paragraphs
+			'page_size' => 20, // Number of entries to show at once
+			'startpage' => 1, // If you want to show page 8 instead of 1
+			
+			'lightboxstyle' => 3,
+			'lightboxsettings' => array('images' => true, 'entry' => null, 'websites' => null),
+			
+			'showcount' => true, // Do you want to show "Displaying 1-19 of 19"?
+			'pagelinksshowall' => true, // Whether to show each page number, or just 7
+			'next_text' => '&raquo;',
+			'prev_text' => '&laquo;',
+			'pagelinkstype' => 'plain', // 'plain' is just a string with the links separated by a newline character. The other possible values are either 'array' or 'list'. 
+			'showrowids' => true, // Whether or not to show the row ids, which are the entry IDs.
+			'fulltext' => true, // If there's a textarea or post content field, show the full content or a summary?
+			'linkemail' => true, // Convert email fields to email mailto: links
+			'linkwebsite' => true, // Convert URLs to links
+			'linknewwindow' => false, // Open links in new window? (uses target="_blank")
+			'nofollowlinks' => false, // Add nofollow to all links, including emails
+			'icon' => false, // show the GF icon as it does in admin?
+			'titleshow' => true, // Show a form title? By default, the title will be the form title.
+			'titleprefix' => 'Entries for ', // Default GF behavior is 'Entries : '
+			'tablewidth' => '100%', // 'width' attribute for the table
+			'searchtabindex' => false, // adds tabindex="" to the search field
+			'search' => true, // show the search field
+			'tfoot' => true, // show the <tfoot>
+			'thead' => true, // show the <thead>
+			'showadminonly' => false, // Admin only columns aren't shown by default, but can be (added 2.0.1)
+			'datecreatedformat' => get_option('date_format').' \a\t '.get_option('time_format'), // Use standard PHP date formats (http://php.net/manual/en/function.date.php)
+			'credit' => true, // Credit link
+			'dateformat' => false, // Override the options from Gravity Forms, and use standard PHP date formats (http://php.net/manual/en/function.date.php)
+			'postimage' => 'icon', // Whether to show icon, thumbnail, or large image
+			'getimagesize' => false,
+			'entry' => true, // If there's an Entry ID column, link to the full entry
+			'entrylink' => 'View entry details',
+			'entryth' => 'More Info',
+			'entryback' => '&larr; Back to directory',
+			'entryonly' => true,
+			'entrytitle' => 'Entry Detail',
+			'entryanchor' => true,
+			'truncatelink' => false,
+			'appendaddress' => false,
+			'hideaddresspieces' => false,
+			'jssearch' => true,
+			'jstable' => false,
+			'lightbox' => null, // depreciated - Combining with lightboxsettings
+			'entrylightbox' => null, // depreciated - Combining with lightboxsettings
+		);
+		
+		$settings = get_option("gf_addons_settings");
+		if(isset($settings['directory_defaults'])) {
+			$defaults = wp_parse_args($settings['directory_defaults'], $defaults);
+		}
+		
+		$options = wp_parse_args($args, $defaults);
+		
+		// Backward Compatibility
+		if(!empty($args['lightbox'])) { $options['lightboxsettings']['images'] = 1; }
+		if(!empty($args['entrylightbox'])) { $options['lightboxsettings']['entry'] = 1; }
+		unset($options['lightbox'], $options['entrylightbox']); // Depreciated for lightboxsettings
+		
+		return apply_filters('kws_gf_directory_defaults', $options);
+    }
+    
 	public static function plugins_loaded() {
 		
 		add_action('admin_notices', array('GFDirectory', 'gf_warning'));
@@ -79,16 +167,19 @@ class GFDirectory {
 				add_action('admin_footer',	array("GFDirectory", 'add_mce_popup'));
 				wp_enqueue_script("gforms_ui_datepicker", GFCommon::get_base_url() . "/js/jquery-ui/ui.datepicker.js", array("jquery"), GFCommon::$version, true);
 			}
+		
+			add_action('admin_head', array('GFDirectory', 'addons_page'));
 			
         } else {
-        	add_action('wp', array('GFDirectory', 'enqueue_files'));
-			if(apply_filters('kws_gf_directory_canonical_add', true)) {
+        	add_action('template_redirect', array('GFDirectory', 'enqueue_files'));
+        	if(apply_filters('kws_gf_directory_canonical_add', true)) {
 				add_filter('post_link', array('GFDirectory','directory_canonical'), 1, 3);
 				add_filter('page_link', array('GFDirectory','directory_canonical'), 1, 3);
 			}
 			if(apply_filters('kws_gf_directory_shortlink', true)) {
 				add_filter('get_shortlink', array('GFDirectory', 'shortlink'));
 			}
+//			add_filter('kws_gf_directory_lead_filter', array('GFDirectory','show_only_user_entries'));
 			add_filter('kws_gf_directory_anchor_text', array('GFDirectory', 'directory_anchor_text'));
         }
         
@@ -133,6 +224,38 @@ class GFDirectory {
 	    }
 	    
     }
+        
+    public static function addons_page(){
+    
+    	if(self::is_gravity_page('gf_addons')) {
+    	
+    		$replacements = array(
+    			'FreshBooks Add-On' => '<a href="https://katzwebservices.freshbooks.com/refer/www">FreshBooks</a> Add-On',
+    			'AWeber email marketing service' => '<a href="http://tryemailmarketing.aweber.com/">AWeber email marketing service</a>'
+    		);
+    	?>
+    	<script type="text/javascript">
+    		jQuery(document).ready(function($) {
+    			var text;
+    			$("#available-addons td").each(function() {
+    				var $that = $(this);
+    				$(this).html(function() {
+	    				text = $that.html();
+		    			<?php 
+		    			foreach($replacements as $key => $text) {
+		    				echo "\ntext = text.replace('{$key}', '{$text}');\n\t";
+		    			}
+		    			?>
+	    				console.log(text);
+	    				return text;
+	    			});
+	    		});
+    		});
+    	</script>
+    	<?php
+    	}
+	
+	}
     
     //Target of Member plugin filter. Provides the plugin with Gravity Forms lists of capabilities
     public static function members_get_capabilities( $caps ) {
@@ -186,6 +309,7 @@ class GFDirectory {
 	
     public function flush_rules() {
 		global $wp_rewrite;
+		self::add_rewrite();
 		$wp_rewrite->flush_rules();
 		return;
 	}
@@ -373,38 +497,104 @@ class GFDirectory {
 	}
     
     public function enqueue_files() {
-    	global $post, $kws_gf_styles, $kws_gf_scripts;
-    	
+    	global $post, $kws_gf_styles, $kws_gf_scripts,$kws_gf_directory_options;
+
     	$kws_gf_styles = isset($kws_gf_styles) ? $kws_gf_styles : array();
     	$kws_gf_scripts = isset($kws_gf_scripts) ? $kws_gf_scripts : array();
     	
-    	if(!empty($post) && !empty($post->post_content) && preg_match('/(.?)\[(directory)\b(.*?)(?:(\/))?\](?:(.+?)\[\/\2\])?(.?)/', $post->post_content, $matches)) {
+    	if(	!empty($post) && 
+    		!empty($post->post_content) && 
+    		preg_match('/(.?)\[(directory)\b(.*?)(?:(\/))?\](?:(.+?)\[\/\2\])?(.?)/', $post->post_content, $matches)
+    	) {
+
+			$options = self::directory_defaults(shortcode_parse_atts($matches[3]));
+    		if(!is_array($options['lightboxsettings'])) { $options['lightboxsettings'] = explode(',', $options['lightboxsettings']); }
     		
-    		$atts = shortcode_parse_atts($matches[3]);
-    		
-    		$options = shortcode_atts( self::directory_defaults(), $atts );
-			
-			do_action('kws_gf_directory_enqueue', $options, $post);
+    		$kws_gf_directory_options = $options;
+    		do_action('kws_gf_directory_enqueue', $options, $post);
 			
 			extract($options);
     		
     		if($jstable) {
     			$theme = apply_filters('kws_gf_tablesorter_theme', 'blue', $form);
-    			wp_enqueue_style('tablesorter-'.$theme, WP_PLUGIN_URL . "/" . basename(dirname(__FILE__))."/tablesorter/themes/{$theme}/style.css");
-    			wp_enqueue_script('tablesorter-min', WP_PLUGIN_URL . "/" . basename(dirname(__FILE__))."/tablesorter/jquery.tablesorter.min.js", array('jquery'));
-    			$kws_gf_styles[] = 'tablesorter-blue';
+    			wp_register_style('tablesorter-'.$theme, WP_PLUGIN_URL . "/" . basename(dirname(__FILE__))."/tablesorter/themes/{$theme}/style.css");
+    			wp_register_script('tablesorter-min', WP_PLUGIN_URL . "/" . basename(dirname(__FILE__))."/tablesorter/jquery.tablesorter.min.js", array('jquery'));
+    			$kws_gf_styles[] = 'tablesorter-'.$theme;
     			$kws_gf_scripts[] = 'tablesorter-min';
     		}
     		
-    		if($lightbox || !empty($entrylightbox)) {
-				wp_enqueue_script('thickbox', array('jquery'));
-				wp_enqueue_style('thickbox');
-				$kws_gf_styles[] = 'thickbox';
-    			$kws_gf_scripts[] = 'thickbox';
+    		if(!empty($lightboxsettings)) {
+    			wp_enqueue_script('colorbox', WP_PLUGIN_URL . "/" . basename(dirname(__FILE__))."/colorbox/js/jquery.colorbox-min.js", array('jquery'));
+    			wp_enqueue_style('colorbox', WP_PLUGIN_URL . "/" . basename(dirname(__FILE__))."/colorbox/example{$lightboxstyle}/colorbox.css", array());
+    			$kws_gf_scripts[] = $kws_gf_styles[] = 'colorbox';
+    			add_action(apply_filters('kws_gf_directory_colorbox_action', 'wp_footer'), array('GFDirectory', 'load_colorbox'), 1000);
 			}
-    		
     	}
     }
+    
+    function format_colorbox_settings($colorboxSettings = array()) {
+    	$settings = array();
+    	if(!empty($colorboxSettings) && is_array($colorboxSettings)) {
+			foreach($colorboxSettings as $key => $value) {
+				if($value === null) { continue; }
+				if($value === true) {
+					$value = 'true';
+				} elseif(empty($value) && $value !== 0) {
+					$value = 'false';
+				} else {
+					$value = '"'.$value.'"';
+				}
+				$settings["{$key}"] = $key.':'.$value.'';
+			}
+		}
+		return $settings;
+    }
+    
+    public function load_colorbox() {
+    	global $kws_gf_directory_options;
+    	extract($kws_gf_directory_options);
+    	
+		$lightboxsettings = apply_filters('kws_gf_directory_lightbox_settings', $lightboxsettings);
+		$colorboxSettings = apply_filters('kws_gf_directory_colorbox_settings', array(
+			'width' => apply_filters('kws_gf_directory_lightbox_width', '70%'),
+			'height' => apply_filters('kws_gf_directory_lightbox_height', '70%'),
+			'iframe' => true,
+			'maxWidth' => '95%',
+			'maxHeight' => '95%',
+			'current' => '{current} of {total}',
+			'rel' => apply_filters('kws_gf_directory_lightbox_settings_rel', null)
+		));
+		
+		?>
+    <script type="text/javascript">
+    	jQuery(document).ready(function($) {
+ <?php 
+    		$output = '';
+    		foreach($lightboxsettings as $key => $value) {
+    			$settings = $colorboxSettings;
+    			if(is_numeric($key)) { $key = $value; }
+    			switch($key) {
+    				case "images":
+	    				$settings['width'] = $settings['height'] = $settings['iframe'] = null;
+	    				break;
+	    			case "urls":
+	    				$settings['height'] = '80%';
+	    				break;
+	    		}
+    			$output .= "\t\t".'$(".colorbox[rel~=directory_'.$key.']").colorbox(';
+    			if(!empty($settings)) {
+	    			$output .= "{\n\t\t\t".implode(",\n\t\t\t",self::format_colorbox_settings(apply_filters("kws_gf_directory_lightbox_{$key}_settings", $settings)))."\n\t\t}";
+    			}
+    			$output .= ");\n\n";
+    		}
+    		echo $output;
+    		do_action('kws_gf_directory_jquery', $kws_gf_directory_options);
+    		?>
+    	});
+    </script>
+    	<?php
+    }
+    
     
     public function add_rewrite() {
     	global $wp_rewrite,$wp;
@@ -482,7 +672,7 @@ class GFDirectory {
 		);
 		
 		array_push($field_groups, $directory_fields);
-		
+	
 		return $field_groups;
 	}
     
@@ -646,6 +836,7 @@ class GFDirectory {
 	    </script>
 	    <?php
 	}
+	
 	public function edit_lead_detail($Form, $lead, $options) {
 		global $current_user, $_gform_directory_approvedcolumn;
 		
@@ -684,8 +875,8 @@ class GFDirectory {
 		            <input type="hidden" name="action" id="action" value="update"/>
 		            <input type="hidden" name="screen_mode" id="screen_mode" value="edit" />
 		            <?php
-						GFEntryDetail::lead_detail_edit($Form, $lead);
-						$update_button = '<input class="button-primary" type="submit" tabindex="4" value="Update Entry" name="save" onclick="' . $button_click . '"/>';				echo $update_button;
+						self::lead_detail_edit($Form, $lead);
+						_e('<input class="button-primary" type="submit" tabindex="4" value="'.apply_filters('kws_gf_directory_update_lead_button_text', __('Update Entry', 'gravity-forms-addons')).'" name="save" />');
 					?>
 				</form>
 				<?php 
@@ -694,6 +885,62 @@ class GFDirectory {
 		}
 		return $lead;
 	}
+	
+	public static function lead_detail_edit($form, $lead){
+		
+		if(!class_exists('GFFormDisplay')) {  @include_once(WP_PLUGIN_DIR . "/gravityforms/form_display.php"); }
+	
+        $form = apply_filters("gform_admin_pre_render_" . $form["id"], apply_filters("gform_admin_pre_render", $form));
+        ?>
+        <script type="text/javascript" src="<?php echo GFCommon::get_base_url() ?>/js/gravityforms.js?version=<?php echo GFCommon::$version?>"></script>
+        <div id="namediv" class="stuffbox">
+            <h3>
+                <label for="name"><?php _e("Details", "gravityforms"); ?></label>
+            </h3>
+            <div class="inside">
+                <table class="form-table entry-details">
+                    <tbody>
+                    <?php
+                    foreach($form["fields"] as $field){
+                        switch(RGFormsModel::get_input_type($field)){
+                            case "section" :
+                                ?>
+                                <tr valign="top">
+                                    <td class="detail-view">
+                                        <div style="margin-bottom:10px; border-bottom:1px dotted #ccc;"><h2 class="detail_gsection_title"><?php echo esc_html(GFCommon::get_label($field))?></h2></div>
+                                    </td>
+                                </tr>
+                                <?php
+
+                            break;
+
+                            case "captcha":
+                            case "html":
+                            case "password":
+                                //ignore certain fields
+                            break;
+                            default :
+                                $value = RGFormsModel::get_lead_field_value($lead, $field);
+                                $content = "<tr valign='top'><td class='detail-view'><label class='detail-label'>" . esc_html(GFCommon::get_label($field)) . "</label>";
+                                // This requires the GFFormDisplay for drop-down fields.
+                                $content .= GFCommon::get_field_input($field, $value, $lead["id"]);
+                                
+                                $content .= "</td></tr>";
+
+                                $content = apply_filters("gform_field_content", $content, $field, $value, $lead["id"], $form["id"]);
+
+                                echo $content;
+                            break;
+                        }
+                    }
+                    ?>
+                    </tbody>
+                </table>
+                <br/>
+            </div>
+        </div>
+        <?php
+    }
 	
 	public function edit_entry_backlink($content = '', $href = '', $entryback = '') {
 		return '<p class="entryback"><a href="'.add_query_arg(array(), remove_query_arg(array('edit'))).'">'.esc_html(__(apply_filters('kws_gf_directory_edit_entry_cancel', "&larr; Cancel Editing"), "gravity-forms-addons")).'</a></p>';
@@ -743,7 +990,7 @@ class GFDirectory {
 					<?php
 					$count = 0;
 					$field_count = sizeof($Form["fields"]);
-#					kws_print_r($Form);
+
 					foreach($Form["fields"] as $field){
 						
 						// Don't show fields defined as hide in single.
@@ -819,7 +1066,7 @@ class GFDirectory {
 									 	'code' => isset($size[3]) ? "<img src='$src' {$size[3]} />" : "<img src='$src' />"
 									 );
 									 $img = apply_filters('kws_gf_directory_lead_image', apply_filters('kws_gf_directory_lead_image_'.$postimage, apply_filters('kws_gf_directory_lead_image_'.$lead['id'], $img)));
-									 $value = $display_value = "<a href='$url'$target$lightboxclass>{$img['code']}</a>";
+									 $value = $display_value = "<a href='{$url}'{$target}{$lightboxclass}>{$img['code']}</a>";
 								}
 							break;
 							
@@ -906,8 +1153,6 @@ class GFDirectory {
 			$form = apply_filters('kws_gf_directory_lead_detail_form', RGFormsModel::get_form_meta((int)$formid));
 			$lead = apply_filters('kws_gf_directory_lead_detail', RGFormsModel::get_lead((int)$leadid));
 			
-			#kws_print_r($lead);
-			
 			if(empty($approvedcolumn)) { $approvedcolumn = self::get_approved_column($form); }
 			if(empty($adminonlycolumns) && !$showadminonly) { $adminonlycolumns = self::get_admin_only($form); }
 			
@@ -973,8 +1218,13 @@ class GFDirectory {
 		}
 		
 		$atts['approved'] = isset($atts['approved']) ? $atts['approved'] : -1;
-		$options = shortcode_atts( self::directory_defaults(), $atts );
-
+		
+		if(!empty($atts['lightboxsettings']) && is_string($atts['lightboxsettings'])) {
+			$atts['lightboxsettings'] = explode(',', $atts['lightboxsettings']);
+		}
+		
+		$options = self::directory_defaults($atts);
+		
 		extract( $options );
 			
 			$form_id = $form;
@@ -1037,7 +1287,7 @@ class GFDirectory {
 			//
 			// Or start to generate the directory
 			//
-			$leads = GFDirectory::get_leads($form_id, $sort_field, $sort_direction, $search_query, $first_item_index, $page_size, $star, $read, $is_numeric, $start_date, $end_date, 'active', $approvedcolumn);
+			$leads = GFDirectory::get_leads($form_id, $sort_field, $sort_direction, $search_query, $first_item_index, $page_size, $star, $read, $is_numeric, $start_date, $end_date, 'active', $approvedcolumn, $limituser);
 			
 			if(!$showadminonly)	 {
 				$columns = self::remove_admin_only($columns, $adminonlycolumns, $approvedcolumn, false, false, $form);
@@ -1046,7 +1296,7 @@ class GFDirectory {
 			
 			
 			// Allow lightbox to determine whether showadminonly is valid without passing a query string in URL
-			if($entry === true && !empty($entrylightbox)) {
+			if($entry === true && !empty($lightboxsettings['entry'])) {
 				if(get_transient('gf_form_'.$form_id.'_post_'.$post->ID.'_showadminonly') != $showadminonly) {
 					set_transient('gf_form_'.$form_id.'_post_'.$post->ID.'_showadminonly', $showadminonly, 60*60);	
 				}
@@ -1063,7 +1313,7 @@ class GFDirectory {
 	
 			if($page_size > 0) {
 				
-				$lead_count = self::get_lead_count($form_id, $search_query, $star, $read, $approvedcolumn, $approved, $leads, $start_date, $end_date);
+				$lead_count = self::get_lead_count($form_id, $search_query, $star, $read, $approvedcolumn, $approved, $leads, $start_date, $end_date, $limituser);
 				
 				$page_links = array(
 					'base' =>  @add_query_arg('page','%#%'),// get_permalink().'%_%',
@@ -1089,11 +1339,11 @@ class GFDirectory {
 			if(!isset($directory_shown)) {
 				$directory_shown = true;
 				
-				if($lightbox || !empty($entrylightbox)) {
-					if(!in_array('thickbox', $kws_gf_scripts)) { wp_print_scripts(array("thickbox")); }
-					if(!in_array('thickbox', $kws_gf_styles)) { wp_print_styles(array("thickbox")); }
+				if(!empty($lightboxsettings['images']) || !empty($lightboxsettings['entry'])) {
+					if(!is_array($kws_gf_scripts) || !in_array('colorbox', $kws_gf_scripts)) { wp_print_scripts(array("colorbox")); }
+					if(!is_array($kws_gf_styles) || !in_array('colorbox', $kws_gf_styles)) { wp_print_styles(array("colorbox")); }
 				}
-				
+		
 				if(!empty($jstable)) { ?>
 				<?php if(!in_array('tablesorter-blue', $kws_gf_styles)) { ?>
 					<link href="<?php echo WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)); ?>/tablesorter/themes/blue/style.css" rel="stylesheet" />
@@ -1102,7 +1352,7 @@ class GFDirectory {
 				<?php } } ?>
 				
 				<script type="text/javascript">
-					<?php if($lightbox || !empty($entrylightbox)) { ?>
+					<?php if(!empty($lightboxsettings['images']) || !empty($lightboxsettings['entry'])) { ?>
 		
 					var tb_pathToImage = "<?php echo site_url('/wp-includes/js/thickbox/loadingAnimation.gif'); ?>";
 					var tb_closeImage = "<?php echo site_url('/wp-includes/js/thickbox/tb-close.png'); ?>";
@@ -1239,15 +1489,12 @@ class GFDirectory {
 								echo "\n\t\t\t\t\t\t";
 								
 								$address = array(); $celltitle = '';
-								$leadapproved = false; if($approved) { $leadapproved = self::check_approval($lead, $approvedcolumn); }
 								
+								if($approved) { $leadapproved = self::check_approval($lead, $approvedcolumn); }
 								
-	#							 if(in_array(key() $adminonlycolumns )
-								
-								if($leadapproved && $approved || !$approved) {
-									$target = ''; if($linknewwindow && !$lightbox) { $target = ' target="_blank"'; }
+								if((isset($leadapproved) && $leadapproved && $approved) || !$approved) {
+									$target = ''; if($linknewwindow && empty($lightboxsettings['images'])) { $target = ' target="_blank"'; }
 									$valignattr = ''; if($valign && $directoryview == 'table') { $valignattr = ' valign="'.$valign.'"'; } 
-									$lightboxclass = ''; if($lightbox) { $lightboxclass = '	 class="thickbox"'; }
 									$nofollow = ''; if($nofollowlinks) { $nofollow = ' rel="nofollow"'; }
 									$evenodd = ($evenodd == ' odd') ? ' even' : ' odd';
 									$evenodd = apply_filters('kws_gf_directory_evenodd', $evenodd);
@@ -1256,9 +1503,9 @@ class GFDirectory {
 									$class = "";
 									$is_first_column = true;
 									$full_address = '';
-									
-									
-									foreach($field_ids as $field_id){
+									foreach($field_ids as $field_id) {
+										$lightboxclass = '';
+										if(!empty($lightboxsettings['images'])) { $lightboxclass = ' class="thickbox colorbox lightbox"';  }
 										$value = isset($lead[$field_id]) ? $lead[$field_id] : '';
 										$input_type = !empty($columns[$field_id]["inputType"]) ? $columns[$field_id]["inputType"] : $columns[$field_id]["type"];
 										switch($input_type){
@@ -1292,7 +1539,6 @@ class GFDirectory {
 													//displaying thumbnail (if file is an image) or an icon based on the extension
 													 $icon = self::get_icon_url($url);
 													 if(!preg_match('/icon\_image\.gif/ism', $icon)) {
-													 	$lightboxclass = '';
 													 	$src = $icon;
 													 	if(!empty($getimagesize)) {
 															$size = @getimagesize($src);
@@ -1327,13 +1573,20 @@ class GFDirectory {
 													 	'code' => isset($size[3]) ? "<img src='$src' {$size[3]} />" : "<img src='$src' />"
 													 );
 													 $img = apply_filters('kws_gf_directory_lead_image', apply_filters('kws_gf_directory_lead_image_'.$postimage, apply_filters('kws_gf_directory_lead_image_'.$lead['id'], $img)));
-													 $value = "<a href='$url'$target$lightboxclass>{$img['code']}</a>";
+
+													if(in_array('images', $lightboxsettings) || !empty($lightboxsettings['images'])) {
+														$lightboxclass .= ' rel="directory_all directory_images"';
+													}
+													$value = "<a href='{$url}'{$target}{$lightboxclass}>{$img['code']}</a>";
 												}
 											break;
 	
 											case "source_url" :
+												if(in_array('urls', $lightboxsettings) || !empty($lightboxsettings['urls'])) {
+													$lightboxclass .= ' rel="directory_all directory_urls"';
+												}
 												if($linkwebsite) {
-													$value = "<a href='" . esc_attr($lead["source_url"]) . "'$target alt='" . esc_attr($lead["source_url"]) ."' title='" . esc_attr($lead["source_url"]) . "'$nofollow>.../" .esc_attr(GFCommon::truncate_url($lead["source_url"])) . "</a>";
+													$value = "<a href='" . esc_attr($lead["source_url"]) . "'{$target}{$lightboxclass} title='" . esc_attr($lead["source_url"]) . "'$nofollow>.../" .esc_attr(GFCommon::truncate_url($lead["source_url"])) . "</a>";
 												} else {
 													$value = esc_attr(GFCommon::truncate_url($lead["source_url"]));
 												}
@@ -1359,7 +1612,7 @@ class GFDirectory {
 											break;
 	
 											case "date_created" :
-												$value = gf_settings_datecreatedformat($value, false, $datecreatedformat);
+												$value = GFCommon::format_date($value, false, $datecreatedformat);
 											break;
 	
 											case "date" :
@@ -1375,20 +1628,29 @@ class GFDirectory {
 												$linkClass = '';
 											break;
 											
+											case "list":
+												$field = RGFormsModel::get_field($form, $field_id);
+												$value = GFCommon::get_lead_field_display($field, $value);
+											break;
+											
 											default:
 	
 												$input_type = 'text';
 												if(is_email($value) && $linkemail) {$value = "<a href='mailto:$value'$nofollow>$value</a>"; } 
 												elseif(preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $value) && $linkwebsite) {
-													if($lightbox) {
-														$elwidth = apply_filters('kws_gf_directory_lightbox_width', 600);
-														$elheight = apply_filters('kws_gf_directory_lightbox_height', 400); 
-														$href = $value .'?KeepThis=true&amp;TB_iframe=true&amp;width='.$elwidth.'&amp;height='.$elheight; $linkClass = ' class="thickbox lightbox"'; 
+													$href = $value;
+													if(!empty($lightboxsettings['images'])) {
+														if(in_array('urls', $lightboxsettings) || !empty($lightboxsettings['urls'])) {
+															$lightboxclass .= ' rel="directory_all directory_urls"';
+														}
+														$linkClass = $lightboxclass; 
+													} else {
+														$linkClass = isset($linkClass) ? $linkClass : '';
 													}
 													if($truncatelink) {
 														$value = apply_filters('kws_gf_directory_anchor_text', $value);
 													}
-													$value = "<a href='$href'{$nofollow}{$target}{$linkClass}>$value</a>"; 
+													$value = "<a href='{$href}'{$nofollow}{$target}{$linkClass}>{$value}</a>"; 
 												}
 												else { $value = esc_html($value); }
 										}
@@ -1446,6 +1708,8 @@ class GFDirectory {
 									
 									if($search_query) {
 										_e("This search returned no results.", "gravity-forms-addons"); 
+									} elseif($limituser) {
+										_e("This form does not have any visible entries.", "gravity-forms-addons"); 
 									} else {
 										_e("This form does not have any entries yet.", "gravity-forms-addons"); 
 									}
@@ -1560,7 +1824,7 @@ class GFDirectory {
     	}
     }
     
-    public function attr($default = '<span class="kws_gf_credit" style="font-weight:normal; text-align:center; display:block; margin:0 auto;">Powered by <a href="http://www.seodenver.com/plugins/gravity-forms-addons/">Gravity Forms Directory</a></span>') {
+    public function attr($default = '<span class="kws_gf_credit" style="font-weight:normal; text-align:center; display:block; margin:0 auto;">Powered by <a href="http://seodenver.com/gravity-forms-addons/">Gravity Forms Directory</a></span>') {
 		
 		include_once(ABSPATH . WPINC . '/feed.php');
 		
@@ -1916,87 +2180,6 @@ class GFDirectory {
         return $links;
     }
     
-    public static function directory_defaults($args = array()) {
-    	$defaults = array(
-			'form' => 1, // Gravity Forms form ID
-			'approved' => false, // Show only entries that have been Approved (have a field in the form that is an Admin-only checkbox with a value of 'Approved' 
-			'smartapproval' => true, // Auto-convert form into Approved-only when an Approved field is detected.
-			'directoryview' => 'table', // Table, list or DL
-			'entryview' => 'table', // Table, list or DL
-			'hovertitle' => true, // Show column name as user hovers over cell
-			'tableclass' => 'gf_directory widefat fixed', // Class for the <table>
-			'tablestyle' => '', // inline CSS for the <table>
-			'rowclass' => '', // Class for the <table>
-			'rowstyle' => '', // inline CSS for all <tbody><tr>'s
-			'valign' => '',
-			'sort' => 'date_created', // Use the input ID ( example: 1.3 or 7 or ip )
-			'dir' => 'DESC',
-			'useredit' => false,
-			'adminedit' => false,
-			
-			'status' => 'active', // Added in 2.0
-			'start_date' => '', // Added in 2.0
-			'end_date' => '', // Added in 2.0
-			
-			'wpautop' => true, // Convert bulk paragraph text to...paragraphs
-			'page_size' => 20, // Number of entries to show at once
-			'startpage' => 1, // If you want to show page 8 instead of 1
-			'lightbox' => true, // Do you want your image uploads to be lightboxed?
-			'showcount' => true, // Do you want to show "Displaying 1-19 of 19"?
-			'pagelinksshowall' => true, // Whether to show each page number, or just 7
-			'next_text' => '&raquo;',
-			'prev_text' => '&laquo;',
-			'pagelinkstype' => 'plain', // 'plain' is just a string with the links separated by a newline character. The other possible values are either 'array' or 'list'. 
-			'showrowids' => true, // Whether or not to show the row ids, which are the entry IDs.
-			'fulltext' => true, // If there's a textarea or post content field, show the full content or a summary?
-			'linkemail' => true, // Convert email fields to email mailto: links
-			'linkwebsite' => true, // Convert URLs to links
-			'linknewwindow' => false, // Open links in new window? (uses target="_blank")
-			'nofollowlinks' => false, // Add nofollow to all links, including emails
-			'icon' => false, // show the GF icon as it does in admin?
-			'titleshow' => true, // Show a form title? By default, the title will be the form title.
-			'titleprefix' => 'Entries for ', // Default GF behavior is 'Entries : '
-			'tablewidth' => '100%', // 'width' attribute for the table
-			'searchtabindex' => false, // adds tabindex="" to the search field
-			'search' => true, // show the search field
-			'tfoot' => true, // show the <tfoot>
-			'thead' => true, // show the <thead>
-			'showadminonly' => false, // Admin only columns aren't shown by default, but can be (added 2.0.1)
-			'datecreatedformat' => get_option('date_format').' \a\t '.get_option('time_format'), // Use standard PHP date formats (http://php.net/manual/en/function.date.php)
-			'credit' => true, // Credit link
-			'dateformat' => false, // Override the options from Gravity Forms, and use standard PHP date formats (http://php.net/manual/en/function.date.php)
-			'postimage' => 'icon', // Whether to show icon, thumbnail, or large image
-			'getimagesize' => false,
-			'entry' => true, // If there's an Entry ID column, link to the full entry
-			'entrylightbox' => false,
-			'entrylink' => 'View entry details',
-			'entryth' => 'More Info',
-			'entryback' => '&larr; Back to directory',
-			'entryonly' => true,
-			'entrytitle' => 'Entry Detail',
-			'entryanchor' => true,
-			'truncatelink' => false,
-			'appendaddress' => false,
-			'hideaddresspieces' => false,
-			'jssearch' => true,
-			'jstable' => false
-		);
-	
-		if(empty($args)) {
-			$settings = get_option("gf_addons_settings");
-			
-			if(isset($settings['directory_defaults'])) {
-				$options = wp_parse_args($settings['directory_defaults'], $defaults);
-			} else {
-				$options = wp_parse_args($args, $defaults);
-			}
-		} else {
-			$options = wp_parse_args($args, $defaults);
-		}
-
-		return apply_filters('kws_gf_directory_defaults', $options);
-    }
-		
     //Returns true if the current page is an Feed pages. Returns false if not
     private static function is_directory_page(){
     	if(empty($_GET["page"])) { return false; }
@@ -2044,7 +2227,7 @@ class GFDirectory {
             $settings = array(
             	"directory" => isset($_POST["gf_addons_directory"]),
             	"referrer" => isset($_POST["gf_addons_referrer"]),
-            	"directory_defaults" => self::directory_defaults($_POST['gf_addons_directory_defaults']),
+            	"directory_defaults" => self::directory_defaults($_POST['gf_addons_directory_defaults'], true),
             	"widget" => isset($_POST["gf_addons_widget"]),
             	"modify_admin" => isset($_POST["gf_addons_modify_admin"]) ? $_POST["gf_addons_modify_admin"] : array(),
             	"version" => self::$version,
@@ -2142,7 +2325,7 @@ class GFDirectory {
 		// if you must, you can filter this out...
 		if(apply_filters('kws_gf_show_donate_box', true)) {
 		?>
-		<div id="kws_gf_donate" class="alert_gray">
+		<div id="kws_gf_donate" class="alert_gray"<?php echo isset($_GET['viewinstructions']) ? ' style="display:none;"' : ''; ?>>
 			<p>
 			<?php if(!is_ssl()) {?><img src="http://www.gravatar.com/avatar/f0f175f8545912adbdab86f0b586f4c3?s=64" alt="Zack Katz, plugin author" height="64" width="64" /> <?php } _e('Hi there! If you find this plugin useful, consider showing your appreciation by making a small donation to its author!', 'gravity-forms-addons'); ?>
 			<a href="http://katz.si/35" target="_blank" class="button button-primary"><?php _e('Donate using PayPal', 'gravity-forms-addons'); ?></a>
@@ -2290,18 +2473,18 @@ class GFDirectory {
         return WP_PLUGIN_DIR . "/" . $folder;
     }
 
-	public static function get_leads($form_id, $sort_field_number=0, $sort_direction='DESC', $search='', $offset=0, $page_size=30, $star=null, $read=null, $is_numeric_sort = false, $start_date=null, $end_date=null, $status='active', $approvedcolumn){
+	public static function get_leads($form_id, $sort_field_number=0, $sort_direction='DESC', $search='', $offset=0, $page_size=30, $star=null, $read=null, $is_numeric_sort = false, $start_date=null, $end_date=null, $status='active', $approvedcolumn, $limituser = false) {
         global $wpdb;
 
         if($sort_field_number == 0)
             $sort_field_number = "date_created";
 
         if(is_numeric($sort_field_number))
-            $sql = self::sort_by_custom_field_query($form_id, $sort_field_number, $sort_direction, $search, $offset, $page_size, $star, $read, $is_numeric_sort, $status, $approvedcolumn);
+            $sql = self::sort_by_custom_field_query($form_id, $sort_field_number, $sort_direction, $search, $offset, $page_size, $star, $read, $is_numeric_sort, $status, $approvedcolumn, $limituser);
         else
-            $sql = self::sort_by_default_field_query($form_id, $sort_field_number, $sort_direction, $search, $offset, $page_size, $star, $read, $is_numeric_sort, $start_date, $end_date, $status, $approvedcolumn);
-
-        //initializing rownum
+            $sql = self::sort_by_default_field_query($form_id, $sort_field_number, $sort_direction, $search, $offset, $page_size, $star, $read, $is_numeric_sort, $start_date, $end_date, $status, $approvedcolumn, $limituser);
+		
+		//initializing rownum
         $wpdb->query("select @rownum:=0");
 
         //getting results
@@ -2317,12 +2500,23 @@ class GFDirectory {
 			$return = self::build_lead_array($results);
 		}
 		
+		$return = apply_filters('kws_gf_directory_lead_filter', $return, $form_id, $sort_field_number, $sort_direction, $search, $offset, $page_size, $star, $read, $is_numeric_sort, $start_date, $end_date, $status, $approvedcolumn, $limituser);
+		
         return $return;
     }
     
+    function is_current_user( $lead = array() ) {
+		global $current_user;
+		get_currentuserinfo();
+		return ( (int)$current_user->ID === (int)$lead["created_by"]) ;
+	}
+	
+	function show_only_user_entries($leads = array()) {
+		return array_filter($leads, array('GFDirectory', 'is_current_user'));
+	}
     
-    private static function sort_by_custom_field_query($form_id, $sort_field_number=0, $sort_direction='DESC', $search='', $offset=0, $page_size=30, $star=null, $read=null, $is_numeric_sort = false, $status='active', $approvedcolumn){
-        global $wpdb;
+    private static function sort_by_custom_field_query($form_id, $sort_field_number=0, $sort_direction='DESC', $search='', $offset=0, $page_size=30, $star=null, $read=null, $is_numeric_sort = false, $status='active', $approvedcolumn = null, $limituser = false){
+        global $wpdb, $current_user;
         if(!is_numeric($form_id) || !is_numeric($sort_field_number)|| !is_numeric($offset)|| !is_numeric($page_size))
             return "";
 
@@ -2343,13 +2537,26 @@ class GFDirectory {
         $where = empty($search) ? "WHERE" : "AND";
         $search_filter .= $read !== null && $status == 'active' ? $wpdb->prepare("$where is_read=%d AND status='active' ", $read) : "";
 
-        //status clause
-        $where = empty($search) ? "WHERE" : "AND";
-        
+		//status clause
         if(function_exists('gform_get_meta')) {
+        	$where = empty($search) ? "WHERE" : "AND";
 	        $search_filter .= $wpdb->prepare("$where status=%s ", $status);
 	    }
-
+		
+		if($limituser) {
+			get_currentuserinfo();
+			if((int)$current_user->ID !== 0 || ($current_user->ID === 0 && apply_filters('kws_gf_show_entries_if_not_logged_in', apply_filters('kws_gf_treat_not_logged_in_as_user', true)))) {
+				$where = empty($search_filter) ? "WHERE" : "AND";
+	        	if((int)$current_user->ID === 0) {
+	        		$search_filter .= $wpdb->prepare("$where (created_by IS NULL OR created_by=%d)", $current_user->ID);
+	        	} else {
+	        		$search_filter .= $wpdb->prepare("$where l.created_by=%d ", $current_user->ID);
+	        	}
+			} else {
+				return false;
+			}
+		}
+		
         $field_number_min = $sort_field_number - 0.001;
         $field_number_max = $sort_field_number + 0.001;
         
@@ -2398,10 +2605,10 @@ class GFDirectory {
         return $sql;
     }
     
-    private static function sort_by_default_field_query($form_id, $sort_field, $sort_direction='DESC', $search='', $offset=0, $page_size=30, $star=null, $read=null, $is_numeric_sort = false, $start_date=null, $end_date=null, $status='active', $approvedcolumn = null){
-        global $wpdb;
-
-        if(!is_numeric($form_id) || !is_numeric($offset)|| !is_numeric($page_size)){
+    private static function sort_by_default_field_query($form_id, $sort_field, $sort_direction='DESC', $search='', $offset=0, $page_size=30, $star=null, $read=null, $is_numeric_sort = false, $start_date=null, $end_date=null, $status='active', $approvedcolumn = null, $limituser = false){
+        global $wpdb, $current_user;
+		
+		if(!is_numeric($form_id) || !is_numeric($offset)|| !is_numeric($page_size)){
             return "";
         }
 
@@ -2429,6 +2636,20 @@ class GFDirectory {
 			#$search_filter .= $wpdb->prepare(" AND m.meta_key = 'is_approved' AND m.meta_value = %s", 1);
 		}
 		
+		$user_filter = '';
+		if($limituser) {
+			get_currentuserinfo();
+			if((int)$current_user->ID !== 0 || ($current_user->ID === 0 && apply_filters('kws_gf_show_entries_if_not_logged_in', apply_filters('kws_gf_treat_not_logged_in_as_user', true)))) {
+	        	if((int)$current_user->ID === 0) {
+	        		$user_filter = $wpdb->prepare(" AND (created_by IS NULL OR created_by=%d)", $current_user->ID);
+	        	} else {
+	        		$user_filter = $wpdb->prepare(" AND created_by=%d ", $current_user->ID);
+	        	}
+			} else {
+				return false;
+			}
+		}
+		
 		$limit_filter = '';
 		if($page_size > 0) { $limit_filter = "LIMIT $offset,$page_size"; }
 		
@@ -2449,6 +2670,7 @@ class GFDirectory {
                     $search_filter
                     $star_filter
                     $read_filter
+                    $user_filter
                     $status_filter
                     $start_date_filter
                     $end_date_filter
@@ -2762,9 +2984,12 @@ EOD;
 			
 			$content = array(
 					array('checkbox',  'wpautop'  ,  true, __( "Convert bulk paragraph text to paragraphs (using the WordPress function <code><a href='http://codex.wordpress.org/Function_Reference/wpautop'>wpautop()</a></code>)", 'gravity-forms-addons')),
-					array('checkbox',  'lightbox'  ,  true, __( sprintf("Show images in a %slightbox%s", '<a href="http://en.wikipedia.org/wiki/Lightbox_(JavaScript)" target="_blank">', '</a>'), 'gravity-forms-addons')),
 					array('checkbox',  'getimagesize'  ,  false, __( "Calculate image sizes (Warning: this may slow down the directory loading speed!)", 'gravity-forms-addons')),
-					array('radio'	, 'postimage' , array(array('label' =>'<img src="'.GFCommon::get_base_url().'/images/doctypes/icon_image.gif" /> Show image icon', 'value'=>'icon', 'default'=>'1'), array('label' =>'Show full image', 'value'=>'image')), "How do you want images to appear in the directory?"),
+					array('radio'	, 'postimage' , array(
+							array('label' =>'<img src="'.GFCommon::get_base_url().'/images/doctypes/icon_image.gif" /> Show image icon', 'value'=>'icon', 'default'=>'1'), 
+							array('label' => __('Show full image', 'gravity-forms-addons'), 'value'=>'image')
+						), __("How do you want images to appear in the directory?", 'gravity-forms-addons')
+					),
 					array('checkbox', 'fulltext' , true, __("Show full content of a textarea or post content field, rather than an excerpt", 'gravity-forms-addons')),
 					
 					array('date', 'start_date' ,  false, __('Start date (in <code>YYYY-MM-DD</code> format)', 'gravity-forms-addons')),
@@ -2773,9 +2998,31 @@ EOD;
 			
 			$administration = array(
 				array('checkbox', 'showadminonly' ,  false, __("Show Admin-Only columns <span class='description'>(in Gravity Forms, Admin-Only fields are defined by clicking the Advanced tab on a field in the Edit Form view, then editing Visibility > Admin Only)</span>", 'gravity-forms-addons')),
-				array('checkbox', 'useredit' , false, __(sprintf("Allow logged-in users to edit entries they created. Will add an 'Edit Your Entry' field to the Single Entry View. %sNote: feature in beta. Test thoroughly before use on production sites!%s", '<strong>', '</strong>'), 'gravity-forms-addons')),
-				array('checkbox', 'adminedit' , false, __(sprintf('Allow %sadministrators%s to edit entries they created. Will add an \'Edit Your Entry\' field to the Single Entry View. %sNote: feature in beta. Test thoroughly before use on production sites!%s', '<strong>', '</strong>', '<strong>', '</strong>'), 'gravity-forms-addons')),
+				array('checkbox', 'useredit' , false, __("Allow logged-in users to edit entries they created. Will add an 'Edit Your Entry' field to the Single Entry View.", 'gravity-forms-addons')),
+				array('checkbox', 'limituser' , false, __("Display entries only the the creator of the entry (users will not see other people's entries).", 'gravity-forms-addons')),
+				array('checkbox', 'adminedit' , false, __(sprintf('Allow %sadministrators%s to edit entries they created. Will add an \'Edit Your Entry\' field to the Single Entry View.','<strong>', '</strong>'), 'gravity-forms-addons')),
 			);	
+			
+			$lightbox = array(
+				#array('checkbox',  'lightbox'  ,  true, __( sprintf("Show images in a %slightbox%s", '<a href="http://en.wikipedia.org/wiki/Lightbox_(JavaScript)" target="_blank">', '</a>'), 'gravity-forms-addons')),
+				array('radio'	, 'lightboxstyle' , 
+					array(
+						array('label' =>'Style 1 <a href="'.self::get_base_url().'/colorbox/example1/index.html" target="_blank">See example</a>', 'value'=>'1'),
+						array('label' =>'Style 2 <a href="'.self::get_base_url().'/colorbox/example2/index.html" target="_blank">See example</a>', 'value'=>'2'),
+						array('label' =>'Style 3 <a href="'.self::get_base_url().'/colorbox/example3/index.html" target="_blank">See example</a>', 'value'=>'3','default'=>'1'),
+						array('label' =>'Style 4 <a href="'.self::get_base_url().'/colorbox/example4/index.html" target="_blank">See example</a>', 'value'=>'4'),
+						array('label' =>'Style 5 <a href="'.self::get_base_url().'/colorbox/example5/index.html" target="_blank">See example</a>', 'value'=>'5')
+					), "What style should the lightbox use?"
+				),
+				array('checkboxes'	, 'lightboxsettings' , 
+					array(
+						array('label' => __('Images', 'gravity-forms-addons'), 'value'=>'images', 'default' => '1'),
+						array('label' => __( "Entry Links (Open entry details in lightbox)"), 'value'=>'entry'),
+						array('label' => __('Website Links (non-entry)', 'gravity-forms-addons'), 'value'=>'urls')
+					), __("Set what type of links should be loaded in the lightbox", 'gravity-forms-addons')
+				),
+				#array('checkbox',  'entrylightbox' ,  false, __( "Open entry details in lightbox (defaults to lightbox settings)", 'gravity-forms-addons'))
+			);
 			
 			$formatting = array( 
 				array('checkbox', 'jstable' ,  false, __('Use the TableSorter jQuery plugin to sort the table?', 'gravity-forms-addons')),
@@ -2806,19 +3053,25 @@ EOD;
 			
 			$entry = array(
 				array('checkbox', 'entry' ,  true, __("If there's a displayed Entry ID column, add link to each full entry", 'gravity-forms-addons')),
-				array('checkbox',  'entrylightbox' ,  false, __( "Open entry details in lightbox (defaults to lightbox settings)", 'gravity-forms-addons')),
-				array('text',  'entrytitle' ,  'Entry Detail', __( "Title of entry lightbox window", 'gravity-forms-addons')),
-				array('text',  'entrylink' ,  'View entry details', __( "Link text to show full entry", 'gravity-forms-addons')),
-				array('text',  'entryth' ,  'More Info', __( "Entry ID column title", 'gravity-forms-addons')),
-				array('text',  'entryback' ,  '&larr; Back to directory', __( "The text of the link to return to the directory view from the single entry view.", 'gravity-forms-addons')),
+				array('text',  'entrytitle' ,  __('Entry Detail', 'gravity-forms-addons'), __( "Title of entry lightbox window", 'gravity-forms-addons')),
+				array('text',  'entrylink' ,  __('View entry details', 'gravity-forms-addons'), __( "Link text to show full entry", 'gravity-forms-addons')),
+				array('text',  'entryth' ,  __('More Info', 'gravity-forms-addons'), __( "Entry ID column title", 'gravity-forms-addons')),
+				array('text',  'entryback' ,  __('&larr; Back to directory', 'gravity-forms-addons'), __( "The text of the link to return to the directory view from the single entry view.", 'gravity-forms-addons')),
 				array('checkbox',  'entryonly' ,  true, __( "When viewing full entry, show entry only? Otherwise, show entry with directory below", 'gravity-forms-addons')),
 				array('checkbox',  'entryanchor' ,  true, __( "When returning to directory view from single entry view, link to specific anchor row?", 'gravity-forms-addons')),
 			);
 		
-		$fieldsets = array('Content Settings' => $content, 'Administration of Entries'=>$administration,'Formatting Options'=>$formatting,'Link Settings'=>$links,'Address Options'=>$address);
+		$fieldsets = array(
+			__('Content Settings', 'gravity-forms-addons') => $content, 
+			__('Administration of Entries', 'gravity-forms-addons') =>$administration, 
+			__('Lightbox Options', 'gravity-forms-addons')=>$lightbox,
+			__('Formatting Options', 'gravity-forms-addons')=>$formatting,
+			__('Link Settings', 'gravity-forms-addons')=>$links,
+			__('Address Options', 'gravity-forms-addons')=>$address
+		);
 		
 		if(!$js) {
-			echo '<a href="#kws_gf_advanced_settings" class="kws_gf_advanced_settings">Show advanced settings</a>';
+			echo '<a href="#kws_gf_advanced_settings" class="kws_gf_advanced_settings">'.__('Show advanced settings', 'gravity-forms-addons').'</a>';
 			echo '<div style="display:none;" id="kws_gf_advanced_settings">';
 			echo "<h2 style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em;'>Single-Entry View</h2>";
 			echo '<span class="howto">These settings control whether users can view each entry as a separate page or lightbox. Single entries will show all data associated with that entry.</span>';
@@ -2831,8 +3084,8 @@ EOD;
 			
 			echo '<div class="hr-divider label-divider"></div>';
 			
-			echo "<h2 style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em;'>Directory View</h2>";
-			echo '<span class="howto">These settings affect how multiple entries are shown at once.</span>';
+			echo "<h2 style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em;'>".__('Directory View', 'gravity-forms-addons')."</h2>";
+			echo '<span class="howto">'.__('These settings affect how multiple entries are shown at once.', 'gravity-forms-addons').'</span>';
 			
 			foreach($fieldsets as $title => $fieldset) {
 				echo "<fieldset><legend><h3 style='padding-top:1em; padding-bottom:.5em; margin:0;'>{$title}</h3></legend>";
@@ -2843,8 +3096,8 @@ EOD;
 				echo '</ul></fieldset>';
 				echo '<div class="hr-divider label-divider"></div>';
 			}
-			echo "<h2 style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em;'>Additional Settings</h2>";
-			echo '<span class="howto">These settings affect both the directory view and single entry view.</span>';
+			echo "<h2 style='margin:0; padding:0; font-weight:bold; font-size:1.5em; margin-top:1em;'>".__('Additional Settings', 'gravity-forms-addons')."</h2>";
+			echo '<span class="howto">'.__('These settings affect both the directory view and single entry view.', 'gravity-forms-addons').'</span>';
 			echo '<ul style="padding: 0 15px 0 15px; width:100%;">';
 		} else {
 			foreach($entry as $o) {
@@ -2914,13 +3167,32 @@ EOD;
 		elseif($type == "text") {
 				$default = $defaults["{$rawid}"];
 				$output .= '<label for="gf_settings_'.$rawid.'"><input type="text" id="gf_settings_'.$rawid.'" value="'.htmlspecialchars(stripslashes($default)).'" style="width:40%;" name="'.$id.'"'.$class.' /> <span class="howto">'.$label.$idLabel.'</span></label>'."\n";
-		} elseif($type == 'radio') {
+		} elseif($type == 'radio' || $type == 'checkboxes') {
 			if(is_array($default)) {
-				$output .= $label.'<ul class="ul-disc">';
+				$output .= $label.$idLabel.'<ul class="ul-disc">';
 				foreach($default as $opt) {
-					if(!empty($defaults["{$rawid}"]) && $defaults["{$rawid}"] == $opt['value']) { $checked = ' checked="checked"'; } else { $checked = ''; }
-					$id_opt = $id.'_'.sanitize_title($opt['value']);
-					$output .= '<li><label for="gf_settings_'.$id_opt.'"><input type="radio"'.$checked.' value="'.$opt['value'].'" id="gf_settings_'.$id_opt.'" name="'.$id.'" /> '.$opt['label'].'</label></li>'."\n";	
+					if($type == 'radio') {
+						$id_opt = $id.'_'.sanitize_title($opt['value']);
+						if(!empty($defaults["{$rawid}"]) && $defaults["{$rawid}"] == $opt['value']) { $checked = ' checked="checked"'; } else { $checked = ''; }
+						$inputtype = 'radio';
+						$name = $id;
+						$value = $opt['value'];
+						$output .= '
+						<li><label for="gf_settings_'.$id_opt.'">';
+					} else {
+						$id_opt = $rawid.'_'.sanitize_title($opt['value']);
+						if(!empty($defaults["{$rawid}"][sanitize_title($opt['value'])])) { $checked = ' checked="checked"'; } else { $checked = ''; }
+						$inputtype = 'checkbox';
+						$name = $id.'['.sanitize_title($opt['value']).']';
+						$value = 1;
+						$output .= '
+							<li><label for="gf_settings_'.$id_opt.'">
+								<input type="hidden" value="0" name="'.$name.'" />';
+					}
+					$output .= '
+							<input type="'.$inputtype.'"'.$checked.' value="'.$value.'" id="gf_settings_'.$id_opt.'" name="'.$name.'" /> '.$opt['label']." <span style='color:#868686'>(".__(sprintf('%s', "<pre style='display:inline'>".sanitize_title($opt['value'])."</pre>"), 'gravity-forms-addons').")</span>".'
+						</label>
+					</li>'."\n";	
 				}
 				$output .= "</ul>";
 			}
@@ -2957,9 +3229,17 @@ EOD;
 				$defaults[$key] = 'false';
 			}
 		}
-		
+		$defaultsArray = array();
 		if($type == "checkbox") {
 			$js = 'var '.$id.' = jQuery("#gf_settings_'.$id.'").is(":checked") ? "true" : "false";';
+		} elseif($type == "checkboxes" && is_array($defaults["{$id}"])) {
+			$js = ''; $i = 0;
+			$js .= "\n\t\t\tvar ".$id.' = new Array();';
+			foreach($defaults["{$id}"] as $key => $value) {
+				$defaultsArray[] = $key;
+				$js .=  "\n\t\t\t".$id.'['.$i.'] = jQuery("input#gf_settings_'.$id.'_'.$key.'").is(":checked") ? "'.$key.'" : null;';
+				$i++;
+			}
 		} elseif($type == "text" || $type == "date") {
 			$js = 'var '.$id.' = jQuery("#gf_settings_'.$id.'").val();';
 		} elseif($type == 'radio') {
@@ -2977,14 +3257,19 @@ EOD;
 				var '.$id.' = jQuery("select[name=\''.$id.'\']").eq(0).val();
 			}';
 		}
-		$idCode = $id.'=\""+'.$id.'+"\"';
-		
-		$set = 'var '.$id.'Output = (jQuery.trim('.$id.') == "'.trim(addslashes(stripslashes_deep($defaults["{$id}"]))).'") ? "" : " '.$idCode.'";';
-		
+		$set = '';
+		if(!is_array($defaults["{$id}"])) {
+			$idCode = $id.'=\""+'.$id.'+"\"';
+			$set = 'var '.$id.'Output = (jQuery.trim('.$id.') == "'.trim(addslashes(stripslashes($defaults["{$id}"]))).'") ? "" : " '.$idCode.'";';
+		} else {
+			
+			$idCode2 = $id.'.join()';
+			$idCode = '"'.$idCode2.'"';
+			$set = '
+			'.$id.' =  jQuery.grep('.$id.',function(n){ return(n); });
+			var '.$id.'Output = (jQuery.trim('.$idCode2.') === "'.implode(',',$defaultsArray).'") ? "" : " '.$id.'=\""+ '.$idCode2.'+"\"";';
+		}
 		 // Debug
-//		$set .= '
-//		console.log("'.$id.' = "+'.$id.'Output+" - Default: '.trim(addslashes($defaults["{$id}"])).'");
-//		';
 		
 		$return = array('js'=>$js, 'id' => $id, 'idcode'=>$idCode, 'setvalue' => $set);
 		
@@ -3075,14 +3360,13 @@ EOD;
 	public function make_entry_link($options = array(), $link = false, $lead_id = '', $form_id = '', $field_id = '', $field_label = '', $linkClass = '') {
 		global $wp_rewrite,$post,$wp;
 		extract($options);
-		
 		$entrylink = (empty($link) || $link === '&nbsp;') ? $field_label : $link; //$entrylink;
 		
 		$entrytitle = apply_filters('kws_gf_directory_detail_title', apply_filters('kws_gf_directory_detail_title_'.$lead_id, $entrytitle));
-		if(!empty($entrylightbox)) {
-			$elwidth = apply_filters('kws_gf_directory_lightbox_entry_width', 600);
-			$elheight = apply_filters('kws_gf_directory_lightbox_entry_height', 'auto'); 
-			$href = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/entry-details.php?leadid=$lead_id&amp;form={$form_id}&amp;post={$post->ID}&amp;KeepThis=true&amp;TB_iframe=true&amp;width=$elwidth&amp;height=$elheight"; $linkClass = ' class="thickbox lightbox"'; 
+
+		if(!empty($lightboxsettings['entry'])) {
+			$href = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/entry-details.php?leadid=$lead_id&amp;form={$form_id}&amp;post={$post->ID}"; 
+			$linkClass = ' class="thickbox colorbox lightbox" rel="directory_all directory_entry"'; 
 		} else {
 			$multisite = (function_exists('is_multisite') && is_multisite() && $wpdb->blogid == 1);
 			if($wp_rewrite->using_permalinks()) {
@@ -3230,8 +3514,8 @@ EOD;
 		return GFCommon::get_base_url() . "/images/doctypes/$file_name";
 	}
   
-  	function get_lead_count($form_id, $search, $star=null, $read=null, $column, $approved = false, $leads = array(), $start_date = null, $end_date = null){
-		global $wpdb;
+  	function get_lead_count($form_id, $search, $star=null, $read=null, $column, $approved = false, $leads = array(), $start_date = null, $end_date = null, $limituser = false){
+		global $wpdb, $current_user;
 
 		if(!is_numeric($form_id))
 			return "";
@@ -3252,13 +3536,28 @@ EOD;
 		$search_term = "%$search%";
 		$search_filter = empty($search) ? "" : $wpdb->prepare("AND ld.value LIKE %s", $search_term);
 		
+		$user_filter = '';
+		if($limituser) {
+			get_currentuserinfo();
+			if((int)$current_user->ID !== 0 || ($current_user->ID === 0 && apply_filters('kws_gf_show_entries_if_not_logged_in', apply_filters('kws_gf_treat_not_logged_in_as_user', true)))) {
+				if(!empty($current_user->ID)) {
+	        		$user_filter = $wpdb->prepare(" AND l.created_by=%d ", $current_user->ID);
+	        	} else {
+	        		$user_filter = $wpdb->prepare(" AND (created_by IS NULL OR created_by=%d)", $current_user->ID);
+	        	}
+			} else {
+				return false;
+			}
+			
+		}
+		
 		$in_filter = "";
 		if($approved) {
 			$in_filter = $wpdb->prepare("l.id IN (SELECT lead_id from $detail_table_name WHERE field_number BETWEEN %f AND %f) AND", $column - 0.001, $column + 0.001);	
 			// This will work once all the fields are converted to the meta_key after 1.6
 			#$search_filter .= $wpdb->prepare(" AND m.meta_key = 'is_approved' AND m.meta_value = %s", 1);
 		}
-
+		
 		$sql = "SELECT count(distinct l.id) FROM $lead_table_name as l,
 				$detail_table_name as ld";
 #		$sql .= function_exists('gform_get_meta') ? " INNER JOIN wp_rg_lead_meta m ON l.id = m.lead_id " : ""; // After 1.6
@@ -3270,6 +3569,7 @@ EOD;
 				$star_filter
 				$read_filter
 				$status_filter
+				$user_filter
 				$start_date_filter
 				$end_date_filter
 				$search_filter";
@@ -3297,7 +3597,7 @@ EOD;
 		}
 		
 		// $lead['status'] is added in 1.6
-		if((isset($lead["{$column}"]) && strtolower($lead["{$column}"]) == 'approved') && (empty($lead['status']) || !empty($lead['status']) && $lead['status'] == 'active')) {
+		if(function_exists('gform_update_meta') && (isset($lead["{$column}"]) && strtolower($lead["{$column}"]) == 'approved') && (empty($lead['status']) || !empty($lead['status']) && $lead['status'] == 'active')) {
 			return true;
 		}
 		if(!$meta) { return false; } // Prevent checking twice.
@@ -3515,8 +3815,8 @@ function kws_gf_load_functions() {
 		}
 		
 		// Returns array of leads for a specific form
-		function get_gf_leads($form_id, $sort_field_number=0, $sort_direction='DESC', $search='', $offset=0, $page_size=3000, $star=null, $read=null, $is_numeric_sort = false, $start_date=null, $end_date=null, $status = 'active', $approvedcolumn = false) {
-			return GFDirectory::get_leads($form_id,$sort_field_number, $sort_direction, $search, $offset, $page_size, $star, $read, $is_numeric_sort, $start_date, $end_date, $status, $approvedcolumn);
+		function get_gf_leads($form_id, $sort_field_number=0, $sort_direction='DESC', $search='', $offset=0, $page_size=3000, $star=null, $read=null, $is_numeric_sort = false, $start_date=null, $end_date=null, $status = 'active', $approvedcolumn = false, $limituser = false) {
+			return GFDirectory::get_leads($form_id,$sort_field_number, $sort_direction, $search, $offset, $page_size, $star, $read, $is_numeric_sort, $start_date, $end_date, $status, $approvedcolumn, $limituser);
 		}
 		
 		function gf_leads($form_id, $sort_field_number=0, $sort_direction='DESC', $search='', $offset=0, $page_size=3000, $star=null, $read=null, $is_numeric_sort = false, $start_date=null, $end_date=null) {

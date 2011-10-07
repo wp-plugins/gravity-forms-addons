@@ -25,6 +25,7 @@ Gravity Forms is already the easiest form plugin...now, the Gravity Forms Direct
 * Completely shortcode based, using the `[directory]` shortcode
 * Includes built-in __searching__
 * Allow logged-in users to edit their directory listings
+* Choose to show entries to only the users who created them
 * Sort by column
 * Easily re-organize the columns inside Gravity Forms
 * Has an option to <strong>show only approved listings</strong> with an easy approval process
@@ -75,6 +76,21 @@ This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-w
 7. How the Gravity Forms 'Add Fields' boxes look after plugin is activated
 
 == Frequently Asked Questions == 
+
+= How do I turn off lightbox grouping? =
+Add the following to your theme's `functions.php` file:
+
+`
+add_filter('kws_gf_directory_lightbox_settings_rel', 'turn_off_directory_lightbox_grouping');
+
+function turn_off_directory_lightbox_grouping() {
+	return 'nofollow';
+}
+`
+= How do I hide entries from logged-out users? =
+Turn on the `limituser` setting, then add the following to your theme's `functions.php` file:
+
+`add_filter('kws_gf_treat_not_logged_in_as_user', '__return_false');`
 
 = How do I sort by a column? =
 The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms “Edit Forms” page, hover over the form and click the link called "IDs" that appears.
@@ -164,6 +180,21 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 3.2 =
+* Added `limituser` option - a new option to show only entries users have created. You can also hide entries from not-logged-in users (see FAQ).
+* Updated lightbox to use <a href="http://jacklmoore.com/colorbox/">Colorbox</a>, vastly superior lightbox to Thickbox.
+	- Now uses `lightboxsettings` shortcode attribute (but is backward compatible with `entrylightbox` and `lightbox` settings)
+	- Added `kws_gf_directory_colorbox_settings` filter to allow you to modify the settings
+	- Groups images, websites, and entries separately by default. Use `kws_gf_directory_lightbox_settings_rel` filter to modify (see FAQ)
+	- Choose from multiple styles
+* Added `list` input type support
+* Fixed bugs/issues
+	* Fixed 404 errors in Single Entry View after de-activating then re-activating plugin. Now properly generates rewrite rules.
+	* Fixed header code 404 when viewing entries in lightbox mode (Support topics <a href="http://www.seodenver.com/forums/topic/intermittent-404s-in-ie-when-clicking-entry-detail-firefox-ok/">here</a> and <a href="http://www.seodenver.com/forums/topic/lightbox-error/">here</a>)
+	* Front-end editing of certain types of input types failed because `GFFormDisplay` class wasn't defined.
+	* Fixed <a href="http://www.seodenver.com/forums/topic/intermittent-404s-in-ie-when-clicking-entry-detail-firefox-ok/">issue</a> where scripts were not always printing in the `<head>`
+	* Fixed fatal error when outputting `date_created` field (<a href="http://wordpress.org/support/topic/649652">issue #649652</a>)
 
 = 3.1.1 =
 * Fixes issue where entries not showing on sort (<a href="http://www.seodenver.com/forums/topic/entries-not-showing-on-sort/">as reported in the plugin support forums</a>)
@@ -284,6 +315,18 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.2 =
+* Added `limituser` option - a new option to show only entries users have created. You can also hide entries from not-logged-in users (see FAQ).
+* Updated lightbox to use <a href="http://jacklmoore.com/colorbox/">Colorbox</a>, vastly superior lightbox to Thickbox.
+	- Now uses `lightboxsettings` shortcode attribute (but is backward compatible with `entrylightbox` and `lightbox` settings)
+	- Added `kws_gf_directory_colorbox_settings` filter to allow you to modify the settings
+	- Groups images, websites, and entries separately by default. Use `kws_gf_directory_lightbox_settings_rel` filter to modify (see FAQ)
+	- Choose from multiple styles
+* Fixed issue where lightbox scripts weren't outputting
+* Fixed issue where front-end editing of certain types of input types failed because `GFFormDisplay` class wasn't defined.
+* Fixed 404 errors in Single Entry View after de-activating then re-activating plugin. Now properly generates rewrite rules.
+* Fixed header code 404 when viewing entries in lightbox mode
 
 = 3.1.1 =
 * Fixes issue where entries not showing on sort (<a href="http://www.seodenver.com/forums/topic/entries-not-showing-on-sort/">as reported in the plugin support forums</a>) - NoteL this only affected users using versions of Gravity Forms older than 1.6.

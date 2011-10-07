@@ -1,10 +1,13 @@
 <?php
-header("HTTP/1.1 200 OK");
-
 require_once (preg_replace("/wp-content.*/","wp-blog-header.php",__FILE__));
 require_once (preg_replace("/wp-content.*/","/wp-admin/includes/admin.php",__FILE__));
 
+header("HTTP/1.1 200 OK");
+
 wp_enqueue_style('gf-admin', GFCommon::get_base_url() .'/css/admin.css');
+
+wp_enqueue_script('jquery');
+
 register_admin_color_schemes();
 
 function show_table() {
