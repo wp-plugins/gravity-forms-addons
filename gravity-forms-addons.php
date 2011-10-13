@@ -246,7 +246,7 @@ class GFDirectory {
 		    				echo "\ntext = text.replace('{$key}', '{$text}');\n\t";
 		    			}
 		    			?>
-	    				console.log(text);
+	    				
 	    				return text;
 	    			});
 	    		});
@@ -792,8 +792,6 @@ class GFDirectory {
 				
 		        //binding to the load field settings event to initialize the checkbox
 		        $(document).bind("gform_load_field_settings", function(event, field, form){
-		        
-			        // console.log(field);
 			        
 		        	if(typeof(field["useAsEntryLink"]) !== "undefined" && field["useAsEntryLink"] !== false && field["useAsEntryLink"] !== 'false' && field["useAsEntryLink"] !== '') {
 			            $("#field_use_as_entry_link").attr("checked", true);
