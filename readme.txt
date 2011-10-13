@@ -181,6 +181,10 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 3.2.1 = 
+* Fixed Colorbox not loading properly in certain cases (<a href="Issue http://wordpress.org/support/topic/656033" rel="nofollow">Issue #656033</a>)
+* Fixed issue where entries appeared not to be approving properly in the admin. (<a href="http://www.seodenver.com/forums/topic/edits-to-entries-not-visible-in-directory-view/">Reported on the Support Forum</a>)
+
 = 3.2 =
 * Added `limituser` option - a new option to show only entries users have created. You can also hide entries from not-logged-in users (see FAQ).
 * Updated lightbox to use <a href="http://jacklmoore.com/colorbox/">Colorbox</a>, vastly superior lightbox to Thickbox.
@@ -315,6 +319,10 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.2.1 = 
+* Fixed Colorbox not loading properly in certain cases (<a href="Issue http://wordpress.org/support/topic/656033" rel="nofollow">Issue #656033</a>)
+* Fixed issue where entries appeared not to be approving properly in the admin. (<a href="http://www.seodenver.com/forums/topic/edits-to-entries-not-visible-in-directory-view/">Reported on the Support Forum</a>)
 
 = 3.2 =
 * Added `limituser` option - a new option to show only entries users have created. You can also hide entries from not-logged-in users (see FAQ).

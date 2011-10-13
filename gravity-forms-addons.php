@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.2
+Version: 3.2.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -581,7 +581,7 @@ class GFDirectory {
 	    				$settings['height'] = '80%';
 	    				break;
 	    		}
-    			$output .= "\t\t".'$(".colorbox[rel~=directory_'.$key.']").colorbox(';
+    			$output .= "\t\t".'$(".colorbox[rel~=\'directory_'.$key.'\']").colorbox(';
     			if(!empty($settings)) {
 	    			$output .= "{\n\t\t\t".implode(",\n\t\t\t",self::format_colorbox_settings(apply_filters("kws_gf_directory_lightbox_{$key}_settings", $settings)))."\n\t\t}";
     			}
@@ -637,13 +637,13 @@ class GFDirectory {
             $wpdb->query($sql);
 		} else {
 			$current_fields = $wpdb->get_results($wpdb->prepare("SELECT id, field_number FROM $lead_detail_table WHERE lead_id=%d", $lead_id));
-			
+
 			$lead_detail_id = RGFormsModel::get_lead_detail_id($current_fields, $_gform_directory_approvedcolumn);
-	
+			
 	        if($lead_detail_id > 0){
-	        	$wpdb->update($lead_detail_table, array("value" => $approved), array("lead_id" => $lead_id, 'form_id' => $form_id, 'field_number' => $_gform_directory_approvedcolumn), array("%s"), array("%d", "%d", "%f"));
+	        	$update = $wpdb->update($lead_detail_table, array("value" => $approved), array("lead_id" => $lead_id, 'form_id' => $form_id, 'field_number' => $_gform_directory_approvedcolumn), array("%s"), array("%d", "%d", "%f"));
 	        } else {
-	        	$wpdb->insert($lead_detail_table, array("lead_id" => $lead_id, "form_id" => $form_id, "field_number" => $_gform_directory_approvedcolumn, "value" => $approved), array("%d", "%d", "%f", "%s"));
+	        	$update = $wpdb->insert($lead_detail_table, array("lead_id" => $lead_id, "form_id" => $form_id, "field_number" => $_gform_directory_approvedcolumn, "value" => $approved), array("%d", "%d", "%f", "%s"));
 	        }
 		}
 	}
@@ -1224,6 +1224,17 @@ class GFDirectory {
 		}
 		
 		$options = self::directory_defaults($atts);
+		
+		
+		// Make sure everything is on the same page.
+		if(is_array($options['lightboxsettings'])) {
+			foreach($options['lightboxsettings'] as $key => $value) {
+				if(is_numeric($key)) {
+					$options['lightboxsettings']["{$value}"] = $value;
+					unset($options['lightboxsettings']["{$key}"]);
+				}
+			}
+		}
 		
 		extract( $options );
 			
@@ -3597,7 +3608,7 @@ EOD;
 		}
 		
 		// $lead['status'] is added in 1.6
-		if(function_exists('gform_update_meta') && (isset($lead["{$column}"]) && strtolower($lead["{$column}"]) == 'approved') && (empty($lead['status']) || !empty($lead['status']) && $lead['status'] == 'active')) {
+		if((isset($lead["{$column}"]) && strtolower($lead["{$column}"]) == 'approved') && ((function_exists('gform_update_meta') && empty($lead['status']) || !empty($lead['status']) && $lead['status'] == 'active') || !function_exists('gform_update_meta'))) {
 			return true;
 		}
 		if(!$meta) { return false; } // Prevent checking twice.
@@ -3680,14 +3691,20 @@ EOD;
         $form_id = 0;
         if(is_array($results) && sizeof($results) > 0){
             $form_id = $results[0]->form_id;
-            $lead = array("id" => $results[0]->id, "form_id" => $results[0]->form_id, "date_created" => $results[0]->date_created, "is_starred" => intval($results[0]->is_starred), "is_read" => intval($results[0]->is_read), "ip" => $results[0]->ip, "source_url" => $results[0]->source_url, "post_id" => $results[0]->post_id, "currency" => $results[0]->currency, "payment_status" => $results[0]->payment_status, "payment_date" => $results[0]->payment_date, "transaction_id" => $results[0]->transaction_id, "payment_amount" => $results[0]->payment_amount, "is_fulfilled" => $results[0]->is_fulfilled, "created_by" => $results[0]->created_by, "transaction_type" => $results[0]->transaction_type, "user_agent" => $results[0]->user_agent, "status" => $results[0]->status);
+            $lead = array("id" => $results[0]->id, "form_id" => $results[0]->form_id, "date_created" => $results[0]->date_created, "is_starred" => intval($results[0]->is_starred), "is_read" => intval($results[0]->is_read), "ip" => $results[0]->ip, "source_url" => $results[0]->source_url, "post_id" => $results[0]->post_id, "currency" => $results[0]->currency, "payment_status" => $results[0]->payment_status, "payment_date" => $results[0]->payment_date, "transaction_id" => $results[0]->transaction_id, "payment_amount" => $results[0]->payment_amount, "is_fulfilled" => $results[0]->is_fulfilled, "created_by" => $results[0]->created_by, "transaction_type" => $results[0]->transaction_type, "user_agent" => $results[0]->user_agent);
+            if(isset($results[0]->status)) { 
+            	$lead["status"] = $results[0]->status;
+            }
         }
 
         $prev_lead_id=0;
         foreach($results as $result){
             if($prev_lead_id <> $result->id && $prev_lead_id > 0){
                 array_push($leads, $lead);
-                $lead = array("id" => $result->id, "form_id" => $result->form_id,     "date_created" => $result->date_created,     "is_starred" => intval($result->is_starred),     "is_read" => intval($result->is_read),     "ip" => $result->ip,     "source_url" => $result->source_url,     "post_id" => $result->post_id,     "currency" => $result->currency,     "payment_status" => $result->payment_status,     "payment_date" => $result->payment_date,     "transaction_id" => $result->transaction_id,     "payment_amount" => $result->payment_amount,     "is_fulfilled" => $result->is_fulfilled,     "created_by" => $result->created_by,     "transaction_type" => $result->transaction_type,     "user_agent" => $result->user_agent, "status" => $result->status);
+                $lead = array("id" => $result->id, "form_id" => $result->form_id,     "date_created" => $result->date_created,     "is_starred" => intval($result->is_starred),     "is_read" => intval($result->is_read),     "ip" => $result->ip,     "source_url" => $result->source_url,     "post_id" => $result->post_id,     "currency" => $result->currency,     "payment_status" => $result->payment_status,     "payment_date" => $result->payment_date,     "transaction_id" => $result->transaction_id,     "payment_amount" => $result->payment_amount,     "is_fulfilled" => $result->is_fulfilled,     "created_by" => $result->created_by,     "transaction_type" => $result->transaction_type,     "user_agent" => $result->user_agent);
+                if(isset($result->status)) {
+                	$lead["status"] = $result->status;
+                }
             }
 
             $field_value = $result->value;
@@ -3829,8 +3846,9 @@ function kws_gf_load_functions() {
 		
 		
 		if(!function_exists('kws_print_r')) {
-			function kws_print_r($content) {
+			function kws_print_r($content, $die = false) {
 				echo '<pre>'.print_r($content, true).'</pre>';
+				if($die) { die(); }
 				return $content;
 			}
 		}
