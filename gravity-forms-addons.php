@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.2.1
+Version: 3.2.2
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -1163,18 +1163,19 @@ class GFDirectory {
 			ob_start(); // Using ob_start() allows us to filter output
 				@self::lead_detail($form, $lead, false, $inline, $options);
 				$content = ob_get_contents(); // Get the output
-			ob_end_clean(); // Clear the cache
+			ob_end_clean(); // Clear the buffer
 			
 			$current = remove_query_arg(array('row', 'page_id', 'leadid', 'form', 'edit'));
 			$url = parse_url(add_query_arg(array(), $current));
-			if(function_exists('is_multisite') && is_multisite() && $wpdb->blogid != 1) {
+			$permalink = get_option('permalink_structure');
+			if(function_exists('is_multisite') && is_multisite() && $wpdb->blogid != 1 || empty($permalink)) {
 				$href = $current;
 			} else {
-				$href = isset($post->permalink) ? $post->permalink : get_permalink();
+				$href = get_permalink($post->ID);
 			}
-			if(!empty($url['query'])) { $href .= '?'.$url['query']; }
-			
+			if(!empty($url['query']) && !empty($permalink)) { $href .= '?'.$url['query']; }			
 			if(!empty($options['entryanchor']) && !empty($options['showrowids'])) { $href .= '#lead_row_'.$leadid; }
+
 			
 			// If there's a back link, format it
 			if(!empty($entryback) && !empty($entryonly)) {
@@ -1298,10 +1299,10 @@ class GFDirectory {
 			//
 			$leads = GFDirectory::get_leads($form_id, $sort_field, $sort_direction, $search_query, $first_item_index, $page_size, $star, $read, $is_numeric, $start_date, $end_date, 'active', $approvedcolumn, $limituser);
 			
-			if(!$showadminonly)	 {
+#			if(!$showadminonly)	 {
 				$columns = self::remove_admin_only($columns, $adminonlycolumns, $approvedcolumn, false, false, $form);
 				$leads = self::remove_admin_only($leads, $adminonlycolumns, $approvedcolumn, true, false, $form);
-			}
+#			}
 			
 			
 			// Allow lightbox to determine whether showadminonly is valid without passing a query string in URL
@@ -1387,7 +1388,7 @@ class GFDirectory {
 						if(not_empty(sort_field_id)) { var sort = "&sort=" + sort_field_id; } else {  var sort = ''; }
 						if(not_empty(sort_direction)) { var dir = "&dir=" + sort_direction; } else {  var dir = ''; }
 						var page = '<?php if($wp_rewrite->using_permalinks()) { echo '?'; } else { echo '&'; } ?>page='+<?php echo isset($_GET['page']) ? intval($_GET['page']) : '"1"'; ?>;
-						var location = "<?php echo get_permalink(); ?>"+page+search+sort+dir;
+						var location = "<?php echo get_permalink($post->ID); ?>"+page+search+sort+dir;
 						document.location = location;
 					}
 				<?php } ?>
@@ -1403,6 +1404,9 @@ class GFDirectory {
 					<p class="search-box">
 						<label class="hidden" for="lead_search"><?php _e("Search Entries:", "gravity-forms-addons"); ?></label>
 						<input type="text" name="gf_search" id="lead_search" value="<?php echo $search_query ?>"<?php if($searchtabindex) { echo ' tabindex="'.intval($searchtabindex).'"';}?> />
+						<?php if(!empty($_GET['p'])) { ?>
+							<input name="p" type="hidden" value="<?php echo esc_html($_GET['p']); ?>" />
+						<?php } ?>
 						<input type="submit" class="button" id="lead_search_button" value="<?php _e("Search", "gravity-forms-addons") ?>"<?php if($searchtabindex) { echo ' tabindex="'.intval($searchtabindex++).'"';}?> />
 					</p>
 				</form>
@@ -1457,7 +1461,7 @@ class GFDirectory {
 								<th scope="col" class="manage-column">
 								<a href="<?php 
 									$searchpage = isset($_GET['page']) ? intval($_GET['page']) : 1;
-									echo add_query_arg(array('gf_search' => $search_query, 'sort' => $field_id, 'dir' => $dir, 'page' => $searchpage), get_permalink()); 
+									echo add_query_arg(array('gf_search' => $search_query, 'sort' => $field_id, 'dir' => $dir, 'page' => $searchpage), get_permalink($post->ID)); 
 								?>"><?php
 								}
 								if($field_info['type'] == 'id' && $entry) { $label = $entryth; }
@@ -2863,7 +2867,7 @@ EOD;
 				
 			<?php 
 					$js = self::make_popup_options(true); 
-					#print_r($js);
+					
 					$ids = $idOutputList = $setvalues = $vars = '';
 
 					foreach($js as $j) {
@@ -3375,7 +3379,12 @@ EOD;
 
 		if(!empty($lightboxsettings['entry'])) {
 			$href = WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/entry-details.php?leadid=$lead_id&amp;form={$form_id}&amp;post={$post->ID}"; 
-			$linkClass = ' class="thickbox colorbox lightbox" rel="directory_all directory_entry"'; 
+			
+			if(wp_script_is('colorbox', 'registered')) {
+				$linkClass = ' class="colorbox lightbox" rel="directory_all directory_entry"'; 
+			} else if(wp_script_is('thickbox', 'registered')) {
+				$linkClass = ' class="thickbox lightbox" rel="directory_all directory_entry"'; 
+			}
 		} else {
 			$multisite = (function_exists('is_multisite') && is_multisite() && $wpdb->blogid == 1);
 			if($wp_rewrite->using_permalinks()) {
@@ -3645,7 +3654,9 @@ EOD;
 	
 	function remove_admin_only($leads, $adminOnly, $approved, $isleads, $single = false, $form) {
 		
-		if(empty($adminOnly) || !is_array($adminOnly) || !is_array($leads)) { return $leads; }
+		if(empty($adminOnly) || !is_array($adminOnly)) { $adminOnly = array(); }
+		
+		if(!is_array($leads)) { return $leads; }
 
 		$i = 0;
 		if($isleads) {

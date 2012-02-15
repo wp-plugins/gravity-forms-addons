@@ -181,6 +181,13 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 3.2.2 =
+* For sites that have "pretty permalinks" turned off
+	* Fixed issue with "Back to Directory" links not working
+	* Fixed search
+* Fixed bug where "Hide This Field in Directory View" wasn't working properly
+* Added a check so that both Thickbox and Colorbox don't open entry if both scripts are loaded
+
 = 3.2.1 = 
 * Fixed Colorbox not loading properly in certain cases (<a href="Issue http://wordpress.org/support/topic/656033" rel="nofollow">Issue #656033</a>)
 * Fixed issue where entries appeared not to be approving properly in the admin. (<a href="http://www.seodenver.com/forums/topic/edits-to-entries-not-visible-in-directory-view/">Reported on the Support Forum</a>)
@@ -319,6 +326,12 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.2.2 =
+* For sites that have "pretty permalinks" turned off
+	* Fixed issue with "Back to Directory" links not working
+	* Fixed search
+* Fixed bug where "Hide This Field in Directory View" wasn't working properly
 
 = 3.2.1 = 
 * Fixed Colorbox not loading properly in certain cases (<a href="Issue http://wordpress.org/support/topic/656033" rel="nofollow">Issue #656033</a>)
