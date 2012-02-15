@@ -1,4 +1,4 @@
-=== Gravity Forms Directory & Addons ===
+=== Gravity Forms Directory ===
 Tags: gravity forms, gravity form, forms, gravity, form, crm, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
 Tested up to: 3.2.1
