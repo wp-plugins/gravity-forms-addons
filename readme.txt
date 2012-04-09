@@ -6,13 +6,13 @@ Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Add directory capabilities and other functionality to the great <a href="http://wordpressformplugin.com?r=addonsdesc" rel="nofollow">Gravity Forms</a> plugin.
+Add directory capabilities and other functionality to the great <a href="http://formplugin.com?r=addonsdesc" rel="nofollow">Gravity Forms</a> plugin.
 
 == Description ==
 
-> <em></em>This plugin requires the <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!<em></em>
+> <em></em>This plugin requires the <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!<em></em>
 
-__How easy is <a href="http://wordpressformplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms</a>? Check out the video below:__
+__How easy is <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms</a>? Check out the video below:__
 [youtube http://www.youtube.com/watch?v=cRtE_riFwaw]
 
 
@@ -116,7 +116,7 @@ To add a filter by date, you add either a `start_date` or `end_date` parameter--
 `[directory form="14" start_date="1984-10-22" end_date="2011-09-07"]`
 
 = Does this plugin require Gravity Forms? =
-This plugin requires the [Gravity Forms plugin](http://wordpressformplugin.com?r=addonsfaq). __Don't use Gravity Forms? [Buy the plugin](http://wordpressformplugin.com?r=addonsfaq)__ and start using this add-on plugin!
+This plugin requires the [Gravity Forms plugin](http://formplugin.com?r=addonsfaq). __Don't use Gravity Forms? [Buy the plugin](http://formplugin.com?r=addonsfaq)__ and start using this add-on plugin!
 
 = How do I find a field ID? =
 On the Gravity Forms "Edit Forms" page, hover over the form and click the link called "IDs" that appears.
