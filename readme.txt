@@ -10,9 +10,9 @@ Add directory capabilities and other functionality to the great <a href="http://
 
 == Description ==
 
-> <em></em>This plugin requires the <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!<em></em>
+> This plugin requires the <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!<br /><small><em>This link helps support the development of the plugin.  You can also <a href="http://www.gravityforms.com">go directly to GravityForms.com</a></em></small>
 
-__How easy is <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms</a>? Check out the video below:__
+__How easy is Gravity Forms? Check out the video below:__
 [youtube http://www.youtube.com/watch?v=cRtE_riFwaw]
 
 
@@ -114,9 +114,6 @@ function different_directory_endpoint($endpoint) {
 To add a filter by date, you add either a `start_date` or `end_date` parameter--or both--in `YYYY-MM-DD` format. Here's an example:
 
 `[directory form="14" start_date="1984-10-22" end_date="2011-09-07"]`
-
-= Does this plugin require Gravity Forms? =
-This plugin requires the [Gravity Forms plugin](http://formplugin.com?r=addonsfaq). __Don't use Gravity Forms? [Buy the plugin](http://formplugin.com?r=addonsfaq)__ and start using this add-on plugin!
 
 = How do I find a field ID? =
 On the Gravity Forms "Edit Forms" page, hover over the form and click the link called "IDs" that appears.
