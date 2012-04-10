@@ -6,15 +6,9 @@ Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Add directory capabilities and other functionality to the great <a href="http://formplugin.com?r=addonsdesc" rel="nofollow">Gravity Forms</a> plugin.
+Add directory capabilities and other functionality to the great Gravity Forms plugin.
 
 == Description ==
-
-> This plugin requires the <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://formplugin.com?r=addonsreadme" rel="nofollow">Buy the plugin</a></strong> and start using this revolutionary plugin!<br /><small><em>This link helps support the development of the plugin.  You can also <a href="http://www.gravityforms.com">go directly to GravityForms.com</a></em></small>
-
-__How easy is Gravity Forms? Check out the video below:__
-[youtube http://www.youtube.com/watch?v=cRtE_riFwaw]
-
 
 ### Turn Gravity Forms into a Directory plugin
 
@@ -44,13 +38,6 @@ There are over 30 configurable options for how you want the directory to display
 * Expand the Add Fields boxes to view all the boxes at once.
 * Edit form entries directly from the Entries page (saving two clicks)
 * Easily access form data to use in your website with PHP functions - [Learn more on the plugin's website](http://www.seodenver.com/gravity-forms-addons/)
-
-### Google Analytics Integration & Gravity Forms Widget
-
-This plugin integrates Joost de Valk's <a href="http://yoast.com/gravity-forms-widget-extras/" target="_blank" rel="nofollow">Gravity Forms Widget + Extras</a>, which includes:
-
-* Track the referrer for the form submission using Google Analytics (adds referrer data and the search keyword[s] used to the notification emails.)
-* A Gravity Forms widget (see <a href="http://wordpress.org/extend/plugins/gravity-forms-addons/screenshots/" rel="nofollow">plugin Screenshots</a>)
 
 #### Other Gravity Forms Add-ons:
 
