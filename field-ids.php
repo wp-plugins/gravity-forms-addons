@@ -25,7 +25,7 @@ if(!GFCommon::current_user_can_any(array("gravityforms_edit_forms", "gravityform
         <style type="text/css">
         	body { height: 100%!important; overflow: auto; }
 	        table#input_ids {
-	        	width: 90%;
+	        	width: 99%;
 	        	margin: 0 auto!important;
 	        }
 	        table#input_ids caption#input_id_caption { 
@@ -33,17 +33,11 @@ if(!GFCommon::current_user_can_any(array("gravityforms_edit_forms", "gravityform
 	        	padding: 1em 0 .5em 0;
 	        }
         </style>
-        <?php
-            require_once(GFCommon::get_base_path() . "/form_display.php");
-            $form = RGFormsModel::get_form_meta($_GET["id"]);
-            GFFormDisplay::enqueue_form_scripts($form);
-            wp_print_scripts();
-        ?>
+
     </head>
     <body>
-    <div id="preview_hdr"><span class="actionlinks"><a href="javascript:window.close()" class="close_window"><?php _e("close window", "gravityforms") ?></a></span><?php _e("Form Preview", "gravityforms") ?></div>
         <?php
-        echo RGForms::get_form($_GET["id"], true, true, true);
+        GFDirectory_Admin::show_field_ids();
         ?>
     </body>
 </html>

@@ -1,7 +1,7 @@
 === Gravity Forms Directory ===
 Tags: gravity forms, gravity form, forms, gravity, form, crm, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
-Tested up to: 3.3.1
+Tested up to: 3.4.2
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -31,7 +31,7 @@ Gravity Forms is already the easiest form plugin...now, the Gravity Forms Direct
 * Option to __view single entries__ in their own page or in a lightbox
 
 ####Insert a totally configurable table using the editor
-There are over 30 configurable options for how you want the directory to display. 
+There are tons of configurable options for how you want the directory to display. 
 
 ###Improve Gravity Forms Functionality and Usability
 
@@ -47,10 +47,9 @@ There are over 30 configurable options for how you want the directory to display
 * <a href="http://wordpress.org/extend/plugins/gravity-forms-mad-mimi/">Gravity Forms Mad Mimi Add-on</a> - Integrate Mad Mimi, a great email marketing company, and Gravity Forms.
 * <a href="http://wordpress.org/extend/plugins/gravity-forms-exacttarget/">Gravity Forms ExactTarget Add-on</a> - Integrate with ExactTarget, an enterprise-class email marketing service
 
-
 #### Have an idea or issue with this Gravity Forms add-on plugin?
 
-* [Leave suggestions, comments, and/or bug reports](http://www.seodenver.com/forums/forum/gravity-forms-addons/)
+* [Leave suggestions, comments, and/or bug reports](http://wordpress.org/support/plugin/gravity-forms-addons)
 
 == Screenshots ==
 
@@ -80,7 +79,7 @@ Turn on the `limituser` setting, then add the following to your theme's `functio
 `add_filter('kws_gf_treat_not_logged_in_as_user', '__return_false');`
 
 = How do I sort by a column? =
-The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms “Edit Forms” page, hover over the form and click the link called "IDs" that appears.
+The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms ìEdit Formsî page, hover over the form and click the link called "IDs" that appears.
 
 If you want to sort by last name, you find the last name id (`1.6` for example). Then, you add `sort="1.6"` to your `[directory]` shortcode.
 
@@ -164,6 +163,23 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 3.3 =
+* Next up: improved management of directory column order and visibility!
+* Fixed: Pagination doesn't work when embedding forms in a page and using permalinks
+* Fixed: Back links would always link to the homepage when permalinks are turned off
+* Fixed: Issue with removing certain fields in the edit screen
+* Fixed: Searches on pages without permalinks enabled now won't go to the home page
+* Fixed: Messed up datepicker fields when working with other plugins using date pickers (<a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-date-picker-conflict">support topic</a>)
+* Fixed: Messed up menu links when navigating from a single entry view
+* Fixed & Improved: Added support for order details in entry view
+* Fixed: Incorrect instructions in the Add Directory form. "Allow administrators to edit entries they created." should have been "Allow administrators to edit all entries."
+* Fixed: Issue with full text not showing up in the Directory, even when `fulltext` was enabled
+* Fixed: `compact` now properly implemented. This is to better inform content filters.
+* Fixed: Editing an entry in a lightbox now works properly
+* Improved: Added ids to the directory `<th>`, <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-set-column-width">as requested</a>
+* Improved: Cleaned up some code
+* Improved: Lead detail editing
 
 = 3.2.2 =
 * For sites that have "pretty permalinks" turned off
@@ -310,6 +326,23 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.3 =
+* Next up: improved management of directory column order and visibility!
+* Fixed: Pagination doesn't work when embedding forms in a page and using permalinks
+* Fixed: Back links would always link to the homepage when permalinks are turned off
+* Fixed: Issue with removing certain fields in the edit screen
+* Fixed: Searches on pages without permalinks enabled now won't go to the home page
+* Fixed: Messed up datepicker fields when working with other plugins using date pickers (<a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-date-picker-conflict">support topic</a>)
+* Fixed: Messed up menu links when navigating from a single entry view
+* Fixed & Improved: Added support for order details in entry view
+* Fixed: Incorrect instructions in the Add Directory form. "Allow administrators to edit entries they created." should have been "Allow administrators to edit all entries."
+* Fixed: Issue with full text not showing up in the Directory, even when `fulltext` was enabled
+* Fixed: `compact` now properly implemented. This is to better inform content filters.
+* Fixed: Editing an entry in a lightbox now works properly
+* Improved: Added ids to the directory `<th>`, <a href="http://wordpress.org/support/topic/plugin-gravity-forms-directory-set-column-width">as requested</a>
+* Improved: Cleaned up some code
+* Improved: Lead detail editing
 
 = 3.2.2 =
 * For sites that have "pretty permalinks" turned off

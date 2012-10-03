@@ -1,6 +1,6 @@
 <?php
-require_once (preg_replace("/wp-content.*/","wp-blog-header.php",__FILE__));
-require_once (preg_replace("/wp-content.*/","/wp-admin/includes/admin.php",__FILE__));
+require_once (preg_replace("/wp-content.*/ism","wp-blog-header.php",__FILE__));
+require_once (preg_replace("/wp-content.*/ism","/wp-admin/includes/admin.php",__FILE__));
 
 header("HTTP/1.1 200 OK");
 
@@ -18,8 +18,8 @@ function show_table() {
 			if(isset($_REQUEST['post'])) {
 				$transient = get_transient('gf_form_'.$_REQUEST['form'].'_post_'.$_REQUEST['post'].'_showadminonly');
 			}
-			
-			echo "<div class='wrap' style='padding:1.25em .5em'>".apply_filters('kws_gf_directory_detail', apply_filters('kws_gf_directory_detail_'.(int)$_REQUEST['leadid'], GFDirectory::process_lead_detail(false, '', apply_filters('kws_gf_directory_showadminonly_lightbox', apply_filters('kws_gf_directory_showadminonly_lightbox_'.$_REQUEST['form'], $transient)))))."</div>";
+			echo '<style>html, body { margin:0; padding: 0!important; } div.wrap { padding:.25em .5em; }</style>';
+			echo "<div class='wrap'>".apply_filters('kws_gf_directory_detail', apply_filters('kws_gf_directory_detail_'.(int)$_REQUEST['leadid'], GFDirectory::process_lead_detail(false, '', apply_filters('kws_gf_directory_showadminonly_lightbox', apply_filters('kws_gf_directory_showadminonly_lightbox_'.$_REQUEST['form'], $transient)))))."</div>";
 	}
 }
 
