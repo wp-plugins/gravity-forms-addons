@@ -164,6 +164,10 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 3.3.1 =
+* Fixed: Fixed issue where datepicker functionality may not exist.
+* Improved: Plugin now uses WordPress jQueryUI datepicker script, instead of Gravity Forms'.
+
 = 3.3 =
 * Next up: improved management of directory column order and visibility!
 * Fixed: Pagination doesn't work when embedding forms in a page and using permalinks
@@ -326,6 +330,10 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.3.1 =
+* Fixed: Fixed issue where datepicker functionality may not exist.
+* Improved: Plugin now uses WordPress jQueryUI datepicker script, instead of Gravity Forms'.
 
 = 3.3 =
 * Next up: improved management of directory column order and visibility!

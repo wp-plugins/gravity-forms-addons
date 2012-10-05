@@ -29,7 +29,7 @@ class GFDirectory_Admin {
 		
 		if(in_array(RG_CURRENT_PAGE, array('post.php', 'page.php', 'page-new.php', 'post-new.php'))){
 			add_action('admin_footer',	array(&$this, 'add_mce_popup'));
-			#wp_enqueue_script("gforms_ui_datepicker", GFCommon::get_base_url() . "/js/jquery-ui/ui.datepicker.js", array("jquery"), GFCommon::$version, true);
+			wp_enqueue_script("jquery-ui-datepicker");
 		}
 		
 		
@@ -247,20 +247,22 @@ EOD;
 			jQuery('document').ready(function($) { 
 				
 			
-			    jQuery('.datepicker').each(
-			        function (){
-			            var element = jQuery(this);
-			            var format = "yy-mm-dd";
-			
-			            var image = "";
-			            var showOn = "focus";
-			            if(element.hasClass("datepicker_with_icon")){
-			                showOn = "both";
-			                image = jQuery('#gforms_calendar_icon_' + this.id).val();
-			            }
-			
-			            element.datepicker({ yearRange: '-100:+10', showOn: showOn, buttonImage: image, buttonImageOnly: true, dateFormat: format });
-			        }
+			    jQuery('#select_gf_directory_form .datepicker').each(
+			    	function (){
+				    	if($.fn.datepicker) {
+				            var element = jQuery(this);
+				            var format = "yy-mm-dd";
+				
+				            var image = "";
+				            var showOn = "focus";
+				            if(element.hasClass("datepicker_with_icon")){
+				                showOn = "both";
+				                image = jQuery('#gforms_calendar_icon_' + this.id).val();
+				            }
+				
+				            element.datepicker({ yearRange: '-100:+10', showOn: showOn, buttonImage: image, buttonImageOnly: true, dateFormat: format });
+				        }
+				   }
 			    );
 
 

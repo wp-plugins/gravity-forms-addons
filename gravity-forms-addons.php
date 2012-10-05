@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.3
+Version: 3.3.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2011 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -33,7 +33,7 @@ class GFDirectory {
 	private static $path = "gravity-forms-addons/gravity-forms-addons.php";
 	private static $url = "http://www.gravityforms.com";
 	private static $slug = "gravity-forms-addons";
-	private static $version = "3.3";
+	private static $version = "3.3.1";
 	private static $min_gravityforms_version = "1.3.9";
 	
 	public static function directory_defaults($args = array()) {
@@ -1556,7 +1556,7 @@ class GFDirectory {
 							}
 							?>
 						</tr>
-						<?php if(!empty($credit)) { self::get_credit_link(sizeof($columns)); } ?>
+						<?php if(!empty($credit)) { self::get_credit_link(sizeof($columns), $options); } ?>
 					</tfoot>
 					<?php } ?>
 					</table>
@@ -1605,7 +1605,7 @@ class GFDirectory {
 			return $content; // Return it!
 	}
     
-    public function get_credit_link($columns = 1) {
+    public function get_credit_link($columns = 1, $options = array()) {
     	global $post;// prevents calling before <HTML>
     	if(empty($post) || is_admin()) { return; }
     	
@@ -1614,7 +1614,7 @@ class GFDirectory {
     	// Only show credit link if the user has saved settings;
     	// this prevents existing directories adding a link without user action.
     	if(isset($settings['version'])) {
-    		echo "<tr><th colspan='{$columns}'>".self::attr()."</th></tr>";
+    		echo "<tr><th colspan='{$columns}'>".self::attr($options)."</th></tr>";
     	}
     }
     
@@ -1622,14 +1622,17 @@ class GFDirectory {
 	    return self::$version;
     }
     
-    public function attr($default = '<span class="kws_gf_credit" style="font-weight:normal; text-align:center; display:block; margin:0 auto;">Powered by <a href="http://seodenver.com/gravity-forms-addons/">Gravity Forms Directory</a></span>') {
-		
+    public function return_7776000() {
+	    return 7776000; // extend the cache to 90 days
+    }
+    
+    public function attr($options, $default = '<span class="kws_gf_credit" style="font-weight:normal; text-align:center; display:block; margin:0 auto;">Powered by <a href="http://seodenver.com/gravity-forms-addons/">Gravity Forms Directory</a></span>') {
 		include_once(ABSPATH . WPINC . '/feed.php');
-		
-		if(!$rss = fetch_feed('http://www.katzwebservices.com/development/attribution.php?site='.htmlentities(substr(get_bloginfo('url'), is_ssl() ? 8 : 7)).'&from=kws_gf_addons&version='.self::$version) ) { return $default; }
-		
-		if(!is_wp_error($rss)) {
-			// This list is only missing 'style', 'id', and 'class' so that those don't get stripped.
+		add_filter( 'wp_feed_cache_transient_lifetime' , array('GFDirectory', 'return_7776000'));
+		$rss = fetch_feed(add_query_arg(array('site' => htmlentities(substr(get_bloginfo('url'), is_ssl() ? 8 : 7)), 'from' => 'kws_gf_addons', 'version' => self::$version, 'credit' => !empty($options['credit'])), 'http://www.katzwebservices.com/development/attribution.php'));
+		remove_filter( 'wp_feed_cache_transient_lifetime' , array('GFDirectory', 'return_7776000'));
+		if($rss && !is_wp_error($rss)) {
+			// We want to strip all tags except for 'style', 'id', and 'class' so that the return value is always safe for the site.
 			$strip = array('bgsound','expr','onclick','onerror','onfinish','onmouseover','onmouseout','onfocus','onblur','lowsrc','dynsrc');
 			$rss->strip_attributes($strip); $rss_items = $rss->get_items(0, 1);
 			foreach ( $rss_items as $item ) {
@@ -2611,5 +2614,4 @@ function kws_gf_load_functions() {
 	}
 }
 
-
-?>
+/* Ending ?> left out intentionally */
