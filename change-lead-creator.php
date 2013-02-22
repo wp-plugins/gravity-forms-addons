@@ -6,6 +6,8 @@ Version: 1.0
 Author URI: http://www.katzwebservices.com
 */
 
+if(function_exists('kws_gf_change_entry_creator_form')) { return; }
+
 add_action("gform_entry_info", 'kws_gf_change_entry_creator_form', 10, 2);
 function kws_gf_change_entry_creator_form($form_id, $lead) {
     if(GFCommon::current_user_can_any("gravityforms_edit_entries")) {
