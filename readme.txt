@@ -1,9 +1,10 @@
 === Gravity Forms Directory ===
 Tags: gravity forms, gravity form, forms, gravity, form, crm, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 2.8
-Tested up to: 3.5
+Tested up to: 3.4.2
 Stable tag: trunk
 Contributors: katzwebdesign
+License: GPLv2 or later
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
 Add directory capabilities and other functionality to the great Gravity Forms plugin.
@@ -31,7 +32,7 @@ Gravity Forms is already the easiest form plugin...now, the Gravity Forms Direct
 * Option to __view single entries__ in their own page or in a lightbox
 
 ####Insert a totally configurable table using the editor
-There are tons of configurable options for how you want the directory to display. 
+There are tons of configurable options for how you want the directory to display.
 
 ###Improve Gravity Forms Functionality and Usability
 
@@ -61,7 +62,31 @@ There are tons of configurable options for how you want the directory to display
 6. The Gravity Forms Addons settings page, found in the Forms > Directory & Addons menu link
 7. How the Gravity Forms 'Add Fields' boxes look after plugin is activated
 
-== Frequently Asked Questions == 
+== Frequently Asked Questions ==
+
+= To integrate a form with Directory: =
+1. Go to the post or page where you would like to add the directory.
+1. Click the "Add Directory" button above the content area.
+1. Choose a form from the drop-down menu and configure settings as you would like them.
+1. Click "Insert Directory". A "shortcode" should appear in the content editor that looks similar to <code style="font-size:1em;">[directory form="#"]</code>
+1. Save the post or page
+
+= Configuring Fields &amp; Columns =
+
+When editing a form, click on a field to expand the field. Next, click the "Directory" tab. There, you will find options to:
+
+* Choose whether you would like the field to be a link to the Single Entry View;
+* Hide the field in Directory View; and
+* Hide the field in Single Entry View
+
+= How do I select what columns I want to display in the Directory? =
+
+1. Edit the Gravity Forms form you'd like to configure a Directory for
+1. Click "Directory Columns" In the Form Editor toolbar (near the top-center of the page)
+1. Drag & drop the fields in the order you'd like them to appear in the directory
+	* Drag from the right ("Hidden Columns") side to the left ("Visible Columns") side.
+1. Click the "Save" button
+1. Voila!
 
 = How do I turn off lightbox grouping? =
 Add the following to your theme's `functions.php` file:
@@ -73,6 +98,7 @@ function turn_off_directory_lightbox_grouping() {
 	return 'nofollow';
 }
 `
+
 = How do I hide entries from logged-out users? =
 Turn on the `limituser` setting, then add the following to your theme's `functions.php` file:
 
@@ -94,7 +120,17 @@ add_filter('kws_gf_directory_endpoint', 'different_directory_endpoint');
 function different_directory_endpoint($endpoint) {
 		return 'example'; // Use your preferred text here. Note: punctuation may screw things up.
 }
-`	
+`
+
+= How do I change who created an Entry? =
+You will see a drop-down input titled "Change Entry Creator" in the Edit Entry "Info" box when you are editing an entry on your site. Change the user in the dropdown, then click the Update button to commit the changes.
+
+* Only users with entry entry editing capability will be able to see the drop-down and edit the entry (the gravityforms_edit_entries capability)
+* Select a new user from the drop-down, update the entry, and the entry creator will be updated.
+* A note will be added to the entry with the following information:
+	* Who changed the entry creator
+	* When the change took place
+	* Who the previous entry creator was
 
 = How do I add a date filter? =
 To add a filter by date, you add either a `start_date` or `end_date` parameter--or both--in `YYYY-MM-DD` format. Here's an example:
@@ -140,7 +176,7 @@ function email_to_asdsad($content) {
 }
 
 // This replaces "Displaying 1-20" with "asdsad 1 - 20"
-add_filter('kws_gf_directory_output', 'displaying_to_asdasd'); 
+add_filter('kws_gf_directory_output', 'displaying_to_asdasd');
 function displaying_to_asdasd($content) {
 	return str_replace('Displaying', 'asdsad', $content);
 }
@@ -155,7 +191,7 @@ function kws_gf_directory_lead_image_edit($img = array()) {
 }
 </pre>
 
-= I can't see the fields in the Add Fields box! = 
+= I can't see the fields in the Add Fields box! =
 The code is meant to expand all the field boxes so you don't need to click them open and closed all the time. This works normally in Safari and Chrome (read: good browsers :-P). For some other browsers, it breaks the whole page.
 
 To fix this issue, add this to your theme's `functions.php` file:
@@ -163,6 +199,30 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 3.4 =
+* Added: __Finally__: A Directory Columns interface! Read the FAQ "How do I select what columns I want to display?" to set up.
+	- Includes field summary option: instead of each individual checkbox or field value, you can choose to diplay the whole shebang. You can now have a column for "Address" and "Name" instead of "First Name" and "Last Name"!
+* Added: When leads are approved or disapproved, a note is added to the lead with who took the action and when.
+* Added: new setting `entrydetailtitle`, which allows you to easily overwrite the Entry View table heading
+* Added: Support for "List" input types
+* Added: Ability to change who created an Entry.
+* Added `kws_gf_directory_lead_being_edited` and `kws_gf_directory_form_being_edited` filters to allow users to modify what fields should be shown for editing.
+* Added: `kws_gf_date_format` filter for Directory date format
+* Added: `kws_gf_directory_tick` filter for changing the check mark in the directory
+* Modified: Improved "Add Directory" button to match WordPress 3.5.
+* Modified: Removed a few options to simplify the plugin (`icon`, `showrowids`)
+* Modified: "Un-approve" is now proper English: Disapprove
+* Modified: "Entry Links" Lightbox view now has back links
+* Modified: Updated Colorbox to latest version
+* Fixed: Approve checkbox works again.
+* Fixed: Added support for the User Registration Add-on's password field.
+* Fixed: Entry Date field displays properly
+* Fixed: Expand All Menus works properly again
+* Fixed: Issue in Entries view where approval "tick" images would be too agressive and take over a couple of columns
+* Fixed: Many admin issues where things were broken.
+* Removed: Redundant widget file
+* Removed: No longer uses Gravity Forms CSS file on directory view
 
 = 3.3.1 =
 * Fixed: Fixed issue where datepicker functionality may not exist.
@@ -192,7 +252,7 @@ To fix this issue, add this to your theme's `functions.php` file:
 * Fixed bug where "Hide This Field in Directory View" wasn't working properly
 * Added a check so that both Thickbox and Colorbox don't open entry if both scripts are loaded
 
-= 3.2.1 = 
+= 3.2.1 =
 * Fixed Colorbox not loading properly in certain cases (<a href="Issue http://wordpress.org/support/topic/656033" rel="nofollow">Issue #656033</a>)
 * Fixed issue where entries appeared not to be approving properly in the admin. (<a href="http://www.seodenver.com/forums/topic/edits-to-entries-not-visible-in-directory-view/">Reported on the Support Forum</a>)
 
@@ -214,14 +274,14 @@ To fix this issue, add this to your theme's `functions.php` file:
 = 3.1.1 =
 * Fixes issue where entries not showing on sort (<a href="http://www.seodenver.com/forums/topic/entries-not-showing-on-sort/">as reported in the plugin support forums</a>)
 
-= 3.1 = 
+= 3.1 =
 * Added much-requested option for front-end User editing of entries. Must be enabled (off by default).
 * Added option for front-end Administrator editing of entries (except for approval status). Must be enabled (off by default).
 * Fixed issue where multiple-word searches were being converted into one word.
 * Removed `?row=#` for the back-link to the directory. There was no need for it to get the lead ID.
 * Added actions and filters for the new editing capabilities. Check out the code if you a) know what this means, and b) want to see. Search for `apply_filters` and `do_action`.
 
-= 3.0.3 = 
+= 3.0.3 =
 Sorry for the many updates in one day, but I can only fix many bugs as they get reported.
 
 * Fixed "close thickbox" button image path for IIS (Windows) servers by using `site_url()` instead of `get_bloginfo()`
@@ -230,10 +290,10 @@ Sorry for the many updates in one day, but I can only fix many bugs as they get 
 * Fixed `Warning: require_once(directory.php): failed to open stream: No such file or directory` warning when using lightbox to view single entries.
 * Fixed non-javascript links to sort by column
 
-= 3.0.2 = 
+= 3.0.2 =
 * Fixed "This form does not have any entries yet." issue - the filtering code was not compatible with Gravity Forms 1.5, only 1.6 beta. This has been resolved.
 
-= 3.0.1 = 
+= 3.0.1 =
 This release should fix some major issues users were having with 3.0. Sorry for the problems.
 
 * Fixed issue where Directory Fields buttons weren't being rendered (the JavaScript hadn't been loaded)
@@ -241,12 +301,12 @@ This release should fix some major issues users were having with 3.0. Sorry for 
 * Added improved support for filter by date
 	- Added `start_date` and `end_date` settings to Insert Directory form with datepicker
 	- Now allows for sorting using the query string (for example, adding `?start_date=YYYY-MM-DD` to the directory URL)
-* Removed bulk update Approve and Unapprove options when form not approval-enabled
+* Removed bulk update Approve and Disapprove options when form not approval-enabled
 * Fixed display of Directory & Addons menu - now showing on all admin pages.
 
-= 3.0 = 
+= 3.0 =
 * Completely revamped the admin approval process! Now approving an entry is as easy as checking a box in the Entries view.
-	- Supports bulk approve and un-approve
+	- Supports bulk approve and disapprove
 * Added "Directory Fields" in the Form Editor
 	- "Approved" field: Add this to your form to have a pre-configured admin-only checkbox.
 	- "Entry Link" field: Use this text as a link to the single entry view
@@ -278,17 +338,17 @@ This release should fix some major issues users were having with 3.0. Sorry for 
 
 Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.2.8 and Gravity Forms 1.6 beta.
 
-= 2.5.2 = 
+= 2.5.2 =
 * Fixed broken image for lightbox close button (<a href="http://wordpress.org/support/topic/570042" rel="nofollow">issue #570042</a>)
 * Fixed definition list (DL) display mode: each entry in directory view is now wrapped with a `dl`; single-entry view entries are now wrapped with single `dl`
 * HTML generation fix: `<liclass` now `<li class` (<a href="http://www.seodenver.com/gravity-forms-addons/#dsq-comment-header-193118389">thanks @lolawson</a>)
 * Improved JavaScript table sorting function (thanks to <a href="http://wordpress.org/support/topic/565544" rel="nofollow">feedback from heavymark</a>)
 * Added option to use links to sort tables instead of JavaScript (`jssearch`, under Formatting Options)
 
-= 2.5.1 = 
+= 2.5.1 =
 * Added alternating `class` of even and odd for rows
 
-= 2.5 = 
+= 2.5 =
 * Improved directory shortcode insertion by checking values against defaults; now inserts into code only non-default items (the default shortcode is now 20 characters instead of 815!)
 * Added formatting options for directory & entries: display as table (default), list (`<ul>`), or definition list (`<dl>`)
 * Added `kws_gf_directory_defaults` filter to update plugin defaults.
@@ -306,14 +366,14 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 * Improved "Expand All Menus" checkbox layout
 * Discovered an issue: pagination on approved-only entries doesn't work well. To compensate, you could set your page size to a large number that contains all the entries. This likely will not be fixed soon.
 
-= 2.4.4 = 
+= 2.4.4 =
 * Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality. Access settings either using Forms > Addons link or Forms > Settings > Addons.
 	* Choose to turn off referrer information, directory functionality, the Addons widget, and Gravity Forms backend modifications
 
-= 2.4.3 = 
+= 2.4.3 =
 * Should fix issue with Approved checkbox not working in some cases where Admin-Only is enabled. Please report if still having issues.
 
-= 2.4.2 = 
+= 2.4.2 =
 * Fixed display of textarea entry data for short content (<a href="http://wordpress.org/support/topic/504755" rel="nofollow">thanks, Tina</a>)
 
 = 2.4.1 =
@@ -321,7 +381,7 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 * Fixed issue with single-entry lightbox view - no longer shows admin-only columns if admin-only setting is turned off.
 * Fixed Multi-blog single entry view, canonical link and chortling generation
 
-= 2.4 = 
+= 2.4 =
 * __Added single-entry viewing capability__
 	- View single entry details on either a separate page or in a lightbox
 	- Entries in separate page have their own permalink (http://example.com/directory/entry/[form#]/[entry#]/)
@@ -330,6 +390,9 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.4 (February 21, 2013) =
+* A major update with big fixes and additions. Read the changelog for more information.
 
 = 3.3.1 =
 * Fixed: Fixed issue where datepicker functionality may not exist.
@@ -358,7 +421,7 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 	* Fixed search
 * Fixed bug where "Hide This Field in Directory View" wasn't working properly
 
-= 3.2.1 = 
+= 3.2.1 =
 * Fixed Colorbox not loading properly in certain cases (<a href="Issue http://wordpress.org/support/topic/656033" rel="nofollow">Issue #656033</a>)
 * Fixed issue where entries appeared not to be approving properly in the admin. (<a href="http://www.seodenver.com/forums/topic/edits-to-entries-not-visible-in-directory-view/">Reported on the Support Forum</a>)
 
@@ -377,32 +440,32 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 = 3.1.1 =
 * Fixes issue where entries not showing on sort (<a href="http://www.seodenver.com/forums/topic/entries-not-showing-on-sort/">as reported in the plugin support forums</a>) - NoteL this only affected users using versions of Gravity Forms older than 1.6.
 
-= 3.1 = 
+= 3.1 =
 * Added much-requested option for front-end User editing of entries. Must be enabled (off by default).
 * Added option for front-end Administrator editing of entries (except for approval status). Must be enabled (off by default).
 * Fixed issue where multiple-word searches were being converted into one word.
 * Shortened changelog to only show versions after 2.4
 
-= 3.0.3 = 
+= 3.0.3 =
 * Fixed "close thickbox" button image path for IIS (Windows) servers by using `site_url()` instead of `get_bloginfo()`
 * Fixed potential incorrect form ID in the link generation to single entries
 * Improved `start_date` and `end_date` shortcode generation
 * Fixed `Warning: require_once(directory.php): failed to open stream: No such file or directory` warning when using lightbox to view single entries.
 * Fixed non-javascript links to sort by column
 
-= 3.0.2 = 
+= 3.0.2 =
 * Fixed "This form does not have any entries yet." issue - the filtering code was not compatible with Gravity Forms 1.5, only 1.6 beta. This has been resolved.
 
-= 3.0.1 = 
+= 3.0.1 =
 * Fixed issue where Directory Fields buttons weren't being rendered (the JavaScript hadn't been loaded)
 * Fixed issue with support for <a href="http://wordpress.org/extend/plugins/members/" rel="nofollow">Members plugin</a>
 * Added improved support for filter by date
 	- Added `start_date` and `end_date` settings to Insert Directory form with datepicker
 	- Now allows for sorting using the query string (for example, adding `?start_date=YYYY-MM-DD` to the directory URL)
-* Removed bulk update Approve and Unapprove options when form not approval-enabled
+* Removed bulk update Approve and Disapprove options when form not approval-enabled
 * Fixed display of Directory & Addons menu - now showing on all admin pages.
 
-= 3.0 = 
+= 3.0 =
 * Completely revamped the admin approval process! Now approving an entry is as easy as checking a box in the Entries view.
 	- Supports bulk approve and un-approve
 * Added "Directory Fields" in the Form Editor
@@ -436,17 +499,17 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.2.8 and Gravity Forms 1.6 beta.
 
-= 2.5.2 = 
+= 2.5.2 =
 * Fixed broken image for lightbox close button (<a href="http://wordpress.org/support/topic/570042" rel="nofollow">issue #570042</a>)
 * Fixed definition list (DL) display mode: each entry in directory view is now wrapped with a `dl`; single-entry view entries are now wrapped with single `dl`
 * HTML generation fix: `<liclass` now `<li class` (<a href="http://www.seodenver.com/gravity-forms-addons/#dsq-comment-header-193118389">thanks @lolawson</a>)
 * Improved JavaScript table sorting function (thanks to <a href="http://wordpress.org/support/topic/565544" rel="nofollow">feedback from heavymark</a>)
 * Added option to use links to sort tables instead of JavaScript (`jssearch`, under Formatting Options)
 
-= 2.5.1 = 
+= 2.5.1 =
 * Added alternating `class` of even and odd for rows
 
-= 2.5 = 
+= 2.5 =
 * Improved directory shortcode insertion by checking values against defaults; now inserts into code only non-default items (the default shortcode is now 20 characters instead of 815!)
 * Added formatting options for directory & entries: display as table (default), list (`<ul>`), or definition list (`<dl>`)
 * Added `kws_gf_directory_defaults` filter to update plugin defaults.
@@ -464,13 +527,13 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 * Improved "Expand All Menus" checkbox layout
 * Discovered an issue: pagination on approved-only entries doesn't work well. To compensate, you could set your page size to a large number that contains all the entries. This likely will not be fixed soon.
 
-= 2.4.4 = 
+= 2.4.4 =
 * Added administration menu for Gravity Forms Addons, allowing you to turn off un-used or un-desired functionality.
 
-= 2.4.3 = 
+= 2.4.3 =
 * Should fix issue with Approved checkbox not working in some cases where Admin-Only is enabled. Please report if still having issues.
 
-= 2.4.2 = 
+= 2.4.2 =
 * Fixed display of textarea entry data for short content (<a href="http://wordpress.org/support/topic/504755" rel="nofollow">thanks, Tina</a>)
 
 = 2.4.1 =
@@ -478,7 +541,7 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 * Fixed issue with single-entry lightbox view - no longer shows admin-only columns if admin-only setting is turned off.
 * Fixed Multi-blog single entry view, canonical link and chortling generation
 
-= 2.4 = 
+= 2.4 =
 * Added single-entry viewing capability
 	- View single entry details on either a separate page or in a lightbox
 	- Entries in separate page have their own permalink (http://example.com/directory/entry/[form#]/[entry#]/)
@@ -486,21 +549,28 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 * Fixed footer column filters
 
 
-== Installation == 
+== Installation ==
 
 1. Upload this plugin to your blog and Activate it
-2. Using Gravity Forms, reorder the columns on the form you'd like to turn into a directory
-	* In the "Entries: [Your Form]") screen, find the "Edit" link with the pencil icon in the table header. Click it.
-	* Drag the columns you want in your directory onto the "Active Columns" box
-	* Drag the columns you <strong>don't</strong> want in your directory onto the "Inactive Columns" box
-	* Click the Save button
-3. Go to the post or page where you want the directory
-4. Click "Add a Gravity Forms Directory" button (likely just to the right of the Gravity Forms button)
-5. Choose a form from the drop down, (you may click advanced options for lots of additional options)
-6. Click "Insert Directory". A "shortcode" should appear in the content editor that looks similar to `[directory form="#"]`
-7. Save the post
+2. Set it up following instructions below:
 
-### Configuring Fields & Columns
+### To integrate a form with Directory: ###
+1. Go to the post or page where you would like to add the directory.
+1. Click the "Add Directory" button above the content area.
+1. Choose a form from the drop-down menu and configure settings as you would like them.
+1. Click "Insert Directory". A "shortcode" should appear in the content editor that looks similar to <code style="font-size:1em;">[directory form="#"]</code>
+1. Save the post or page
+
+### How do I select what columns I want to display in the Directory? ###
+
+1. Edit the Gravity Forms form you'd like to configure a Directory for
+1. Click "Directory Columns" In the Form Editor toolbar (near the top-center of the page)
+1. Drag & drop the fields in the order you'd like them to appear in the directory
+	* Drag from the right ("Hidden Columns") side to the left ("Visible Columns") side.
+1. Click the "Save" button
+1. Voila!
+
+### More Configuring of Fields & Columns ###
 
 When editing a form, click on a field to expand the field. Next, click the "Directory" tab. There, you will find options to:
 
