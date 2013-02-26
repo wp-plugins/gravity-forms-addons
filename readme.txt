@@ -1,7 +1,7 @@
 === Gravity Forms Directory ===
 Tags: gravity forms, gravity form, forms, gravity, form, crm, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
-Requires at least: 2.8
-Tested up to: 3.4.2
+Requires at least: 3.0
+Tested up to: 3.5.1
 Stable tag: trunk
 Contributors: katzwebdesign
 License: GPLv2 or later
@@ -122,6 +122,16 @@ function different_directory_endpoint($endpoint) {
 }
 `
 
+= How do I change who created an Entry? =
+You will see a drop-down input titled "Change Entry Creator" in the Edit Entry "Info" box when you are editing an entry on your site. Change the user in the dropdown, then click the Update button to commit the changes.
+
+* Only users with entry entry editing capability will be able to see the drop-down and edit the entry (the gravityforms_edit_entries capability)
+* Select a new user from the drop-down, update the entry, and the entry creator will be updated.
+* A note will be added to the entry with the following information:
+	* Who changed the entry creator
+	* When the change took place
+	* Who the previous entry creator was
+
 = How do I add a date filter? =
 To add a filter by date, you add either a `start_date` or `end_date` parameter--or both--in `YYYY-MM-DD` format. Here's an example:
 
@@ -190,12 +200,20 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
-= 3.4 =
+= 3.4.1 (February 26, 2013) =
+* Fixed: Issue where entries would be hidden if both "Show only entries that have been Approved" and "Smart Approval" aren't checked
+* Fixed: Insert Directory button image path fixed
+* Fixed: PHP warning
+* Modified: Single Entry view now uses `<th>` instead of `<td>` for headings
+* Removed: The removed checkbox for Yoast Widget in settings
+
+= 3.4 (February 21, 2013) =
 * Added: __Finally__: A Directory Columns interface! Read the FAQ "How do I select what columns I want to display?" to set up.
 	- Includes field summary option: instead of each individual checkbox or field value, you can choose to diplay the whole shebang. You can now have a column for "Address" and "Name" instead of "First Name" and "Last Name"!
 * Added: When leads are approved or disapproved, a note is added to the lead with who took the action and when.
 * Added: new setting `entrydetailtitle`, which allows you to easily overwrite the Entry View table heading
 * Added: Support for "List" input types
+* Added: Ability to change who created an Entry.
 * Added `kws_gf_directory_lead_being_edited` and `kws_gf_directory_form_being_edited` filters to allow users to modify what fields should be shown for editing.
 * Added: `kws_gf_date_format` filter for Directory date format
 * Added: `kws_gf_directory_tick` filter for changing the check mark in the directory
@@ -379,6 +397,12 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.4.1 (February 26, 2013) =
+* Fixed: Issue where entries would be hidden if both "Show only entries that have been Approved" and "Smart Approval" aren't checked
+* Fixed: Insert Directory button image path fixed
+* Fixed: PHP warning
+* Modified: Single Entry view now uses `<th>` instead of `<td>` for headings
 
 = 3.4 (February 21, 2013) =
 * A major update with big fixes and additions. Read the changelog for more information.
