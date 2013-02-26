@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.4
+Version: 3.4.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2012 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -33,7 +33,7 @@ class GFDirectory {
 	private static $path = "gravity-forms-addons/gravity-forms-addons.php";
 	private static $url = "http://www.gravityforms.com";
 	private static $slug = "gravity-forms-addons";
-	private static $version = "3.4";
+	private static $version = "3.4.1";
 	private static $min_gravityforms_version = "1.3.9";
 
 	public static function directory_defaults($args = array()) {
@@ -233,11 +233,6 @@ class GFDirectory {
 
 		$settings = GFDirectory::get_settings();
 		extract($settings);
-
-		if($widget) {
-			// Load Joost's widget
-			@include_once('gravity-forms-widget.php');
-		}
 
 		if($referrer) {
 			// Load Joost's referrer tracker
@@ -721,7 +716,7 @@ class GFDirectory {
 
                                 $content = '
                                 <tr>
-                                    <td colspan="2" class="entry-view-field-name">' . esc_html(GFCommon::get_label($field)) . '</td>
+                                    <th colspan="2" class="entry-view-field-name">' . esc_html(GFCommon::get_label($field)) . '</th>
                                 </tr>
                                 <tr>
                                     <td colspan="2" class="entry-view-field-value' . $last_row . '">' . $display_value . '</td>
@@ -844,7 +839,7 @@ class GFDirectory {
 					?>
 						<tr>
 							<th scope="row" class="entry-view-field-name"><?php _e(apply_filters('kws_gf_directory_edit_entry_th', "Edit"), "gravity-forms-addons"); ?></th>
-								<td class="entry-view-field-value useredit"><a href="<?php echo add_query_arg(array('edit' => wp_create_nonce('edit'))); ?>"><?php _e($editbuttontext); ?></a></td>
+							<td class="entry-view-field-value useredit"><a href="<?php echo add_query_arg(array('edit' => wp_create_nonce('edit'))); ?>"><?php _e($editbuttontext); ?></a></td>
 						</tr>
 					<?php
 					}
@@ -1178,7 +1173,8 @@ class GFDirectory {
 			$columns = self::get_grid_columns($form_id, true);
 
 			$approvedcolumn = null;
-			if($approved || (!empty($smartapproval) && $approved === -1)) {
+
+			if((!$approved && $approved !== -1) || (!empty($smartapproval) && $approved === -1)) {
                 $approvedcolumn = self::get_approved_column($form);
             }
 
@@ -1513,7 +1509,7 @@ class GFDirectory {
 	private function get_filters($leads) {
 
         $form_id = $leads[0]['form_id'];
-        #print_r($leads);
+
         if(empty($leads) || !is_array($leads)) { return ''; }
         $filters = array();
 		foreach($leads as $lead) {
@@ -1727,7 +1723,6 @@ class GFDirectory {
         		"directory" => true,
         		"directory_defaults" => array(),
         		"referrer" => false,
-        		"widget" => true,
         		"modify_admin" => array(
             		'expand' => true,
            			'toggle' => true,
@@ -1792,6 +1787,7 @@ class GFDirectory {
         if($sort_field_number == 0)
             $sort_field_number = "date_created";
 
+        // Retreive the leads based on whether it's sorted or not.
         if(is_numeric($sort_field_number))
             $sql = self::sort_by_custom_field_query($form_id, $sort_field_number, $sort_direction, $search, $offset, $page_size, $star, $read, $is_numeric_sort, $status, $approvedcolumn, $limituser);
         else
@@ -1826,6 +1822,9 @@ class GFDirectory {
 		return array_filter($leads, array('GFDirectory', 'is_current_user'));
 	}
 
+	/**
+	 * A copy of the Gravity Forms method, but adding $approvedcolumns and $limituser args
+	 */
     private static function sort_by_custom_field_query($form_id, $sort_field_number=0, $sort_direction='DESC', $search='', $offset=0, $page_size=30, $star=null, $read=null, $is_numeric_sort = false, $status='active', $approvedcolumn = null, $limituser = false){
         global $wpdb, $current_user;
         if(!is_numeric($form_id) || !is_numeric($sort_field_number)|| !is_numeric($offset)|| !is_numeric($page_size))
@@ -1916,6 +1915,9 @@ class GFDirectory {
         return $sql;
     }
 
+    /**
+	 * A copy of the Gravity Forms method, but adding $approvedcolumns and $limituser args
+	 */
     private static function sort_by_default_field_query($form_id, $sort_field, $sort_direction='DESC', $search='', $offset=0, $page_size=30, $star=null, $read=null, $is_numeric_sort = false, $start_date=null, $end_date=null, $status='active', $approvedcolumn = null, $limituser = false){
         global $wpdb, $current_user;
 

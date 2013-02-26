@@ -296,7 +296,7 @@ class GFDirectory_EditForm {
 	    </style>
 	    <script type='text/javascript'>
 	    	jQuery(document).ready(function($) {
-	    		var url = '<?php echo add_query_arg(array('gf_page' => 'directory_columns', 'id' => $_GET['id'], 'TB_iframe' => 'true', 'height' => 600, 'width' => 700), admin_url()); ?>';
+	    		var url = '<?php echo add_query_arg(array('gf_page' => 'directory_columns', 'id' => @$_GET['id'], 'TB_iframe' => 'true', 'height' => 600, 'width' => 700), admin_url()); ?>';
 	    		$link = $('<li class="gf_form_toolbar_preview gf_form_toolbar_directory" id="gf_form_toolbar_directory"><a href="'+url+'" class="thickbox" title="<?php echo esc_html(__('Modify Gravity Forms Directory Columns', 'gravity-forms-addons')); ?>"><?php _e('Directory Columns', 'gravity-forms-addons'); ?></a></li>');
 	    		$('#gf_form_toolbar_links').append($link);
 	    	});

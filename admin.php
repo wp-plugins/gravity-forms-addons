@@ -695,7 +695,7 @@ EOD;
 		$output = '
 			<style>
 			.gfdirectory_media_icon {
-                background:url('.plugins_url( '/editor-icon.png', __FILE__).') no-repeat top left;
+                background:url('.plugins_url( '/editor-icon.gif', __FILE__).') no-repeat top left;
 	            display: inline-block;
 	            height: 16px;
 	            margin: 0 2px 0 0;
@@ -728,7 +728,6 @@ EOD;
             	"directory" => isset($_POST["gf_addons_directory"]),
             	"referrer" => isset($_POST["gf_addons_referrer"]),
             	"directory_defaults" => GFDirectory::directory_defaults($_POST['gf_addons_directory_defaults'], true),
-            	"widget" => isset($_POST["gf_addons_widget"]),
             	"modify_admin" => isset($_POST["gf_addons_modify_admin"]) ? $_POST["gf_addons_modify_admin"] : array(),
             	"version" => GFDirectory::get_version(),
             	"saved" => true
@@ -902,13 +901,7 @@ EOD;
                 <tr>
                     <th scope="row"><label for="gf_addons_referrer"><?php _e("Add Referrer Data to Emails", "gravity-forms-addons"); ?></label> </th>
                     <td>
-                        <label for="gf_addons_referrer"><input type="checkbox" id="gf_addons_referrer" name="gf_addons_referrer" <?php checked($settings["referrer"]); ?> /> Adds referrer data to entries, including the path the user took to get to the form before submitting.</label>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row"><label for="gf_addons_widget"><?php _e("Load Addons Widget", "gravity-forms-addons"); ?></label> </th>
-                    <td>
-                        <label for="gf_addons_widget"><input type="checkbox" id="gf_addons_widget" name="gf_addons_widget" <?php checked($settings["widget"]); ?> /> Load the <a href="http://yoast.com/gravity-forms-widget-extras/" rel="nofollow">Gravity Forms Widget by Yoast</a></label>
+                        <label for="gf_addons_referrer"><input type="checkbox" id="gf_addons_referrer" name="gf_addons_referrer" <?php checked($settings["referrer"]); ?> /> <?php _e("Adds referrer data to entries, including the path the user took to get to the form before submitting.", 'gravity-forms-addons'); ?></label>
                     </td>
                 </tr>
                 <tr>
