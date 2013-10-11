@@ -101,7 +101,7 @@ class GFDirectory_EditForm {
 			if(!(self::is_gravity_page('gf_entries') && isset($_GET['id']) && !self::is_gravity_page('gf_edit_forms'))) { return; }
 
 			 ?>
-		<style type="text/css">
+		<style>
 
 		.lead_approved .toggleApproved {
 			background: url(<?php echo GFCommon::get_base_url() ?>/images/tick.png) left top no-repeat;
@@ -115,11 +115,12 @@ class GFDirectory_EditForm {
 			overflow: hidden;
 		}
 		</style>
-		<script type="text/javascript">
+		<script>
 
 			<?php
 
 			$formID = RGForms::get("id");
+
 	        if(empty($formID)) {
 		        $forms = RGFormsModel::get_forms(null, "title");
 	            $formID = $forms[0]->id;
@@ -187,7 +188,7 @@ class GFDirectory_EditForm {
 		    	var approveTitle = '<?php _e('Entry not approved for directory viewing. Click to approve this entry.', 'gravity-forms-addons'); ?>';
 		    	var unapproveTitle = '<?php _e('Entry approved for directory viewing. Click to disapprove this entry.', 'gravity-forms-addons'); ?>';
 
-		    	$('.toggleApproved').live('click load', function(e) {
+		    	$(document).on('click load', '.toggleApproved', function(e) {
 		    		e.preventDefault();
 
 		    		var $tr = $(this).parents('tr');
@@ -198,8 +199,8 @@ class GFDirectory_EditForm {
 				    }
 
 					// Update the title and screen-reader text
-			        if(!is_approved) { $(this).text('X').attr('title', unapproveTitle); }
-			        else { $(this).text('O').attr('title', approveTitle); }
+			        if(!is_approved) { $(this).text('X').prop('title', unapproveTitle); }
+			        else { $(this).text('O').prop('title', approveTitle); }
 
 					if(e.type == 'click') {
 				        UpdateApproved($('th input[type="checkbox"]', $tr).val(), is_approved ? 0 : 'Approved');
@@ -228,9 +229,9 @@ class GFDirectory_EditForm {
 		    	}
 
 		    	$('td:has(img[src*="star"])').after('<td><a href="#" class="toggleApproved" title="'+approveTitle+'">X</a></td>');
-		    	$('th.check-column:eq(1)').after('<th class="manage-column column-cb check-column"><a href="<?php echo add_query_arg(array('sort' => $_gform_directory_approvedcolumn)); ?>"><img src="<?php echo WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)); ?>/form-button-1.png" style="text-align:center; margin:0 auto; display:block;" title="<?php _e('Show entry in directory view?', 'gravity-forms-addons'); ?>" /></span></a></th>');
+		    	$('th.check-column:eq(1)').after('<th class="manage-column column-cb check-column"><a href="<?php echo add_query_arg(array('sort' => $_gform_directory_approvedcolumn)); ?>"><img src="<?php echo WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)); ?>/images/form-button-1.png" style="text-align:center; margin:0 auto; display:block;" title="<?php _e('Show entry in directory view?', 'gravity-forms-addons'); ?>" /></span></a></th>');
 
-		    	$('tr:has(input.lead_approved)').addClass('lead_approved').find('a.toggleApproved').attr('title', unapproveTitle).text('O');
+		    	$('tr:has(input.lead_approved)').addClass('lead_approved').find('a.toggleApproved').prop('title', unapproveTitle).text('O');
 
 		    	UpdateApprovedColumns($('table'), true);
 
@@ -287,11 +288,11 @@ class GFDirectory_EditForm {
 	public function toolbar_links() {
 
 		?>
-	    <style type="text/css">
+	    <style>
 	    	li.gf_directory_setting, li.gf_directory_setting li {
 	    		padding-bottom: 4px!important;
 	    	}
-	    	ul#gf_form_toolbar_links li#gf_form_toolbar_directory a { background: url(<?php echo WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)); ?>/editor-icon.gif) left top no-repeat; }
+	    	ul#gf_form_toolbar_links li#gf_form_toolbar_directory a { background: url(<?php echo WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)); ?>/images/editor-icon.gif) left top no-repeat; }
 	    	ul#gf_form_toolbar_links li#gf_form_toolbar_directory a:hover { background-position: left -19px; }
 	    </style>
 	    <script type='text/javascript'>
@@ -306,15 +307,18 @@ class GFDirectory_EditForm {
 
 	public function editor_script(){
 	    ?>
-	    <style type="text/css">
+	    <style>
 	    	li.gf_directory_setting, li.gf_directory_setting li {
 	    		padding-bottom: 4px!important;
 	    	}
 	    </style>
-	    <script type='text/javascript'>
+	    <script>
 	    	jQuery(document).ready(function($) {
 
-	    		$( "#field_settings" ).tabs("add", "#gform_tab_3", "Directory");
+	    		// instead of simply .tabs('add')...
+	    		$('<li><a href="#gform_tab_3"><?php _e('Directory', 'gravity-forms-addons'); ?></a></li>' ).appendTo('#field_settings .ui-tabs-nav');
+				$('#gform_tab_3').appendTo( "#field_settings" );
+	    		$( '#field_settings' ).tabs( "refresh" );
 
 	    		$('a[href="#gform_tab_3"]').parent('li').css({'width':'100px', 'padding':'0'});
 
@@ -377,39 +381,39 @@ class GFDirectory_EditForm {
 		        $(document).bind("gform_load_field_settings", function(event, field, form){
 
 		        	if(typeof(field["useAsEntryLink"]) !== "undefined" && field["useAsEntryLink"] !== false && field["useAsEntryLink"] !== 'false' && field["useAsEntryLink"] !== '') {
-			            $("#field_use_as_entry_link").attr("checked", true);
+			            $("#field_use_as_entry_link").prop("checked", true);
 			            $(".use_as_entry_link_value").show();
 			            $('#field_use_as_entry_link_value_custom_text').parent('span').hide();
 			            switch(field["useAsEntryLink"]) {
 			            	case "on":
 			            	case "":
 			            	case false:
-			            		$("#field_use_as_entry_link_value").attr('checked', true);
+			            		$("#field_use_as_entry_link_value").prop('checked', true);
 			            		break;
 			            	case "label":
-			            		$("#field_use_as_entry_link_label").attr('checked', true);
+			            		$("#field_use_as_entry_link_label").prop('checked', true);
 			            		break;
 			            	default:
 			            		$('#field_use_as_entry_link_value_custom_text').parent('span').show();
-			            		$("#field_use_as_entry_link_custom").attr('checked', true);
+			            		$("#field_use_as_entry_link_custom").prop('checked', true);
 			            		$("#field_use_as_entry_link_value_custom_text").val(field["useAsEntryLink"]);
 			            }
 			        } else {
 			        	$(".use_as_entry_link_value").hide();
-			        	$("#field_use_as_entry_link").attr("checked", false);
+			        	$("#field_use_as_entry_link").prop("checked", false);
 			        }
 
 			        if($('input[name="field_use_as_entry_link_value"]:checked').length === 0) {
-						$('#field_use_as_entry_link_value').attr('checked', true);
+						$('#field_use_as_entry_link_value').prop('checked', true);
 					}
 
 			        kwsGFupdateEntryLinkLabel(field.label);
 
 
-		            $("#field_use_as_entry_link_label").attr("checked", field["useAsEntryLink"] === 'label');
+		            $("#field_use_as_entry_link_label").prop("checked", field["useAsEntryLink"] === 'label');
 
-		            $("#hide_in_single_entry_view").attr("checked", (field["hideInSingle"] === true || field["hideInSingle"] === "on"));
-		            $("#hide_in_directory_view").attr("checked", (field["hideInDirectory"] === true || field["hideInDirectory"] === "on"));
+		            $("#hide_in_single_entry_view").prop("checked", (field["hideInSingle"] === true || field["hideInSingle"] === "on"));
+		            $("#hide_in_directory_view").prop("checked", (field["hideInDirectory"] === true || field["hideInDirectory"] === "on"));
 
 
 		        });

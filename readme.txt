@@ -1,9 +1,9 @@
 === Gravity Forms Directory ===
 Tags: gravity forms, gravity form, forms, gravity, form, crm, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
-Requires at least: 3.0
-Tested up to: 3.5.1
+Requires at least: 3.2
+Tested up to: 3.6.1
 Stable tag: trunk
-Contributors: katzwebdesign
+Contributors: katzwebdesign, katzwebservices
 License: GPLv2 or later
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
@@ -105,7 +105,7 @@ Turn on the `limituser` setting, then add the following to your theme's `functio
 `add_filter('kws_gf_treat_not_logged_in_as_user', '__return_false');`
 
 = How do I sort by a column? =
-The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms √¨Edit Forms√Æ page, hover over the form and click the link called "IDs" that appears.
+The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms ÏEdit FormsÓ page, hover over the form and click the link called "IDs" that appears.
 
 If you want to sort by last name, you find the last name id (`1.6` for example). Then, you add `sort="1.6"` to your `[directory]` shortcode.
 
@@ -199,6 +199,12 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 3.4.2 (October 11, 2013) =
+* Fixed compatibility with WordPress 3.6+
+	- Directory tab restored to form editor
+	- Converted jQuery `live()` to `on()`
+* Updated Colorbox library
 
 = 3.4.1 (February 26, 2013) =
 * Fixed: Issue where entries would be hidden if both "Show only entries that have been Approved" and "Smart Approval" aren't checked
@@ -397,6 +403,12 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.4.2 (October 11, 2013) =
+* Fixed compatibility with WordPress 3.6+
+	- Directory tab restored to form editor
+	- Converted jQuery `live()` to `on()`
+* Updated Colorbox library
 
 = 3.4.1 (February 26, 2013) =
 * Fixed: Issue where entries would be hidden if both "Show only entries that have been Approved" and "Smart Approval" aren't checked

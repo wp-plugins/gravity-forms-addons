@@ -4,10 +4,10 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://www.seodenver.com/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.4.1
+Version: 3.4.2
 Author URI: http://www.katzwebservices.com
 
-Copyright 2012 Katz Web Services, Inc.  (email: info@katzwebservices.com)
+Copyright 2013 Katz Web Services, Inc.  (email: info@katzwebservices.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ class GFDirectory {
 	private static $path = "gravity-forms-addons/gravity-forms-addons.php";
 	private static $url = "http://www.gravityforms.com";
 	private static $slug = "gravity-forms-addons";
-	private static $version = "3.4.1";
-	private static $min_gravityforms_version = "1.3.9";
+	private static $version = "3.4.2";
+	private static $min_gravityforms_version = "1.5";
 
 	public static function directory_defaults($args = array()) {
     	$defaults = array(
@@ -306,7 +306,7 @@ class GFDirectory {
     		}
 
     		if(!empty($lightboxsettings)) {
-    			wp_enqueue_script('colorbox', plugins_url( "/colorbox/js/jquery.colorbox-min.js", __FILE__), array('jquery'));
+    			wp_enqueue_script('colorbox', plugins_url( "/colorbox/jquery.colorbox-min.js", __FILE__), array('jquery'));
     			wp_enqueue_style('colorbox', plugins_url( "/colorbox/example{$lightboxstyle}/colorbox.css", __FILE__), array());
     			$kws_gf_scripts[] = $kws_gf_styles[] = 'colorbox';
     			add_action(apply_filters('kws_gf_directory_colorbox_action', 'wp_footer'), array('GFDirectory', 'load_colorbox'), 1000);
@@ -397,8 +397,7 @@ class GFDirectory {
 	    } else {
 	    	$gf_pages = is_array($page) ? $page : array($page);
 	    }
-
-        return in_array($current_page, $gf_pages);
+	    return in_array($current_page, $gf_pages);
     }
 
     function directory_update_approved($lead_id = 0, $approved = 0, $form_id = 0, $approvedcolumn = 0) {

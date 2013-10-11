@@ -6,9 +6,10 @@ Version: 1.0
 Author URI: http://www.katzwebservices.com
 */
 
-if(function_exists('kws_gf_change_entry_creator_form')) { return; }
-
 add_action("gform_entry_info", 'kws_gf_change_entry_creator_form', 10, 2);
+
+// If this is already custom-added from SEODenver.com
+if(!function_exists('kws_gf_change_entry_creator_form')) {
 function kws_gf_change_entry_creator_form($form_id, $lead) {
     if(GFCommon::current_user_can_any("gravityforms_edit_entries")) {
         $users = get_users();
@@ -24,8 +25,10 @@ function kws_gf_change_entry_creator_form($form_id, $lead) {
         echo $output;
     }
 }
+}
 
 add_action("gform_after_update_entry", 'kws_gf_update_entry_creator', 10, 2);
+if(!function_exists('kws_gf_update_entry_creator')) {
 function kws_gf_update_entry_creator($form, $leadid) {
         global $current_user;
 
@@ -43,4 +46,5 @@ function kws_gf_update_entry_creator($form, $leadid) {
             RGFormsModel::add_note($leadid, $current_user->ID, $user_data->display_name, sprintf(__('Changed lead creator from %s to %s', 'gravity-forms-addons'), $originally_created_by_user_data->display_name.' (ID #'.$originally_created_by_user_data->ID.')', $created_by_user_data->display_name.' (ID #'.$created_by_user_data->ID.')'));
         }
     }
+}
 }

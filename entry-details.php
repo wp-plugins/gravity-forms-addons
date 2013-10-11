@@ -24,5 +24,3 @@ function show_table() {
 }
 
 wp_iframe('show_table');
-
-?>
