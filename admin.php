@@ -5,7 +5,7 @@ add_action('init', array('GFDirectory_Admin', 'initialize'));
 
 class GFDirectory_Admin {
 
-	function initialize() {
+	static function initialize() {
 		new GFDirectory_Admin;
 	}
 
@@ -36,7 +36,50 @@ class GFDirectory_Admin {
 		if(!empty($settings['modify_admin'])) {
 			add_action('admin_head', array(&$this, 'admin_head'), 1);
 		}
+
+		self::process_bulk_update();
 	}
+
+    public static function process_bulk_update() {
+		global $process_bulk_update_message;
+
+        if(RGForms::post("action") === 'bulk'){
+            check_admin_referer('gforms_entry_list', 'gforms_entry_list');
+
+            $bulk_action = !empty($_POST["bulk_action"]) ? $_POST["bulk_action"] : $_POST["bulk_action2"];
+            $leads = $_POST["lead"];
+
+            $entry_count = count($leads) > 1 ? sprintf(__("%d entries", "gravityforms"), count($leads)) : __("1 entry", "gravityforms");
+
+			$bulk_action = explode('-', $bulk_action);
+			if(!isset($bulk_action[1]) || empty($leads)) { return false; }
+
+            switch($bulk_action[0]){
+                case "approve":
+                    self::directory_update_bulk($leads, 1, $bulk_action[1]);
+                    $process_bulk_update_message = sprintf(__("%s approved.", "gravity-forms-addons"), $entry_count);
+                break;
+
+                case "unapprove":
+            		self::directory_update_bulk($leads, 0, $bulk_action[1]);
+                    $process_bulk_update_message = sprintf(__("%s disapproved.", "gravity-forms-addons"), $entry_count);
+                break;
+			}
+		}
+	}
+
+    private function directory_update_bulk($leads, $approved, $form_id) {
+    	global $_gform_directory_approvedcolumn;
+
+    	if(empty($leads) || !is_array($leads)) { return false; }
+
+    	$_gform_directory_approvedcolumn = empty($_gform_directory_approvedcolumn) ? self::globals_get_approved_column($_POST['form_id']) : $_gform_directory_approvedcolumn;
+
+		$approved = empty($approved) ? 0 : 'Approved';
+    	foreach($leads as $lead_id) {
+			self::directory_update_approved($lead_id, $approved, $form_id);
+		}
+    }
 
 	// If the classes don't exist, the plugin won't do anything useful.
 	function gf_warning() {
