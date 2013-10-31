@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: Gravity Forms Directory & Addons
-Plugin URI: http://www.seodenver.com/gravity-forms-addons/
+Plugin URI: http://katz.co/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.4.2
+Version: 3.4.3
 Author URI: http://www.katzwebservices.com
 
 Copyright 2013 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -33,7 +33,7 @@ class GFDirectory {
 	private static $path = "gravity-forms-addons/gravity-forms-addons.php";
 	private static $url = "http://www.gravityforms.com";
 	private static $slug = "gravity-forms-addons";
-	private static $version = "3.4.2";
+	private static $version = "3.4.3";
 	private static $min_gravityforms_version = "1.5";
 
 	public static function directory_defaults($args = array()) {
@@ -138,7 +138,6 @@ class GFDirectory {
 		}
 
 	    add_action('init',  array('GFDirectory', 'init'));
-	    self::process_bulk_update();
 	    add_shortcode('directory', array('GFDirectory', 'make_directory'));
 
 	}
@@ -203,7 +202,7 @@ class GFDirectory {
         return array_merge($caps, array("gravityforms_directory", "gravityforms_directory_uninstall"));
     }
 
-    public function activation() {
+    static public function activation() {
 		self::add_permissions();
 		self::flush_rules();
     }
@@ -218,7 +217,7 @@ class GFDirectory {
         $wp_roles->add_cap("administrator", "gravityforms_directory_uninstall");
     }
 
-    public function flush_rules() {
+    static public function flush_rules() {
 		global $wp_rewrite;
 		self::add_rewrite();
 		$wp_rewrite->flush_rules();
@@ -227,11 +226,11 @@ class GFDirectory {
 
 
 
-    private function load_functionality() {
+    static private function load_functionality() {
 
     	register_deactivation_hook( __FILE__, array('GFDirectory', 'uninstall') );
 
-		$settings = GFDirectory::get_settings();
+		$settings = self::get_settings();
 		extract($settings);
 
 		if($referrer) {
@@ -241,7 +240,7 @@ class GFDirectory {
 
 	}
 
-	public function shortlink($link = '') {
+	static public function shortlink($link = '') {
 		global $post;
 		if(empty($post)) { return; }
 		if(empty($link) && isset($post->guid)) {
@@ -258,7 +257,7 @@ class GFDirectory {
 		return $link;
 	}
 
-	public function directory_canonical($permalink, $sentPost = '', $leavename = '') {
+	static public function directory_canonical($permalink, $sentPost = '', $leavename = '') {
 
 		// This was messing up the wp menu links
 		if(did_action('wp_head')) { return $permalink; }
@@ -278,7 +277,7 @@ class GFDirectory {
 		return $permalink;
 	}
 
-    public function enqueue_files() {
+    static public function enqueue_files() {
     	global $post, $kws_gf_styles, $kws_gf_scripts,$kws_gf_directory_options;
 
     	$kws_gf_styles = isset($kws_gf_styles) ? $kws_gf_styles : array();
@@ -314,7 +313,7 @@ class GFDirectory {
     	}
     }
 
-    function format_colorbox_settings($colorboxSettings = array()) {
+    static function format_colorbox_settings($colorboxSettings = array()) {
     	$settings = array();
     	if(!empty($colorboxSettings) && is_array($colorboxSettings)) {
 			foreach($colorboxSettings as $key => $value) {
@@ -332,7 +331,7 @@ class GFDirectory {
 		return $settings;
     }
 
-    public function load_colorbox() {
+    static public function load_colorbox() {
     	global $kws_gf_directory_options;
     	extract($kws_gf_directory_options);
 
@@ -348,7 +347,7 @@ class GFDirectory {
 		));
 
 		?>
-    <script type="text/javascript">
+    <script>
     	jQuery(document).ready(function($) {
  <?php
     		$output = '';
@@ -377,8 +376,7 @@ class GFDirectory {
     	<?php
     }
 
-
-    public function add_rewrite() {
+    static public function add_rewrite() {
     	global $wp_rewrite,$wp;
 
 		if(!$wp_rewrite->using_permalinks()) { return; }
@@ -441,7 +439,7 @@ class GFDirectory {
         }
     }
 
-	public function edit_lead_detail($Form, $lead, $options) {
+	static public function edit_lead_detail($Form, $lead, $options) {
 		global $current_user, $_gform_directory_approvedcolumn;
 		require_once(GFCommon::get_base_path() . "/form_display.php");
 		if(empty($_gform_directory_approvedcolumn)) { $_gform_directory_approvedcolumn = self::get_approved_column($Form); }
@@ -462,7 +460,7 @@ class GFDirectory {
 		if(!(
 
 			// Users can edit their own listings, they are logged in, the current user is the creator of the lead
-			(!empty($options['useredit']) && is_user_logged_in() && intval($current_user->id) === intval($lead['created_by'])) === true || // OR
+			(!empty($options['useredit']) && is_user_logged_in() && intval($current_user->ID) === intval($lead['created_by'])) === true || // OR
 
 			// Administrators can edit every listing, and this person has administrator access
 			(!empty($options['adminedit']) && self::has_access("gravityforms_directory")) === true)
@@ -522,6 +520,7 @@ class GFDirectory {
 	            <?php
 	            	$form_without_products = $Form;
                     $post_message_shown = false;
+                    $product_fields = array();
 	            	foreach($Form['fields'] as $key => $field) {
 	            		if(
                            GFCommon::is_product_field($field["type"]) ||
@@ -564,7 +563,7 @@ class GFDirectory {
 	}
 
 
-	public function lead_detail($Form, $lead, $allow_display_empty_fields=false, $inline = true, $options = array()) {
+	static public function lead_detail($Form, $lead, $allow_display_empty_fields=false, $inline = true, $options = array()) {
 			global $current_user, $_gform_directory_approvedcolumn;
 			get_currentuserinfo();
 
@@ -610,6 +609,7 @@ class GFDirectory {
 				<tbody>
 					<?php
 					$count = 0;
+					$has_product_fields = false;
 					$field_count = sizeof($Form["fields"]);
 
 					foreach($Form["fields"] as $field){
@@ -645,8 +645,7 @@ class GFDirectory {
 	                            //ignore captcha, html, password, page field
 	                        break;
 
-							case "fileupload" :
-							case "post_image" :
+	                        case "post_image" :
 								$value = RGFormsModel::get_lead_field_value($lead, $field);
 								$valueArray = explode("|:|", $value);
 
@@ -654,7 +653,7 @@ class GFDirectory {
 								$size = '';
 								if(!empty($url)){
 									//displaying thumbnail (if file is an image) or an icon based on the extension
-									 $icon = self::get_icon_url($url);
+									 $icon = GFEntryList::get_icon_url($url);
 									 if(!preg_match('/icon\_image\.gif/ism', $icon)) {
 									 	$lightboxclass = '';
 									 	$src = $icon;
@@ -825,7 +824,7 @@ class GFDirectory {
 
 					// Edit link
 					if(
-						!empty($options['useredit']) && is_user_logged_in() && $current_user->id === $lead['created_by'] || // Is user who created the entry
+						!empty($options['useredit']) && is_user_logged_in() && $current_user->ID === $lead['created_by'] || // Is user who created the entry
 						!empty($options['adminedit']) && self::has_access("gravityforms_directory") // Or is an administrator
 					) {
 
@@ -849,7 +848,7 @@ class GFDirectory {
 			<?php
 	}
 
-	public function get_admin_only($form, $adminOnly = array()) {
+	static public function get_admin_only($form, $adminOnly = array()) {
 		if(!is_array($form)) { return false; }
 
 		foreach($form['fields'] as $key=>$col) {
@@ -876,7 +875,7 @@ class GFDirectory {
 	* 	Get the form and lead IDs from the URL or from $_REQUEST
 	*	@return array|null $formid, $leadid if found. Null if not.
 	*/
-	private function get_form_and_lead_ids() {
+	static private function get_form_and_lead_ids() {
 		global $wp, $wp_rewrite;
 
 		$formid = $leadid = null;
@@ -907,7 +906,7 @@ class GFDirectory {
 	 * @param string $entryback (default: '') The text of the back-link anchor
 	 * @return string The HTML link for the backlink
 	 */
-	public function get_back_link($options = array()) {
+	static public function get_back_link($options = array()) {
 		global $pagenow,$wp_rewrite;
 
 		if(empty($options)) {
@@ -943,7 +942,7 @@ class GFDirectory {
 		return $link;
 	}
 
-	public function process_lead_detail($inline = true, $entryback = '', $showadminonly = false, $adminonlycolumns = array(), $approvedcolumn = null, $options = array(), $entryonly = true) {
+	static public function process_lead_detail($inline = true, $entryback = '', $showadminonly = false, $adminonlycolumns = array(), $approvedcolumn = null, $options = array(), $entryonly = true) {
 		global $wp,$post,$wp_rewrite,$wpdb;
 		$formid = $leadid = false;
 
@@ -964,7 +963,7 @@ class GFDirectory {
 			}
 
 			ob_start(); // Using ob_start() allows us to filter output
-				@self::lead_detail($form, $lead, false, $inline, $options);
+				self::lead_detail($form, $lead, false, $inline, $options);
 				$content = ob_get_contents(); // Get the output
 			ob_end_clean(); // Clear the buffer
 
@@ -985,7 +984,7 @@ class GFDirectory {
 		}
 	}
 
-    public function change_directory_columns() {
+    static public function change_directory_columns() {
         check_ajax_referer('gforms_directory_columns','gforms_directory_columns');
         $columns = GFCommon::json_decode(stripslashes($_POST["directory_columns"]), true);
         self::update_grid_column_meta((int)$_POST['form_id'], $columns);
@@ -1104,12 +1103,13 @@ class GFDirectory {
             return $field_label;
     }
 
-	function make_directory($atts) {
+	public static function make_directory($atts) {
 		global $wpdb,$wp_rewrite,$post, $wpdb,$directory_shown,$kws_gf_scripts,$kws_gf_styles;
 
 		if(!class_exists('GFEntryDetail')) { @require_once(GFCommon::get_base_path() . "/entry_detail.php"); }
 		if(!class_exists('GFCommon')) { @require_once(WP_PLUGIN_DIR . "/gravityforms/common.php"); }
 		if(!class_exists('RGFormsModel')) { @require_once(WP_PLUGIN_DIR . "/gravityforms/forms_model.php"); }
+		if(!class_exists('GFEntryList')) { require_once(WP_PLUGIN_DIR . "/gravityforms/entry_list.php"); }
 
 		//quit if version of wp is not supported
 		if(!class_exists('GFCommon') || !GFCommon::ensure_wp_version())
@@ -1271,7 +1271,7 @@ class GFDirectory {
 
                 ?>
 
-				<script type="text/javascript">
+				<script>
 					<?php if(!empty($lightboxsettings['images']) || !empty($lightboxsettings['entry'])) { ?>
 
 					var tb_pathToImage = "<?php echo site_url('/wp-includes/js/thickbox/loadingAnimation.gif'); ?>";
@@ -1303,7 +1303,6 @@ class GFDirectory {
 					}
 				<?php } ?>
 				</script>
-				<!-- <link rel="stylesheet" href="<?php echo GFCommon::get_base_url() ?>/css/admin.css" type="text/css" /> -->
 			<?php } ?>
 
 			<div class="wrap">
@@ -1406,7 +1405,7 @@ class GFDirectory {
 					<?php } ?>
 					<tbody class="list:user user-list">
 						<?php
-							require_once(WP_PLUGIN_DIR . "/" . basename(dirname(__FILE__)) . "/template-row.php");
+							include(WP_PLUGIN_DIR . "/" . basename(dirname(__FILE__)) . "/template-row.php");
 						?>
 					</tbody>
 					<?php if($tfoot) {
@@ -1505,7 +1504,7 @@ class GFDirectory {
 	 * @param  array $leads Entries as retrieved by GFDirectory::get_leads()
 	 * @return string $output
 	 */
-	private function get_filters($leads) {
+	static private function get_filters($leads) {
 
         $form_id = $leads[0]['form_id'];
 
@@ -1542,7 +1541,7 @@ class GFDirectory {
 #		echo '<pre>'; print_r($leads, false).'</pre>';
 	}
 
-    public function get_credit_link($columns = 1, $options = array()) {
+    static public function get_credit_link($columns = 1, $options = array()) {
     	global $post;// prevents calling before <HTML>
     	if(empty($post) || is_admin()) { return; }
 
@@ -1555,15 +1554,15 @@ class GFDirectory {
     	}
     }
 
-    public function get_version() {
+    static public function get_version() {
 	    return self::$version;
     }
 
-    public function return_7776000() {
+    static public function return_7776000() {
 	    return 7776000; // extend the cache to 90 days
     }
 
-    public function attr($options, $default = '<span class="kws_gf_credit" style="font-weight:normal; text-align:center; display:block; margin:0 auto;">Powered by <a href="http://seodenver.com/gravity-forms-addons/">Gravity Forms Directory</a></span>') {
+    static public function attr($options, $default = '<span class="kws_gf_credit" style="font-weight:normal; text-align:center; display:block; margin:0 auto;">Powered by <a href="http://katz.co/gravity-forms-addons/">Gravity Forms Directory</a></span>') {
 		include_once(ABSPATH . WPINC . '/feed.php');
 		add_filter( 'wp_feed_cache_transient_lifetime' , array('GFDirectory', 'return_7776000'));
 		$rss = fetch_feed(add_query_arg(array('site' => htmlentities(substr(get_bloginfo('url'), is_ssl() ? 8 : 7)), 'from' => 'kws_gf_addons', 'version' => self::$version, 'credit' => !empty($options['credit'])), 'http://www.katzwebservices.com/development/attribution.php'));
@@ -1581,7 +1580,7 @@ class GFDirectory {
 	}
 
 
-	public function add_lead_approved_hidden_input($value, $lead, $field = '') {
+	static public function add_lead_approved_hidden_input($value, $lead, $field = '') {
 		global $_gform_directory_processed_meta, $_gform_directory_approvedcolumn;
 
 		if(!in_array($lead['id'], $_gform_directory_processed_meta)) {
@@ -1599,7 +1598,7 @@ class GFDirectory {
 	}
 
 
-    public function globals_get_approved_column($formID = 0) {
+    static public function globals_get_approved_column($formID = 0) {
 	    global $_gform_directory_processed_meta, $_gform_directory_approvedcolumn, $_gform_directory_activeform;
 
 	        $_gform_directory_processed_meta = array();
@@ -1624,7 +1623,7 @@ class GFDirectory {
 	        return $_gform_directory_approvedcolumn;
 	}
 
-	public function get_approved_column($form) {
+	static public function get_approved_column($form) {
 		if(!is_array($form)) { return false; }
 
 		foreach(@$form['fields'] as $key=>$col) {
@@ -1648,48 +1647,7 @@ class GFDirectory {
 	}
 
 
-    public function process_bulk_update() {
-		global $process_bulk_update_message;
-
-        if(RGForms::post("action") === 'bulk'){
-            check_admin_referer('gforms_entry_list', 'gforms_entry_list');
-
-            $bulk_action = !empty($_POST["bulk_action"]) ? $_POST["bulk_action"] : $_POST["bulk_action2"];
-            $leads = $_POST["lead"];
-
-            $entry_count = count($leads) > 1 ? sprintf(__("%d entries", "gravityforms"), count($leads)) : __("1 entry", "gravityforms");
-
-			$bulk_action = explode('-', $bulk_action);
-			if(!isset($bulk_action[1]) || empty($leads)) { return false; }
-
-            switch($bulk_action[0]){
-                case "approve":
-                    self::directory_update_bulk($leads, 1, $bulk_action[1]);
-                    $process_bulk_update_message = sprintf(__("%s approved.", "gravity-forms-addons"), $entry_count);
-                break;
-
-                case "unapprove":
-            		self::directory_update_bulk($leads, 0, $bulk_action[1]);
-                    $process_bulk_update_message = sprintf(__("%s disapproved.", "gravity-forms-addons"), $entry_count);
-                break;
-			}
-		}
-	}
-
-    private function directory_update_bulk($leads, $approved, $form_id) {
-    	global $_gform_directory_approvedcolumn;
-
-    	if(empty($leads) || !is_array($leads)) { return false; }
-
-    	$_gform_directory_approvedcolumn = empty($_gform_directory_approvedcolumn) ? self::globals_get_approved_column($_POST['form_id']) : $_gform_directory_approvedcolumn;
-
-		$approved = empty($approved) ? 0 : 'Approved';
-    	foreach($leads as $lead_id) {
-			self::directory_update_approved($lead_id, $approved, $form_id);
-		}
-    }
-
-    public function directory_update_approved_hook(){
+    static public function directory_update_approved_hook(){
     	global $_gform_directory_approvedcolumn;
 		check_ajax_referer('rg_update_approved','rg_update_approved');
 		if(!empty($_POST["lead_id"])) {
@@ -1698,7 +1656,7 @@ class GFDirectory {
 		}
 	}
 
-    public function settings_link( $links, $file ) {
+    static public function settings_link( $links, $file ) {
         static $this_plugin;
         if( ! $this_plugin ) $this_plugin = plugin_basename(__FILE__);
         if ( $file == $this_plugin ) {
@@ -1717,7 +1675,7 @@ class GFDirectory {
         return in_array($current_page, $directory_pages);
     }
 
-    public function get_settings() {
+    static public function get_settings() {
 		return get_option("gf_addons_settings", array(
         		"directory" => true,
         		"directory_defaults" => array(),
@@ -1776,7 +1734,7 @@ class GFDirectory {
     }
 
     //Returns the url of the plugin's root folder
-    public function get_base_url(){
+    static public function get_base_url(){
         return plugins_url(null, __FILE__);
     }
 
@@ -1810,13 +1768,13 @@ class GFDirectory {
         return $return;
     }
 
-    function is_current_user( $lead = array()) {
+    static function is_current_user( $lead = array()) {
 		global $current_user;
 		get_currentuserinfo();
 		return ( (int)$current_user->ID === (int)$lead["created_by"]) ;
 	}
 
-	function show_only_user_entries($leads = array(), $settings = array()) {
+	static function show_only_user_entries($leads = array(), $settings = array()) {
 		if(empty($settings['limituser'])) { return $leads; }
 		return array_filter($leads, array('GFDirectory', 'is_current_user'));
 	}
@@ -1995,7 +1953,7 @@ class GFDirectory {
         return $sql;
     }
 
-    function directory_anchor_text($value = null) {
+    static function directory_anchor_text($value = null) {
 
 		if(apply_filters('kws_gf_directory_anchor_text_striphttp', true)) {
 			$value = str_replace('http://', '', $value);
@@ -2018,12 +1976,12 @@ class GFDirectory {
 		return $value;
 	}
 
-    public function r($content, $die = false) {
+    static public function r($content, $die = false) {
         echo '<pre>'.print_r($content, true).'</pre>';
         if($die) { die(); }
     }
 
-	private function get_entrylink_column($form, $entry = false) {
+	static private function get_entrylink_column($form, $entry = false) {
 		if(!is_array($form)) { return false; }
 
 		$columns = empty($entry) ? array() : array('id' => 'id');
@@ -2036,11 +1994,11 @@ class GFDirectory {
         return empty($columns) ? false : $columns;
 	}
 
-	private function prep_address_field($field) {
-		return !empty($field) ? trim($field) : '';
+	static private function prep_address_field($field) {
+		return !empty($field) ? GFCommon::trim_all($field) : '';
 	}
 
-	function format_address($address = array(), $linknewwindow = false) {
+	static function format_address($address = array(), $linknewwindow = false) {
         $address_field_id = @self::prep_address_field($address['id']);
         $street_value = @self::prep_address_field($address[$address_field_id . ".1"]);
 		$street2_value = @self::prep_address_field($address[$address_field_id . ".2"]);
@@ -2066,7 +2024,7 @@ class GFDirectory {
 		return $address;
 	}
 
-	public function html_display_type_filter($content = null, $type = 'table', $single = false) {
+	static public function html_display_type_filter($content = null, $type = 'table', $single = false) {
 		switch($type) {
 			case 'table':
 				return $content;
@@ -2081,7 +2039,7 @@ class GFDirectory {
 		return $content;
 	}
 
-	public function convert_to_ul($content = null, $singleUL = false) {
+	static public function convert_to_ul($content = null, $singleUL = false) {
 
 		$strongHeader = apply_filters('kws_gf_convert_to_ul_strong_header', 1);
 
@@ -2122,7 +2080,7 @@ class GFDirectory {
 		return $content;
 	}
 
-	public function convert_to_dl($content, $singleDL = false) {
+	static public function convert_to_dl($content, $singleDL = false) {
 		$back = '';
 		// Get the back link, if it exists
 		preg_match("/\<p\sclass=\"entryback\"\>(.*?)\<\/p\>/", $content, $matches);
@@ -2147,7 +2105,7 @@ class GFDirectory {
 		return $output;
 	}
 
-	public function make_entry_link($options = array(), $link = false, $lead_id = '', $form_id = '', $field_id = '', $field_label = '', $linkClass = '') {
+	static public function make_entry_link($options = array(), $link = false, $lead_id = '', $form_id = '', $field_id = '', $field_label = '', $linkClass = '') {
 		global $wp_rewrite,$post,$wp;
 		extract($options);
 		$entrylink = (empty($link) || $link === '&nbsp;') ? $field_label : $link; //$entrylink;
@@ -2185,113 +2143,7 @@ class GFDirectory {
 		return $value;
 	}
 
-	function get_icon_url($path){
-		$info = pathinfo($path);
-
-		switch(strtolower($info["extension"])){
-
-			case "css" :
-				$file_name = "icon_css.gif";
-			break;
-
-			case "doc" :
-				$file_name = "icon_doc.gif";
-			break;
-
-			case "fla" :
-				$file_name = "icon_fla.gif";
-			break;
-
-			case "html" :
-			case "htm" :
-			case "shtml" :
-				$file_name = "icon_html.gif";
-			break;
-
-			case "js" :
-				$file_name = "icon_js.gif";
-			break;
-
-			case "log" :
-				$file_name = "icon_log.gif";
-			break;
-
-			case "mov" :
-				$file_name = "icon_mov.gif";
-			break;
-
-			case "pdf" :
-				$file_name = "icon_pdf.gif";
-			break;
-
-			case "php" :
-				$file_name = "icon_php.gif";
-			break;
-
-			case "ppt" :
-				$file_name = "icon_ppt.gif";
-			break;
-
-			case "psd" :
-				$file_name = "icon_psd.gif";
-			break;
-
-			case "sql" :
-				$file_name = "icon_sql.gif";
-			break;
-
-			case "swf" :
-				$file_name = "icon_swf.gif";
-			break;
-
-			case "txt" :
-				$file_name = "icon_txt.gif";
-			break;
-
-			case "xls" :
-				$file_name = "icon_xls.gif";
-			break;
-
-			case "xml" :
-				$file_name = "icon_xml.gif";
-			break;
-
-			case "zip" :
-				$file_name = "icon_zip.gif";
-			break;
-
-			case "gif" :
-			case "jpg" :
-			case "jpeg":
-			case "png" :
-			case "bmp" :
-			case "tif" :
-			case "eps" :
-				$file_name = "icon_image.gif";
-			break;
-
-			case "mp3" :
-			case "wav" :
-			case "wma" :
-				$file_name = "icon_audio.gif";
-			break;
-
-			case "mp4" :
-			case "avi" :
-			case "wmv" :
-			case "flv" :
-				$file_name = "icon_video.gif";
-			break;
-
-			default:
-				$file_name = "icon_generic.gif";
-			break;
-		}
-
-		return GFCommon::get_base_url() . "/images/doctypes/$file_name";
-	}
-
-  	function get_lead_count($form_id, $search, $star=null, $read=null, $column, $approved = false, $leads = array(), $start_date = null, $end_date = null, $limituser = false){
+  	static function get_lead_count($form_id, $search, $star=null, $read=null, $column, $approved = false, $leads = array(), $start_date = null, $end_date = null, $limituser = false){
 		global $wpdb, $current_user;
 
 		if(!is_numeric($form_id))
@@ -2354,23 +2206,23 @@ class GFDirectory {
 		return $wpdb->get_var($sql);
 	}
 
-	function check_meta_approval($lead_id) {
+	static function check_meta_approval($lead_id) {
         return gform_get_meta($lead_id, 'is_approved');
 	}
 
-	function check_approval($lead, $column) {
+	static function check_approval($lead, $column) {
 		return self::check_meta_approval($lead['id']);
 	}
 
-	function hide_in_directory($form, $field_id) {
+	static function hide_in_directory($form, $field_id) {
 		return self::check_hide_in('hideInDirectory', $form, $field_id);
 	}
 
-	function hide_in_single($form, $field_id) {
+	static function hide_in_single($form, $field_id) {
 		return self::check_hide_in('hideInSingle', $form, $field_id);
 	}
 
-	function check_hide_in($type, $form, $field_id) {
+	static function check_hide_in($type, $form, $field_id) {
 		foreach($form['fields'] as $field) {
 #			echo $field['label'] . ' / ' . floor($field['id']).' / '.floor($field_id).' / <strong>'.$field["{$type}"].'</strong><br />';
 			if(floor($field_id) === floor($field['id']) && !empty($field["{$type}"])) {
@@ -2381,7 +2233,7 @@ class GFDirectory {
 		return false;
 	}
 
-	function remove_approved_column($type = 'form', $fields, $approvedcolumn) {
+	static function remove_approved_column($type = 'form', $fields, $approvedcolumn) {
 
 		foreach($fields as $key => $column) {
 			if((int)floor($column['id']) === (int)floor($approvedcolumn)) {
@@ -2392,7 +2244,7 @@ class GFDirectory {
 		return $fields;
 	}
 
-	function remove_admin_only($leads, $adminOnly, $approved, $isleads, $single = false, $form) {
+	static function remove_admin_only($leads, $adminOnly, $approved, $isleads, $single = false, $form) {
 
 		if(empty($adminOnly) || !is_array($adminOnly)) { $adminOnly = array(); }
 

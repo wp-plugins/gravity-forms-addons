@@ -28,7 +28,7 @@
 				foreach($field_ids as $field_id) {
 					$field = $columns[$field_id];
 					$lightboxclass = '';
-					if(!empty($lightboxsettings['images'])) { $lightboxclass = ' class="thickbox colorbox lightbox"';  }
+					if(!empty($lightboxsettings['images'])) { $lightboxclass = ' class="thickbox"';  }
 					$value = isset($lead[$field_id]) ? $lead[$field_id] : '';
 
 					if(GFCommon::is_post_field($columns[$field_id])) {
@@ -82,7 +82,7 @@
 							$size = '';
 							if(!empty($url)){
 								//displaying thumbnail (if file is an image) or an icon based on the extension
-								 $icon = self::get_icon_url($url);
+								 $icon = GFEntryList::get_icon_url($url);
 								 if(!preg_match('/icon\_image\.gif/ism', $icon)) {
 								 	$src = $icon;
 								 	if(!empty($getimagesize)) {

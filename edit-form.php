@@ -4,7 +4,7 @@ add_action('init', array('GFDirectory_EditForm', 'initialize'));
 
 class GFDirectory_EditForm {
 
-	function initialize() {
+	static public function initialize() {
 		$GFDirectory_EditForm = new GFDirectory_EditForm();
 	}
 
@@ -286,8 +286,8 @@ class GFDirectory_EditForm {
 	}
 
 	public function toolbar_links() {
-
-		?>
+		wp_enqueue_style( 'thickbox' );
+	?>
 	    <style>
 	    	li.gf_directory_setting, li.gf_directory_setting li {
 	    		padding-bottom: 4px!important;
