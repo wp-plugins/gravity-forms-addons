@@ -77,7 +77,7 @@ class GFDirectory_Admin {
 
 		$approved = empty($approved) ? 0 : 'Approved';
     	foreach($leads as $lead_id) {
-			self::directory_update_approved($lead_id, $approved, $form_id);
+			GFDirectory::directory_update_approved($lead_id, $approved, $form_id);
 		}
     }
 
@@ -139,9 +139,6 @@ class GFDirectory_Admin {
 				echo $style;
 			}
 		}
-		if(!empty($settings['modify_admin']['ids'])) {
-			echo '<script src="'.GFCommon::get_base_url().'/js/jquery.simplemodal-1.3.min.js"></script>'; // Added for the new IDs popup
-		}
 
 		if(isset($_REQUEST['page']) && ($_REQUEST['page'] == 'gf_edit_forms' || $_REQUEST['page'] == 'gf_entries')) {
 			echo self::add_edit_js(isset($_REQUEST['id']), $settings);
@@ -191,44 +188,10 @@ class GFDirectory_Admin {
 			else if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'gf_edit_forms' && !empty($settings['modify_admin']['ids'])) {
 				?>
 				// Changed from :contains('Delete') to :last-child for future-proofing
-				$(".row-actions span.edit:last-child").each(function() {
+				$(".row-actions .trash").each(function() {
 					var formID = $(this).parents('tr').find('.column-id').text();;
-					$(this).after('<span class="edit">| <a title="<?php _e("View form field IDs", "gravity-forms-addons"); ?>" href="<?php  echo WP_PLUGIN_URL . "/" . basename(dirname(__FILE__)) . "/field-ids.php"; ?>?id='+formID+'&amp;show_field_ids=true" class="form_ids"><?php _e("IDs", "gravity-forms-addons"); ?></a></span>');
+					$(this).after('<span class="edit"> | <a title="<?php _e("View form field IDs", "gravity-forms-addons"); ?>" href="<?php echo plugins_url("field-ids.php", __FILE__); ?>?id='+formID+'&amp;show_field_ids=true&amp;width=600&amp;height=800&amp;TB_iframe=true" class="thickbox form_ids"><?php _e("IDs", "gravity-forms-addons"); ?></a></span>');
 				});
-					var h = $('#gravityformspreviewidsiframe').css('height');
-
-					$("a.form_ids").live('click', function(e) {
-						e.preventDefault();
-						var src = $(this).attr('href');
-						$.modal('<iframe src="' + src + '" width="" height="" style="border:0;">', {
-//							closeHTML:"<a href='#'>Close</a>",
-							minHeight:400,
-							minWidth: 600,
-							containerCss:{
-								borderColor: 'transparent',
-								borderWidth: 0,
-								padding:10,
-								escClose: true,
-								minWidth:500,
-								maxWidth:800,
-								minHeight:500,
-							},
-							overlayClose:true,
-							onShow: function(dlg) {
-								var iframeHeight = $('iframe', $(dlg.container)).height();
-								var containerHeight = $(dlg.container).height();
-								var iframeWidth = $('iframe', $(dlg.container)).width();
-								var containerWidth = $(dlg.container).width();
-
-								if(containerHeight < iframeHeight) { $(dlg.container).height(iframeHeight); }
-								else { $('iframe', $(dlg.container)).height(containerHeight); }
-
-								if(containerWidth < iframeWidth) { $(dlg.container).width(iframeWidth); }
-								else { $('iframe', $(dlg.container)).width(containerWidth); }
-							}
-						});
-			         });
-
 				<?php } ?>
 			});
 		</script>

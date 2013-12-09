@@ -200,6 +200,14 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 3.4.4 (December 9, 2013) =
+* Fixed: Entry approval error [ticket](http://wordpress.org/support/topic/approval-not-working-1)
+* Fixed: Images in the directory now open using lightbox again
+* Fixed: Show Form IDs functionality
+* Fixed: Broken link to SimpleModal script on Forms page ([ticket](http://wordpress.org/support/topic/js-error-6))
+* Fixed: Compatibility with Gravity Forms 1.8's new icon set
+* Updated: Now uses latest Colorbox script
+
 = 3.4.3 (October 31, 2013) =
 * Fixed: PHP 5.4 warnings
 * Fixed: Editing Lists field type
@@ -411,6 +419,14 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.4.4 (December 9, 2013) =
+* Fixed: Entry approval error [ticket](http://wordpress.org/support/topic/approval-not-working-1)
+* Fixed: Images in the directory now open using lightbox again
+* Fixed: Show Form IDs functionality
+* Fixed: Broken link to SimpleModal script on Forms page ([ticket](http://wordpress.org/support/topic/js-error-6))
+* Fixed: Compatibility with Gravity Forms 1.8's new icon set
+* Updated: Now uses latest Colorbox script
 
 = 3.4.3 (October 31, 2013) =
 * Fixed: PHP 5.4 warnings

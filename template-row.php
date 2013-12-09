@@ -28,7 +28,15 @@
 				foreach($field_ids as $field_id) {
 					$field = $columns[$field_id];
 					$lightboxclass = '';
-					if(!empty($lightboxsettings['images'])) { $lightboxclass = ' class="thickbox"';  }
+
+					if(!empty($lightboxsettings['images'])) {
+						if(wp_script_is('colorbox', 'registered')) {
+							$lightboxclass = ' class="colorbox lightbox"';
+						} else if(wp_script_is('thickbox', 'registered')) {
+							$lightboxclass = ' class="thickbox lightbox"';
+						}
+					}
+
 					$value = isset($lead[$field_id]) ? $lead[$field_id] : '';
 
 					if(GFCommon::is_post_field($columns[$field_id])) {
