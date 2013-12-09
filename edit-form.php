@@ -104,10 +104,10 @@ class GFDirectory_EditForm {
 		<style>
 
 		.lead_approved .toggleApproved {
-			background: url(<?php echo GFCommon::get_base_url() ?>/images/tick.png) left top no-repeat;
+			background: url(<?php echo plugins_url('images/tick.png', __FILE__); ?>) left top no-repeat;
 		}
 		.toggleApproved {
-			background: url(<?php echo GFCommon::get_base_url() ?>/images/cross.png) left top no-repeat;
+			background: url(<?php echo plugins_url('images/cross.png', __FILE__); ?>) left top no-repeat;
 			width: 16px;
 			height: 16px;
 			display: block;
@@ -220,7 +220,7 @@ class GFDirectory_EditForm {
 					$('tr', $table).each(function() {
 						if($(this).is('.lead_approved') || (onLoad && $("input.lead_approved", $(this)).length > 0)) {
 							if(onLoad && $(this).not('.lead_approved')) { $(this).addClass('lead_approved'); }
-							$('td:visible:eq('+colIndex+'):has(.toggleApproved)', $(this)).html("<img src='<?php echo GFCommon::get_base_url(); ?>/images/tick.png'/>");
+							$('td:visible:eq('+colIndex+'):has(.toggleApproved)', $(this)).html("<img src='<?php echo plugins_url('images/tick.png', __FILE__); ?>/>");
 						} else {
 							if(onLoad && $(this).is('.lead_approved')) { $(this).removeClass('lead_approved'); }
 							$('td:visible:eq('+colIndex+'):has(.toggleApproved)', $(this)).html('');
