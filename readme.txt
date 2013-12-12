@@ -1,7 +1,7 @@
 === Gravity Forms Directory ===
 Tags: gravity forms, gravity form, forms, gravity, form, crm, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 3.3
-Tested up to: 3.7.1
+Tested up to: 3.8
 Stable tag: trunk
 Contributors: katzwebdesign, katzwebservices
 License: GPLv2 or later
@@ -199,6 +199,9 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 3.4.5 (December 12, 2013) =
+* `sort_field_number` is the var used inside `get_leads` method to indicate the sort column or default, but "sort_field" doesn't exist in the scope of this method.
 
 = 3.4.4 (December 9, 2013) =
 * Fixed: Entry approval error [ticket](http://wordpress.org/support/topic/approval-not-working-1)
@@ -419,6 +422,9 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.4.5 (December 12, 2013) =
+* `sort_field_number` is the var used inside `get_leads` method to indicate the sort column or default, but "sort_field" doesn't exist in the scope of this method.
 
 = 3.4.4 (December 9, 2013) =
 * Fixed: Entry approval error [ticket](http://wordpress.org/support/topic/approval-not-working-1)

@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://katz.co/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.4.4
+Version: 3.4.5
 Author URI: http://www.katzwebservices.com
 
 Copyright 2013 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -33,7 +33,7 @@ class GFDirectory {
 	private static $path = "gravity-forms-addons/gravity-forms-addons.php";
 	private static $url = "http://www.gravityforms.com";
 	private static $slug = "gravity-forms-addons";
-	private static $version = "3.4.4";
+	private static $version = "3.4.5";
 	private static $min_gravityforms_version = "1.5";
 
 	public static function directory_defaults($args = array()) {
@@ -1769,7 +1769,7 @@ class GFDirectory {
 		}
 
 		// Used by at least the show_only_user_entries() method
-		$return = apply_filters('kws_gf_directory_lead_filter', $return, compact("approved","sort_field","sort_direction","search_query","first_item_index","page_size","star","read","is_numeric","start_date","end_date","status", "approvedcolumn", "limituser"));
+		$return = apply_filters('kws_gf_directory_lead_filter', $return, compact("approved","sort_field_number","sort_direction","search_query","first_item_index","page_size","star","read","is_numeric","start_date","end_date","status", "approvedcolumn", "limituser"));
 
         return $return;
     }
