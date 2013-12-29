@@ -4,7 +4,7 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://katz.co/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.5
+Version: 3.5.1
 Author URI: http://www.katzwebservices.com
 
 Copyright 2013 Katz Web Services, Inc.  (email: info@katzwebservices.com)
@@ -32,7 +32,7 @@ class GFDirectory {
 
 	private static $path = "gravity-forms-addons/gravity-forms-addons.php";
 	private static $slug = "gravity-forms-addons";
-	private static $version = "3.5";
+	private static $version = "3.5.1";
 	private static $min_gravityforms_version = "1.5";
 
 	public static function directory_defaults($args = array()) {
@@ -914,9 +914,7 @@ class GFDirectory {
 	static public function get_back_link($options = array()) {
 		global $pagenow,$wp_rewrite;
 
-		if(empty($options)) {
-			$options = self::directory_defaults();
-		}
+		$options = self::directory_defaults($options);
 
 		if(isset($_GET['edit'])) {
 			return '<p class="entryback"><a href="'.add_query_arg(array(), remove_query_arg(array('edit'))).'">'.esc_html(__(apply_filters('kws_gf_directory_edit_entry_cancel', "&larr; Cancel Editing"), "gravity-forms-addons")).'</a></p>';
@@ -971,7 +969,7 @@ class GFDirectory {
 			ob_end_clean(); // Clear the buffer
 
 			// Get the back link if this is a single entry.
-			$link = !empty($entryonly) ? self::get_back_link() : '';
+			$link = !empty($entryonly) ? self::get_back_link(array('entryback' => $entryback)) : '';
 
 			$content = $link . $content;
 			$content = apply_filters('kws_gf_directory_detail', apply_filters('kws_gf_directory_detail_'.(int)$leadid, $content, (int)$leadid), (int)$leadid);
