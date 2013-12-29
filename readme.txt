@@ -78,6 +78,7 @@ When editing a form, click on a field to expand the field. Next, click the "Dire
 * Choose whether you would like the field to be a link to the Single Entry View;
 * Hide the field in Directory View; and
 * Hide the field in Single Entry View
+* Enable using the field as an advanced search filter
 
 = How do I select what columns I want to display in the Directory? =
 
@@ -87,6 +88,21 @@ When editing a form, click on a field to expand the field. Next, click the "Dire
 	* Drag from the right ("Hidden Columns") side to the left ("Visible Columns") side.
 1. Click the "Save" button
 1. Voila!
+
+= How do Directory Search filters work? =
+If the field is a text field, a text search input will be added that will search only this field. Otherwise, the field choices will be used to populate a dropdown menu search input.
+
+Example: if the "Vehicle Make" field has choices "Ford", "Chevy", and "Toyota", the search dropdown options will have those items as choices in a dropdown search field. If "Ford" is selected and the search form is submitted, only entries with the Vehicle Make of "Ford" will be shown.
+
+To enable a field as a search filter, view "How do I add a field as a Directory Search filter?" below.
+
+= How do I add a field as a Directory Search filter? =
+
+1. Edit the Gravity Forms form you'd like to configure a Directory for
+1. Click the bar on the top of the field to expand the field
+1. Click the "Directory" tab
+1. Check the box that says "Use this field as a search filter"
+1. Click "Update Form" to save the form
 
 = How do I turn off lightbox grouping? =
 Add the following to your theme's `functions.php` file:
@@ -200,8 +216,13 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
-= 3.4.5 (December 12, 2013) =
-* `sort_field_number` is the var used inside `get_leads` method to indicate the sort column or default, but "sort_field" doesn't exist in the scope of this method.
+= 3.5 (December 29, 2013) =
+* Added: __Advanced search filters!__ Filter results based on fields of the form. For more information, read the item in the FAQ tab: "How do Directory Search filters work?"
+* Added: Allow visibility of chosen fields if user is logged-in
+* Added: Supports Single Entry links when Previewing posts and pages that have an embedded directory
+* Fixed: Use `sort_field_number` instead of `sort_field` for the `get_leads()` method
+* Fixed: Replaced `WP_PLUGIN_URL` with `plugins_url()` to prevent mixed content warnings when editing forms over HTTPS (thanks, [dbarlett](https://github.com/dbarlett))
+* Updated: Better icon on Edit Form view for Gravity Forms 1.8
 
 = 3.4.4 (December 9, 2013) =
 * Fixed: Entry approval error [ticket](http://wordpress.org/support/topic/approval-not-working-1)
@@ -423,8 +444,14 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 == Upgrade Notice ==
 
-= 3.4.5 (December 12, 2013) =
-* `sort_field_number` is the var used inside `get_leads` method to indicate the sort column or default, but "sort_field" doesn't exist in the scope of this method.
+= 3.5 (December 29, 2013) =
+* Added: __Advanced search filters!__ Filter results based on fields of the form. For more information, read the item in the FAQ tab: "How do Directory Search filters work?"
+* Added: Make fields visibile based on whether an user is logged-in and has certain capabilities ("Only visible to logged in users with [Any] role." setting in the Directory tab)
+* Added: Supports Single Entry links when Previewing posts and pages that have an embedded directory
+* Fixed: Use `sort_field_number` instead of `sort_field` for the `get_leads()` method
+* Fixed: Replaced `WP_PLUGIN_URL` with `plugins_url()` to prevent mixed content warnings when editing forms over HTTPS (thanks, [dbarlett](https://github.com/dbarlett))
+* Updated: Better icon on Edit Form view for Gravity Forms 1.8
+* Updated: Removed `remove_admin_only()` method and replaced with `remove_hidden_fields()`
 
 = 3.4.4 (December 9, 2013) =
 * Fixed: Entry approval error [ticket](http://wordpress.org/support/topic/approval-not-working-1)
