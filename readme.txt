@@ -121,7 +121,7 @@ Turn on the `limituser` setting, then add the following to your theme's `functio
 `add_filter('kws_gf_treat_not_logged_in_as_user', '__return_false');`
 
 = How do I sort by a column? =
-The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms ÏEdit FormsÓ page, hover over the form and click the link called "IDs" that appears.
+The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms √¨Edit Forms√Æ page, hover over the form and click the link called "IDs" that appears.
 
 If you want to sort by last name, you find the last name id (`1.6` for example). Then, you add `sort="1.6"` to your `[directory]` shortcode.
 
@@ -216,13 +216,15 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
-= 3.5 (December 29, 2013) =
+= 3.5 & 3.5.1 (December 29, 2013) =
 * Added: __Advanced search filters!__ Filter results based on fields of the form. For more information, read the item in the FAQ tab: "How do Directory Search filters work?"
-* Added: Allow visibility of chosen fields if user is logged-in
+* Added: Make fields visibile based on whether an user is logged-in and has certain capabilities ("Only visible to logged in users with [Any] role." setting in the Directory tab)
 * Added: Supports Single Entry links when Previewing posts and pages that have an embedded directory
 * Fixed: Use `sort_field_number` instead of `sort_field` for the `get_leads()` method
 * Fixed: Replaced `WP_PLUGIN_URL` with `plugins_url()` to prevent mixed content warnings when editing forms over HTTPS (thanks, [dbarlett](https://github.com/dbarlett))
+* Fixed: Now respects shortcode `entryback` link setting (previously, only the global setting was respected)
 * Updated: Better icon on Edit Form view for Gravity Forms 1.8
+* Updated: Removed `remove_admin_only()` method and replaced with `remove_hidden_fields()`
 
 = 3.4.4 (December 9, 2013) =
 * Fixed: Entry approval error [ticket](http://wordpress.org/support/topic/approval-not-working-1)
@@ -444,12 +446,13 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 == Upgrade Notice ==
 
-= 3.5 (December 29, 2013) =
+= 3.5 & 3.5.1 (December 29, 2013) =
 * Added: __Advanced search filters!__ Filter results based on fields of the form. For more information, read the item in the FAQ tab: "How do Directory Search filters work?"
 * Added: Make fields visibile based on whether an user is logged-in and has certain capabilities ("Only visible to logged in users with [Any] role." setting in the Directory tab)
 * Added: Supports Single Entry links when Previewing posts and pages that have an embedded directory
 * Fixed: Use `sort_field_number` instead of `sort_field` for the `get_leads()` method
 * Fixed: Replaced `WP_PLUGIN_URL` with `plugins_url()` to prevent mixed content warnings when editing forms over HTTPS (thanks, [dbarlett](https://github.com/dbarlett))
+* Fixed: Now respects shortcode `entryback` link setting (previously, only the global setting was respected)
 * Updated: Better icon on Edit Form view for Gravity Forms 1.8
 * Updated: Removed `remove_admin_only()` method and replaced with `remove_hidden_fields()`
 
