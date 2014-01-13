@@ -216,6 +216,14 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
+= 3.5.3 (January 13, 2014) =
+The fixes in this update were submitted by [Dylan Bartlett](http://www.dylanbarlett.com). Thanks, Dylan!
+
+* Check for 'page' request var instead of suppressing error when not set.
+* Add filters & actions to `gf_edit_forms` only when editing a specific form
+* Fixed: Use correct path to enqueue Colorbox JS
+* Fixed: JS syntax in Search function
+
 = 3.5.2 (December 30, 2013) =
 * Fixed: Fatal error for users using < Gravity Forms 1.8
 
@@ -448,6 +456,14 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.5.3 (January 13, 2014) =
+The fixes in this update were submitted by [Dylan Bartlett](http://www.dylanbarlett.com). Thanks, Dylan!
+
+* Check for 'page' request var instead of suppressing error when not set.
+* Add filters & actions to `gf_edit_forms` only when editing a specific form
+* Fixed: Use correct path to enqueue Colorbox JS
+* Fixed: JS syntax in Search function
 
 = 3.5.2 (December 30, 2013) =
 * Fixed: Fatal error for users using < Gravity Forms 1.8

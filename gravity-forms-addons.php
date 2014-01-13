@@ -4,10 +4,10 @@ Plugin Name: Gravity Forms Directory & Addons
 Plugin URI: http://katz.co/gravity-forms-addons/
 Description: Turn <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> into a great WordPress directory...and more!
 Author: Katz Web Services, Inc.
-Version: 3.5.2
+Version: 3.5.3
 Author URI: http://www.katzwebservices.com
 
-Copyright 2013 Katz Web Services, Inc.  (email: info@katzwebservices.com)
+Copyright 2014 Katz Web Services, Inc.  (email: info@katzwebservices.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ class GFDirectory {
 
 	private static $path = "gravity-forms-addons/gravity-forms-addons.php";
 	private static $slug = "gravity-forms-addons";
-	private static $version = "3.5.2";
+	private static $version = "3.5.3";
 	private static $min_gravityforms_version = "1.5";
 
 	public static function directory_defaults($args = array()) {
@@ -304,7 +304,7 @@ class GFDirectory {
     		}
 
     		if(!empty($lightboxsettings)) {
-    			wp_enqueue_script('colorbox', plugins_url( "/colorbox/jquery.colorbox-min.js", __FILE__), array('jquery'));
+    			wp_enqueue_script('colorbox', plugins_url( "/colorbox/js/jquery.colorbox-min.js", __FILE__), array('jquery'));
     			wp_enqueue_style('colorbox', plugins_url( "/colorbox/example{$lightboxstyle}/colorbox.css", __FILE__), array());
     			$kws_gf_scripts[] = $kws_gf_styles[] = 'colorbox';
     			add_action(apply_filters('kws_gf_directory_colorbox_action', 'wp_footer'), array('GFDirectory', 'load_colorbox'), 1000);
@@ -1321,7 +1321,7 @@ class GFDirectory {
 					var search_filters = '';
 					if( not_empty( search_criteria ) ) {
 						$.each( search_criteria, function( index, value ){
-							search_filters .= "&filter_" + index + "=" + encodeURIComponent(value);
+							search_filters += "&filter_" + index + "=" + encodeURIComponent(value);
 						} );
 					}
 
