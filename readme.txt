@@ -11,7 +11,7 @@ Add directory capabilities and other functionality to the great Gravity Forms pl
 
 == Description ==
 
-> __GravityView is landing soon.__
+> __GravityView is landing soon.__  
 > We're getting ready to release a totally re-written version of the Directory plugin!
 > 
 > [Sign up for email updates](https://katz.co/gravityview/) to learn when it's released.
