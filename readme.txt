@@ -1,8 +1,8 @@
 === Gravity Forms Directory ===
 Tags: gravity forms, gravity form, forms, gravity, form, crm, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 3.3
-Tested up to: 3.8
-Stable tag: trunk
+Tested up to: 3.8.1
+Stable tag: 3.5.4.1
 Contributors: katzwebdesign, katzwebservices
 License: GPLv2 or later
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -215,6 +215,10 @@ To fix this issue, add this to your theme's `functions.php` file:
 <code>add_filter('kws_gf_display_all_fields', create_function('$content', 'return "";') );</code>
 
 == Changelog ==
+
+= 3.5.4.1 (March 10, 2014) =
+* Small fix on showing the edit entry link for own user entries
+* Renamed filename from `change-lead-creator.php` to `gravity-forms-lead-creator.php` as WordPress activates the first file with plugin info encountered in the directory (ordered by name) - this way, the main file `gravity-forms-addons.php` will appear first.
 
 = 3.5.4 (January 23, 2014) =
 * Separated Change Entry Creator functionality into a separate, packaged plugin. This will allow you to enable or disable the functionality as you would a plugin.
@@ -460,6 +464,10 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 
 == Upgrade Notice ==
+
+= 3.5.4.1 (March 10, 2014) =
+* Small fix on showing the edit entry link for own user entries
+* Renamed filename from `change-lead-creator.php` to `gravity-forms-lead-creator.php` as WordPress activates the first file with plugin info encountered in the directory (ordered by name) - this way, the main file `gravity-forms-addons.php` will appear first.
 
 = 3.5.4 (January 23, 2014) =
 * Separated Change Entry Creator functionality into a separate, packaged plugin. This will allow you to enable or disable the functionality as you would a plugin.
