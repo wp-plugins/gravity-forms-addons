@@ -11,6 +11,10 @@ Add directory capabilities and other functionality to the great Gravity Forms pl
 
 == Description ==
 
+> We're getting ready to release a totally re-written version of the Directory plugin; GravityView.
+> 
+> [Sign up for email updates](https://katz.co/gravityview/) to learn when it's released!
+
 ### Turn Gravity Forms into a Directory plugin
 
 Gravity Forms is already the easiest form plugin...now, the Gravity Forms Directory & Addons plugin turns Gravity Forms into a great directory.
