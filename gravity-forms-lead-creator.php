@@ -1,10 +1,29 @@
 <?php
 /*
-Change Entry Creator Gravity Forms Add-on
-This simple addon allows users with Entry-editing capabilities to change who a lead is assigned to.
-Version: 1.0
+Plugin Name: Gravity Forms Change Entry Creator Add-on
+Plugin URI: http://katz.co/gravity-forms-addons/
+Description: This simple addon allows users with Entry-editing capabilities to change who a <a href="http://katz.si/gravityforms" rel="nofollow">Gravity Forms</a> lead is assigned to.
+Author: Katz Web Services, Inc.
+Version: 3.5.4.5
 Author URI: http://www.katzwebservices.com
+
+Copyright 2014 Katz Web Services, Inc. (email: info@katzwebservices.com)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 */
+
 
 add_action("gform_entry_info", 'kws_gf_change_entry_creator_form', 10, 2);
 
@@ -12,13 +31,24 @@ add_action("gform_entry_info", 'kws_gf_change_entry_creator_form', 10, 2);
 if(!function_exists('kws_gf_change_entry_creator_form')) {
 function kws_gf_change_entry_creator_form($form_id, $lead) {
     if(GFCommon::current_user_can_any("gravityforms_edit_entries")) {
-        $users = get_users();
+
+        //@since 3.5.3 - filter possible creators
+        $users = apply_filters( 'kws_gf_entry_creator_users', '', $form_id );
+
+        if( empty( $users ) ) {
+        	$count = count_users();
+        	if( !empty( $count['total_users'] ) && $count['total_users'] > (int)apply_filters( 'kws_gf_entry_creator_max_users', 300 ) )
+	        	$users = get_users( 'role=administrator' );
+	        else
+	        	$users = get_users();
+		}
+
         $output = '<label for="change_created_by">';
         $output .= __('Change Entry Creator:', 'gravity-forms-addons');
         $output .= '</label>
         <select name="created_by" id="change_created_by" class="widefat">';
         foreach($users as $user) {
-            $output .= '<option value="'.$user->ID.'"'.selected((int)$lead["created_by"] === (int)$user->ID, true, false).'>'.$user->display_name.' ('.$user->user_nicename.')</option>';
+            $output .= '<option value="'. $user->ID .'"'. selected( $lead['created_by'], $user->ID, false ).'>'.$user->display_name.' ('.$user->user_nicename.')</option>';
         }
         $output .= '</select>';
         $output .= '<input name="originally_created_by" value="'.$lead['created_by'].'" type="hidden" />';

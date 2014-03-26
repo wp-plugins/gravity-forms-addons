@@ -1,8 +1,8 @@
 === Gravity Forms Directory ===
 Tags: gravity forms, gravity form, forms, gravity, form, crm, directory, business, business directory, list, listings, sort, submissions, table, tables, member, contact, contacts, directorypress, business directory, directory plugin, wordpress directory, classifieds, captcha, cforms, contact, contact form, contact form 7, contact forms, CRM, email, enhanced wp contact form, feedback, form, forms, gravity, gravity form, gravity forms, secure form, simplemodal contact form, wp contact form, widget
 Requires at least: 3.3
-Tested up to: 3.8
-Stable tag: trunk
+Tested up to: 3.8.1
+Stable tag: 3.5.4.5
 Contributors: katzwebdesign, katzwebservices
 License: GPLv2 or later
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -10,6 +10,11 @@ Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackka
 Add directory capabilities and other functionality to the great Gravity Forms plugin.
 
 == Description ==
+
+> __GravityView is landing soon.__
+> We're getting ready to release a totally re-written version of the Directory plugin!
+>
+> [Sign up for email updates](https://katz.co/gravityview/) to learn when it's released.
 
 ### Turn Gravity Forms into a Directory plugin
 
@@ -121,7 +126,7 @@ Turn on the `limituser` setting, then add the following to your theme's `functio
 `add_filter('kws_gf_treat_not_logged_in_as_user', '__return_false');`
 
 = How do I sort by a column? =
-The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms ÏEdit FormsÓ page, hover over the form and click the link called "IDs" that appears.
+The `sort` attribute allows you to sort by an ID. To find the field ID, On the Gravity Forms √¨Edit Forms√Æ page, hover over the form and click the link called "IDs" that appears.
 
 If you want to sort by last name, you find the last name id (`1.6` for example). Then, you add `sort="1.6"` to your `[directory]` shortcode.
 
@@ -216,13 +221,49 @@ To fix this issue, add this to your theme's `functions.php` file:
 
 == Changelog ==
 
-= 3.5 (December 29, 2013) =
+= 3.5.4.5 (March 21, 2014) =
+* Fixed: View entry issue when website has too many users caused by entry creator change select box. If more than 300 users, show only administrators.
+* Fixed: Undefined variable notice (line 2606)
+* Added filter to convert the post_title field in a link to the post itself
+
+= 3.5.4.3 (March 10, 2014) =
+* IMPORTANT SECURITY UPDATE - security hole patched. __Update as soon as possible.__ (Thanks, BMoskovits)
+* Fixed: Lightbox entry view now allows `wp-content` to be a different name
+* Fixed: Static PHP messages on settings page
+* Fixed: Back to Directory link now works with Javascript disabled
+* Fixed: Back to Directory link now displays properly on lightbox entry view. Note: it will link to the originating entry, not a blog archive page if the directory is embedded in a blog post.
+
+= 3.5.4.2 (March 10, 2014) =
+* Fix broken path to Change Lead Creator plugin
+
+= 3.5.4.1 (March 10, 2014) =
+* Small fix on showing the edit entry link for own user entries
+* Renamed filename from `change-lead-creator.php` to `gravity-forms-lead-creator.php` as WordPress activates the first file with plugin info encountered in the directory (ordered by name) - this way, the main file `gravity-forms-addons.php` will appear first.
+
+= 3.5.4 (January 23, 2014) =
+* Separated Change Entry Creator functionality into a separate, packaged plugin. This will allow you to enable or disable the functionality as you would a plugin.
+* Added a new filter (`kws_gf_entry_creator_users`) for the Change Entry Creator plugin. This allows you to define what users appear in the dropdown (as an array of `WP_User` objects). If no users are specified, all users are shown.
+
+= 3.5.3 (January 13, 2014) =
+The fixes in this update were submitted by [Dylan Bartlett](http://www.dylanbarlett.com). Thanks, Dylan!
+
+* Check for 'page' request var instead of suppressing error when not set.
+* Add filters & actions to `gf_edit_forms` only when editing a specific form
+* Fixed: Use correct path to enqueue Colorbox JS
+* Fixed: JS syntax in Search function
+
+= 3.5.2 (December 30, 2013) =
+* Fixed: Fatal error for users using < Gravity Forms 1.8
+
+= 3.5 & 3.5.1 (December 29, 2013) =
 * Added: __Advanced search filters!__ Filter results based on fields of the form. For more information, read the item in the FAQ tab: "How do Directory Search filters work?"
-* Added: Allow visibility of chosen fields if user is logged-in
+* Added: Make fields visibile based on whether an user is logged-in and has certain capabilities ("Only visible to logged in users with [Any] role." setting in the Directory tab)
 * Added: Supports Single Entry links when Previewing posts and pages that have an embedded directory
 * Fixed: Use `sort_field_number` instead of `sort_field` for the `get_leads()` method
 * Fixed: Replaced `WP_PLUGIN_URL` with `plugins_url()` to prevent mixed content warnings when editing forms over HTTPS (thanks, [dbarlett](https://github.com/dbarlett))
+* Fixed: Now respects shortcode `entryback` link setting (previously, only the global setting was respected)
 * Updated: Better icon on Edit Form view for Gravity Forms 1.8
+* Updated: Removed `remove_admin_only()` method and replaced with `remove_hidden_fields()`
 
 = 3.4.4 (December 9, 2013) =
 * Fixed: Entry approval error [ticket](http://wordpress.org/support/topic/approval-not-working-1)
@@ -444,12 +485,47 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 == Upgrade Notice ==
 
-= 3.5 (December 29, 2013) =
+= 3.5.4.5 (March 21, 2014) =
+* Fixed: View entry issue when website has too many users caused by entry creator change select box. If more than 300 users, show only administrators.
+* Fixed: Undefined variable notice (line 2606)
+* Added filter to convert the post_title field in a link to the post itself
+
+= 3.5.4.3 (March 10, 2014) =
+* IMPORTANT SECURITY UPDATE - security hole patched. __Update as soon as possible.__
+* Fixed: Lightbox entry view now allows `wp-content` to be a different name
+* Fixed: Static PHP messages on settings page
+* Fixed: Back to Directory link now works with Javascript disabled
+* Fixed: Back to Directory link now displays properly on lightbox entry view. Note: it will link to the originating entry, not a blog archive page if the directory is embedded in a blog post.
+
+= 3.5.4.2 (March 10, 2014) =
+* Fix broken path to Change Lead Creator plugin
+
+= 3.5.4.1 (March 10, 2014) =
+* Small fix on showing the edit entry link for own user entries
+* Renamed filename from `change-lead-creator.php` to `gravity-forms-lead-creator.php` as WordPress activates the first file with plugin info encountered in the directory (ordered by name) - this way, the main file `gravity-forms-addons.php` will appear first.
+
+= 3.5.4 (January 23, 2014) =
+* Separated Change Entry Creator functionality into a separate, packaged plugin. This will allow you to enable or disable the functionality as you would a plugin.
+* Added a new filter (`kws_gf_entry_creator_users`) for the Change Entry Creator plugin. This allows you to define what users appear in the dropdown (as an array of `WP_User` objects). If no users are specified, all users are shown.
+
+= 3.5.3 (January 13, 2014) =
+The fixes in this update were submitted by [Dylan Bartlett](http://www.dylanbarlett.com). Thanks, Dylan!
+
+* Check for 'page' request var instead of suppressing error when not set.
+* Add filters & actions to `gf_edit_forms` only when editing a specific form
+* Fixed: Use correct path to enqueue Colorbox JS
+* Fixed: JS syntax in Search function
+
+= 3.5.2 (December 30, 2013) =
+* Fixed: Fatal error for users using < Gravity Forms 1.8
+
+= 3.5 & 3.5.1 (December 29, 2013) =
 * Added: __Advanced search filters!__ Filter results based on fields of the form. For more information, read the item in the FAQ tab: "How do Directory Search filters work?"
 * Added: Make fields visibile based on whether an user is logged-in and has certain capabilities ("Only visible to logged in users with [Any] role." setting in the Directory tab)
 * Added: Supports Single Entry links when Previewing posts and pages that have an embedded directory
 * Fixed: Use `sort_field_number` instead of `sort_field` for the `get_leads()` method
 * Fixed: Replaced `WP_PLUGIN_URL` with `plugins_url()` to prevent mixed content warnings when editing forms over HTTPS (thanks, [dbarlett](https://github.com/dbarlett))
+* Fixed: Now respects shortcode `entryback` link setting (previously, only the global setting was respected)
 * Updated: Better icon on Edit Form view for Gravity Forms 1.8
 * Updated: Removed `remove_admin_only()` method and replaced with `remove_hidden_fields()`
 

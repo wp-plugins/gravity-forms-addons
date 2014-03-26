@@ -12,7 +12,7 @@ class GFDirectory_EditForm {
 
 		add_action('admin_init',  array(&$this, 'process_exterior_pages'));
 
-		if(self::is_gravity_page()) {
+		if(self::is_gravity_page() && isset($_REQUEST['id'])) {
 
 			add_filter('gform_tooltips', array(&$this, 'directory_tooltips')); //Filter to add a new tooltip
 			add_action("gform_editor_js", array(&$this, "editor_script")); //Action to inject supporting script to the form editor page
@@ -312,7 +312,7 @@ class GFDirectory_EditForm {
 	    	<?php
 
 			// After 1.8, GF includes Font Awesome icons, so don't use the old image icon.
-	    	if(version_compare(str_replace('beta', '', GFForms::$version), '1.8', '<')) {
+	    	if(version_compare(str_replace('beta', '', GFCommon::$version), '1.8', '<')) {
 				?>
 				ul#gf_form_toolbar_links li#gf_form_toolbar_directory a { background: url(<?php echo plugins_url( '/images/editor-icon.gif', __FILE__); ?>) left top no-repeat; }
 				ul#gf_form_toolbar_links li#gf_form_toolbar_directory a:hover { background-position: left -19px; }
