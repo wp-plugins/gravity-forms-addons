@@ -1,6 +1,6 @@
 /*!
  * tablesorter pager plugin
- * updated 3/7/2014 (v2.15.6)
+ * updated 3/31/2014 (v2.15.12)
  */
 /*jshint browser:true, jquery:true, unused:false */
 ;(function($) {
@@ -207,6 +207,7 @@
 		hideRows = function(table, p){
 			if (!p.ajaxUrl) {
 				var i,
+				lastIndex = 0,
 				c = table.config,
 				rows = c.$tbodies.eq(0).children(),
 				l = rows.length,
@@ -216,9 +217,23 @@
 				j = 0; // size counter
 				for ( i = 0; i < l; i++ ){
 					if ( !rows[i].className.match(f) ) {
-						rows[i].style.display = ( j >= s && j < e ) ? '' : 'none';
-						// don't count child rows
-						j += rows[i].className.match(c.cssChildRow + '|' + c.selectorRemove.slice(1)) && !p.countChildRows ? 0 : 1;
+						if (j === s && rows[i].className.match(c.cssChildRow)) {
+							// hide child rows @ start of pager (if already visible)
+							rows[i].style.display = 'none';
+						} else {
+							rows[i].style.display = ( j >= s && j < e ) ? '' : 'none';
+							// don't count child rows
+							j += rows[i].className.match(c.cssChildRow + '|' + c.selectorRemove.slice(1)) && !p.countChildRows ? 0 : 1;
+							if ( j === e && rows[i].style.display !== 'none' && rows[i].className.match(ts.css.cssHasChild) ) {
+								lastIndex = i;
+							}
+						}
+					}
+				}
+				// add any attached child rows to last row of pager. Fixes part of issue #396
+				if ( lastIndex > 0 && rows[lastIndex].className.match(ts.css.cssHasChild) ) {
+					while ( ++lastIndex < l && rows[lastIndex].className.match(c.cssChildRow) ) {
+						rows[lastIndex].style.display = '';
 					}
 				}
 			}
@@ -457,6 +472,7 @@
 				for ( i = s; i < e; i++ ) {
 					$tb.append(rows[i]);
 				}
+				
 				ts.processTbody(table, $tb, false);
 			}
 
@@ -542,6 +558,7 @@
 			$.data(table, 'pagerLastPage', p.page);
 			$.data(table, 'pagerLastSize', p.size);
 			p.totalPages = Math.ceil( p.totalRows / p.size );
+			p.filteredPages = Math.ceil( p.filteredRows / p.size );
 			moveToPage(table, p);
 		},
 
