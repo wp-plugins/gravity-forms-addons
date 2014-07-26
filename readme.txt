@@ -11,11 +11,9 @@ Add directory capabilities and other functionality to the great Gravity Forms pl
 
 == Description ==
 
-> #### [GravityView](https://gravityview.co/) is landing soon.
+> #### [GravityView](https://gravityview.co/) has landed.
 > 
-> We're getting ready to release a totally re-written version of the Directory plugin!
->
-> [Sign up for email updates](https://gravityview.co/) to learn when it's released.
+> GravityView is the best way to display Gravity Forms entries. [Check it out](https://gravityview.co/).
 
 ### Turn Gravity Forms into a Directory plugin
 
