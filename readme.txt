@@ -5,17 +5,15 @@ Tested up to: 3.8.2
 Stable tag: 3.6.1.2
 Contributors: katzwebdesign, katzwebservices
 License: GPLv2 or later
-Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20Addons&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
+Donate link:https://gravityview.co
 
 Add directory capabilities and other functionality to the great Gravity Forms plugin.
 
 == Description ==
 
-> #### [GravityView](https://gravityview.co/) is landing soon.
+> #### [GravityView](https://gravityview.co/) has landed.
 > 
-> We're getting ready to release a totally re-written version of the Directory plugin!
->
-> [Sign up for email updates](https://gravityview.co/) to learn when it's released.
+> GravityView is the best way to display Gravity Forms entries. [Check it out](https://gravityview.co/).
 
 ### Turn Gravity Forms into a Directory plugin
 
