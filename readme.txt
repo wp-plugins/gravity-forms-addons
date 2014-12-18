@@ -2,7 +2,7 @@
 Tags: gravity forms, gravity form, forms, gravity, form, directory, business, business directory, directorypress, classifieds, cforms, formidable, gravityview
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 3.7
+Stable tag: 3.7.1
 Contributors: katzwebdesign, katzwebservices
 License: GPLv2 or later
 Donate link: https://gravityview.co
@@ -233,7 +233,8 @@ Since 3.6.3, the Directory plugin displays formatted values (like currency). To 
 
 == Changelog ==
 
-= 3.7 on December 17 = 
+= 3.7 and 3.7.1 on December 17 = 
+* Fixed: Add `load_plugin_textdomain()` for translations
 * Fixed: Restored single entry links
 * Fixed: Displaying IP address, other default entry values
 * Fixed: HTML links are no longer displayed as text
@@ -546,7 +547,8 @@ Note: This update has only been tested with WordPress 3.2 and Gravity Forms 1.5.
 
 == Upgrade Notice ==
 
-= 3.7 on December 17 = 
+= 3.7 and 3.7.1 on December 17 = 
+* Fixed: Add `load_plugin_textdomain()` for translations
 * Fixed: Restored single entry links
 * Fixed: Displaying IP address, other default entry values
 * Fixed: HTML links are no longer displayed as text
